@@ -11,7 +11,7 @@ As default storage it uses git (instead of a database).
 
 ## Development
 
-This server is written in Pythno 3.8 with aiohttp.
+This server is written in Python 3.8 with aiohttp.
 
 ### Running a local server
 
