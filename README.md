@@ -82,13 +82,13 @@ Initially we did hack in support for templates, but as it is written in Ruby, no
 In the end, it was decided this was not a road to go.
 
 This made me interested in how difficult it would be to write this ourself.
-A quick search showed the existence of [wikitextparserver](https://github.com/5j9/wikitextparser), written in Python, the programming languages all OpenTTD services are written in.
+A quick search showed the existence of [wikitextparser](https://github.com/5j9/wikitextparser), written in Python, the programming languages all OpenTTD services are written in.
 This library seems to be able to parse wikitext just fine, the repository exists for many years, the author is still active, and has a 100% coverage.
 In short this library is absolutely amazing.
 It took ~4 hours to make a proof of concept, to show we can render HTML via this library from wikitext.
 So, [wikitexthtml](https://github.com/TrueBrain/wikitexthtml) was born.
 
-The next week or so was spend in finding bugs in [wikitextparserver](https://github.com/5j9/wikitextparser) and [wikitexthtml](https://github.com/TrueBrain/wikitexthtml), while we were running the current content of the OpenTTD wiki through it.
+The next week or so was spend in finding bugs in [wikitextparser](https://github.com/5j9/wikitextparser) and [wikitexthtml](https://github.com/TrueBrain/wikitexthtml), while we were running the current content of the OpenTTD wiki through it.
 Nothing groundbreaking, just the normal edge-cases you get when parsing a wiki that has been around for 15+ years with many different people thinking they can write wikitext.
 It was also where we found out that wikitext has not really a specification; it is more of a: what-ever the PHP implementation does.
 A [rust library](https://docs.rs/parse_wiki_text/0.1.5/parse_wiki_text/) for parsing wikitext has an excellent rant about this, expressing exactly how I feel.
