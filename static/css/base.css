@@ -1,0 +1,191 @@
+*, ::before, ::after {
+	box-sizing: border-box;
+}
+html {
+	background: #ab9c7d;
+	color: black;
+	font-family: "Trebuchet MS", Arial, Verdana, Sans-Serif;
+	font-size: 12px;
+}
+body {
+	margin: auto auto;
+}
+select {
+	color: black;
+}
+img {
+	border: 0px;
+}
+a {
+	color: #DD6000;
+}
+a:focus, a:hover {
+	color: #BB4000;
+}
+hr {
+	background: url("../img/layout/hr.png") repeat-x;
+	border: none;
+	height: 2px;
+}
+h3, .h3 {
+	font-weight: normal;
+	font-size: 16px;
+	margin: 0px;
+	text-decoration: underline;
+}
+h4, .h4 {
+	font-weight: normal;
+	font-size: 14px;
+	margin: 0px;
+}
+h5, .h5 {
+	font-weight: normal;
+	font-size: 12px;
+	margin: 0px;
+}
+
+.nowrap {
+	overflow: hidden;
+	white-space: nowrap;
+
+	/* The following elements are not part of CSS2, but are required for some
+	 *  (broken) browsers who do not understand the former definitions. */
+	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+}
+
+body > * {
+	width: 800px;
+}
+
+body > header {
+	margin: 0px auto;
+	padding: 6px 10px 10px 10px;
+	box-shadow: 0px 0px 5px #000000;
+	/* Stripes! */
+	background-image: repeating-linear-gradient(to bottom, #323536 0, #323536 1px, #3c3e40 1px, #3c3e40 2px);
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+#download-fast {
+	background: url("../img/layout/download-package.gif") 12px 50% no-repeat, rgba(85, 87, 89, 0.4);
+	border: 0 solid;
+	border-radius: 6px;
+	list-style: none;
+	margin: 0;
+	padding: 6px 10px 6px 45px;
+	text-align: left;
+}
+#download-fast a {
+	color: #ccc;
+	font-size: 11px;
+	text-decoration: none;
+}
+#download-fast a:focus, #download-fast a:hover {
+	color: #999;
+	text-decoration: underline;
+}
+
+#openttd-logo {
+	background: url("../img/layout/openttd-64.gif") no-repeat left bottom 2px;
+	height: 68px;
+	width: 250px;
+	position: relative;
+}
+#openttd-logo-text,
+#openttd-logo-text img,
+#openttd-logo-text-noai,
+#openttd-logo-text-noai img,
+#openttd-logo-text-bananas,
+#openttd-logo-text-bananas img,
+#openttd-logo-text-security,
+#openttd-logo-text-security img,
+#openttd-logo-text-binaries,
+#openttd-logo-text-binaries img,
+#openttd-logo-text-translator,
+#openttd-logo-text-translator img {
+	display: block;
+}
+#openttd-logo-text,
+#openttd-logo-text-noai,
+#openttd-logo-text-bananas,
+#openttd-logo-text-security,
+#openttd-logo-text-binaries,
+#openttd-logo-text-translator {
+	position: absolute;
+	bottom: 4px;
+	left: 78px;
+}
+
+body > nav {
+	background: #555555;
+	border-radius: 0px 0px 10px 10px;
+	box-shadow: 0px 0px 5px #000000;
+	height: 32px;
+	margin: 0px auto;
+	min-height: 32px;
+	overflow: hidden;
+}
+#navigation-bar {
+	display: flex;
+	margin: 0px;
+	padding: 0px;
+}
+#navigation-bar li {
+	font-size: 12px;
+	flex-grow: 1;
+	line-height: 32px;
+	list-style-type: none;
+}
+#navigation-bar li a {
+	color: #DDDDDD;
+	display: block;
+	padding: 0px 3px 0px 3px;
+	text-decoration: none;
+	text-align: center;
+}
+#navigation-bar li a:focus, #navigation-bar li a:hover {
+	background: linear-gradient(#C4C4C4, #A5A5A5);
+	color: #444444;
+}
+#navigation-bar li.selected {
+	background: linear-gradient(#FCD085, #FFB23F);
+}
+#navigation-bar li.selected a {
+	color: #444444;
+}
+
+main {
+	background-color: white;
+	margin: 12px auto;
+	padding: 7px;
+	border-radius: 5px;
+	box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.11);
+}
+body > footer {
+	background-color: white;
+	margin: 0 auto 36px auto;
+	padding: 7px 7px 6px 7px;
+	overflow: hidden;
+	border-radius: 5px;
+	box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.11);
+}
+#content-bottom-links {
+	float: left;
+	font-size: 11px;
+	padding: 3px 5px;
+}
+#content-bottom-copyright {
+	float: right;
+	font-size: 11px;
+	padding: 3px 5px;
+}
+#hr-clear {
+	clear: both;
+}
+
+.mono {
+	font-family: 'Courier New', monospace;
+}

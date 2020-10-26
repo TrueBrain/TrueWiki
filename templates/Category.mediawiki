@@ -1,0 +1,27 @@
+{{#if:{{categories}}|
+<h2>Categories</h2>
+<ul>
+    {{categories}}
+</ul>
+}}
+
+{{#if:{{pages}}|
+<h2>Pages</h2>
+<ul>
+    {{pages}}
+</ul>
+}}
+
+{{#if:{{templates}}|
+<h2>Templates</h2>
+<ul>
+    {{templates}}
+</ul>
+}}
+
+{{#if:{{other_language}}|
+<h2>Entries that don't belong to the language of this category</h2>
+<ul>
+    {{other_language}}
+</ul>
+}}

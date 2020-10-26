@@ -1,0 +1,4 @@
+<li>
+    <a href=""><img src="/uploads/{{language}}/Flag.png"></a>
+    [[{{url}}|{{language}}]]
+</li>
