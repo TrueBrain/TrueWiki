@@ -1,4 +1,5 @@
 import logging
+import time
 
 from aiohttp import web
 from aiohttp.web_log import AccessLogger
@@ -26,10 +27,12 @@ class ErrorOnlyAccessLogger(AccessLogger):
 @click_logging  # Should always be on top, as it initializes the logging
 @click_sentry
 def main():
-    print("Loading metadata ...")
-    load_metadata()
+    print("Loading metadata (this can take a while) ...")
 
-    print("Starting webserver ...")
+    start = time.time()
+    load_metadata()
+    print(f"Loading metadata done; took {time.time() - start:.2f} seconds")
+
     webapp = web.Application()
     webapp.router.add_static("/uploads", "data/File/")
     webapp.router.add_static("/static", "static/")
