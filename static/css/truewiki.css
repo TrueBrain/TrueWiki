@@ -153,11 +153,11 @@ dd {
 h1, h2, h3, h4, h5, h6 {
     border-bottom: 1px solid #aaa;
     font-weight: normal;
-    margin-bottom: 5px;
-    margin: 0;
+    margin: 0 0 5px 0;
     overflow: hidden;
     padding-bottom: 0px;
     padding-top: 32px;
+    text-align: left;
     text-decoration: none;
     width: auto;
 }
