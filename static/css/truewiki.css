@@ -300,3 +300,34 @@ h6:hover .anchor {
 #categories ul li:not(:last-child):after {
     content: " | "
 }
+
+ul.gallery {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+ul.gallery li {
+    display: inline-block;
+    line-height: 1.1;
+    list-style-image: none;
+    list-style-type: none;
+    margin-left: 2px;
+    vertical-align: top;
+}
+ul.gallery li.gallerycaption {
+    display: block;
+    font-weight: bold;
+    padding: 3px 0 6px 0 !important;
+    text-align: center;
+    word-wrap: break-word;
+}
+ul.gallery .thumb {
+    border: 1px solid #aaa;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+}
+ul.gallery .gallerytext {
+    font-size: 80%;
+    padding: 6px 3px 12px 3px !important;
+}
