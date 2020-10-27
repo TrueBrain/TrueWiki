@@ -1,6 +1,10 @@
+import logging
 import os
 
+from typing import Optional
 from wikitexthtml import Page
+
+log = logging.getLogger(__name__)
 
 SPECIAL_FOLDERS = ("Template/", "Category/")
 
@@ -59,3 +63,12 @@ class WikiPage(Page):
                 return "OpenTTD's Wiki"
         else:
             return stitle[-1]
+
+    def file_get_link(self, url: str) -> str:
+        return f"/File/{url}"
+
+    def file_get_img(self, url: str, thumb: Optional[int]) -> str:
+        if thumb:
+            log.error("[%s] Thumb size %d requested but not supported yet", self.page, thumb)
+
+        return f"/uploads/{url}"
