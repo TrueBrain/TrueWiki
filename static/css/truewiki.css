@@ -92,17 +92,20 @@ a.new {
 }
 .thumbinner {
     background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    display: inline-block;
+    display: inline-table;
     font-size: 94%;
+    outline: 1px solid #ccc;
     overflow: hidden;
-    padding: 3px !important;
+    padding: 3px 3px 0 3px !important;
     text-align: center;
 }
 .thumbcaption {
     border: none;
+    caption-side: bottom;
+    display: table-caption;
     font-size: 94%;
-    padding: 0px 6px !important;
+    margin-top: -5px;
+    padding: 0 3px 0 3px !important;
     text-align: left;
 }
 .thumbcaption p {
@@ -113,6 +116,7 @@ a.new {
     background: none !important;
     border: none !important;
     float: right;
+    margin-right: -3px;
 }
 
 .magnify a {
