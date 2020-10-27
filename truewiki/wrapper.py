@@ -9,7 +9,7 @@ from wikitexthtml.render import (
 from .wiki_page import WikiPage
 
 
-def wrap_page(page, wrapper, variables):
+def wrap_page(page, wrapper, variables, templates):
     with open(f"templates/{wrapper}.mediawiki", "r") as fp:
         body = fp.read()
 
@@ -17,11 +17,13 @@ def wrap_page(page, wrapper, variables):
     body = preprocess.begin(wiki_page, body)
     wtp = wikitextparser.parse(body)
 
-    parameter.replace(wiki_page, wtp, [])
+    arguments = [wikitextparser.Argument(f"|{name}={value}") for name, value in variables.items()]
+    parameter.replace(wiki_page, wtp, arguments)
+
     for template in reversed(wtp.templates):
         name = template.name.strip()
-        if name in variables:
-            template.string = variables[name]
+        if name in templates:
+            template.string = templates[name]
     parser_function.replace(wiki_page, wtp)
 
     return wtp.string

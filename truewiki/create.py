@@ -42,25 +42,34 @@ def create_category_index(page):
         else:
             add_func(link)
 
+    render_templates = {}
+
+    if templates:
+        wtp = wikitextparser.parse("\n".join(sorted(templates, key=lambda x: x.split("/")[-2])))
+        wikilink.replace(WikiPage(page), wtp)
+        render_templates["templates"] = wtp.string
+
+    if categories:
+        wtp = wikitextparser.parse("\n".join(sorted(categories, key=lambda x: x.split("/")[-2])))
+        wikilink.replace(WikiPage(page), wtp)
+        render_templates["categories"] = wtp.string
+
+    if pages:
+        wtp = wikitextparser.parse("\n".join(sorted(pages, key=lambda x: x.split("/")[-2])))
+        wikilink.replace(WikiPage(page), wtp)
+        render_templates["pages"] = wtp.string
+
+    if other_language:
+        wtp = wikitextparser.parse("\n".join(sorted(other_language, key=lambda x: x.split("/")[-2])))
+        wikilink.replace(WikiPage(page), wtp)
+        render_templates["other_language"] = wtp.string
+
+    # Also set a variable to indicate the section is set
     variables = {}
+    for name in render_templates:
+        variables[name] = "1"
 
-    wtp = wikitextparser.parse("\n".join(sorted(templates)))
-    wikilink.replace(WikiPage(page), wtp)
-    variables["templates"] = wtp.string
-
-    wtp = wikitextparser.parse("\n".join(sorted(categories)))
-    wikilink.replace(WikiPage(page), wtp)
-    variables["categories"] = wtp.string
-
-    wtp = wikitextparser.parse("\n".join(sorted(pages)))
-    wikilink.replace(WikiPage(page), wtp)
-    variables["pages"] = wtp.string
-
-    wtp = wikitextparser.parse("\n".join(sorted(other_language)))
-    wikilink.replace(WikiPage(page), wtp)
-    variables["other_language"] = wtp.string
-
-    return wrap_page(page, "Category", variables)
+    return wrap_page(page, "Category", variables, render_templates)
 
 
 def create_category_bar(page, categories):

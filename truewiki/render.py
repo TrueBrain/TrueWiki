@@ -23,12 +23,12 @@ def render_source(page: str) -> str:
     wikilink.replace(WikiPage(page), wtp)
     templates_used = wtp.string
 
-    variables = {
+    templates = {
         "content": body,
         "templates_used": templates_used,
     }
 
-    return wrap_page(page, "Source", variables)
+    return wrap_page(page, "Source", {}, templates)
 
 
 def render_page(page: str) -> str:
@@ -37,18 +37,18 @@ def render_page(page: str) -> str:
 
     wikipage = WikiPage(page)
 
-    variables = {
+    templates = {
         "content": wikipage.render().html,
         "language": "",
         "category": "",
     }
 
     if wikipage.en_page:
-        variables["language"] = create_language_bar(page, wikipage.en_page)
+        templates["language"] = create_language_bar(page, wikipage.en_page)
     if wikipage.categories:
-        variables["category"] = create_category_bar(page, wikipage.categories)
+        templates["category"] = create_category_bar(page, wikipage.categories)
 
     if page.startswith("Category/"):
-        variables["content"] += create_category_index(page)
+        templates["content"] += create_category_index(page)
 
-    return wrap_page(page, "Page", variables)
+    return wrap_page(page, "Page", {}, templates)
