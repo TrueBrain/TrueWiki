@@ -38,10 +38,10 @@ def category_callback(wtp, page):
             CATEGORIES[wikilink.target[len("Category:") :]].append(page)
 
 
-def load_metadata():
-    scan_folder("data/Page", len("data/Page/"), [translation_callback, category_callback])
-    scan_folder("data/Template", len("data/"), [translation_callback, category_callback])
-    scan_folder("data/Category", len("data/"), [translation_callback, category_callback])
+def load_metadata(folder):
+    scan_folder(f"{folder}/Page", len(f"{folder}/Page/"), [translation_callback, category_callback])
+    scan_folder(f"{folder}/Template", len(f"{folder}/"), [translation_callback, category_callback])
+    scan_folder(f"{folder}/Category", len(f"{folder}/"), [translation_callback, category_callback])
 
     for translation in TRANSLATIONS:
         TRANSLATIONS[translation] = sorted(TRANSLATIONS[translation], key=lambda name: (name.find("en/") < 0, name))

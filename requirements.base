@@ -1,4 +1,5 @@
 aiohttp
 click
+GitPython
 openttd-helpers
 wikitexthtml
