@@ -1,6 +1,8 @@
+import click
 import logging
 
 from aiohttp import web
+from openttd_helpers import click_helper
 
 from .render import (
     render_source,
@@ -9,6 +11,9 @@ from .render import (
 
 log = logging.getLogger(__name__)
 routes = web.RouteTableDef()
+
+RELOAD_SECRET = None
+STORAGE = None
 
 
 @routes.get("/")
@@ -39,7 +44,41 @@ async def html_page(request):
     return web.Response(body=body, content_type="text/html")
 
 
+@routes.post("/reload")
+async def reload(request):
+    if RELOAD_SECRET is None:
+        return web.HTTPNotFound()
+
+    data = await request.json()
+
+    if "secret" not in data:
+        return web.HTTPNotFound()
+
+    if data["secret"] != RELOAD_SECRET:
+        return web.HTTPNotFound()
+
+    STORAGE.reload()
+
+    return web.HTTPNoContent()
+
+
+@routes.get("/healthz")
+async def healthz_handler(request):
+    return web.HTTPOk()
+
+
 @routes.route("*", "/{tail:.*}")
 async def fallback(request):
     log.warning("Unexpected URL: %s", request.url)
     return web.HTTPNotFound()
+
+
+@click_helper.extend
+@click.option(
+    "--reload-secret",
+    help="Secret to allow an index reload. Always use this via an environment variable!",
+)
+def click_web_routes(reload_secret):
+    global RELOAD_SECRET
+
+    RELOAD_SECRET = reload_secret

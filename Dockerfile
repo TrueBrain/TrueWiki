@@ -13,6 +13,17 @@ LABEL org.opencontainers.image.licenses="GPLv2"
 LABEL org.opencontainers.image.title="Wiki Server"
 LABEL org.opencontainers.image.description="TrueWiki is a wikitext server similar to mediawiki and gollum"
 
+# git is needed to clone the wiki data
+# openssh-client is needed to git clone over ssh
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git \
+        openssh-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# We will be connecting to github.com, so populate their key already.
+RUN mkdir -p ~/.ssh \
+    && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
 WORKDIR /code
 
 COPY requirements.txt \
@@ -30,7 +41,9 @@ RUN pip freeze 2>/dev/null > requirements.installed \
         || ( echo "!! ERROR !! requirements.txt defined different packages or versions for installation" \
                 && exit 1 ) 1>&2
 
+COPY static /code/static
+COPY templates /code/templates
 COPY truewiki /code/truewiki
 
 ENTRYPOINT ["python", "-m", "truewiki"]
-CMD []
+CMD ["--bind", "0.0.0.0", "--storage", "local"]

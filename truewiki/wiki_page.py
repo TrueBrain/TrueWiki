@@ -4,6 +4,8 @@ import os
 from typing import Optional
 from wikitexthtml import Page
 
+from . import web_routes
+
 log = logging.getLogger(__name__)
 
 SPECIAL_FOLDERS = ("Template/", "Category/")
@@ -14,6 +16,7 @@ class WikiPage(Page):
         super().__init__(page)
         self.en_page = None
         self.categories = []
+        self._folder = web_routes.STORAGE.folder
 
     def page_load(self, page: str) -> str:
         for special_folder in SPECIAL_FOLDERS:
@@ -24,7 +27,7 @@ class WikiPage(Page):
         else:
             prefix = "Page"
 
-        with open(f"data/{prefix}/{page}.mediawiki") as fp:
+        with open(f"{self._folder}/{prefix}/{page}.mediawiki") as fp:
             body = fp.read()
         return body
 
@@ -37,17 +40,17 @@ class WikiPage(Page):
         else:
             prefix = "Page"
 
-        return os.path.exists(f"data/{prefix}/{page}.mediawiki")
+        return os.path.exists(f"{self._folder}/{prefix}/{page}.mediawiki")
 
     def template_load(self, template: str) -> str:
-        with open(f"data/Template/{template}.mediawiki") as fp:
+        with open(f"{self._folder}/Template/{template}.mediawiki") as fp:
             return fp.read()
 
     def template_exists(self, template: str) -> bool:
-        return os.path.exists(f"data/Template/{template}.mediawiki")
+        return os.path.exists(f"{self._folder}/Template/{template}.mediawiki")
 
     def file_exists(self, file: str) -> bool:
-        return os.path.exists(f"data/File/{file}")
+        return os.path.exists(f"{self._folder}/File/{file}")
 
     def clean_url(self, url: str) -> str:
         if url.endswith("Main Page"):
