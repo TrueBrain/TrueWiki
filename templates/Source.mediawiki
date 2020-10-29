@@ -33,18 +33,17 @@
         </nav>
         <main>
             {{#if:{{{has_errors|}}}|
-            <p>
-                The following errors happened during rendering:
-            </p>
+            <h3>Errors</h3>
             <ul>
                 {{errors}}
             </ul>
             }}
+            <h3>Source</h3>
             <textarea style="width: 100%;" rows=50>{{content}}</textarea>
+            <h3>
+                Templates
+            </h3>
             {{#if:{{{has_templates_used|}}}|
-            <p>
-                Templates used:
-            </p>
             <ul>
                 {{templates_used}}
             </ul>
