@@ -22,8 +22,6 @@ from . import wikilink  # noqa
 
 log = logging.getLogger(__name__)
 
-SPECIAL_FOLDERS = ("Template/", "Category/")
-
 
 class ErrorOnlyAccessLogger(AccessLogger):
     def log(self, request, response, time):
