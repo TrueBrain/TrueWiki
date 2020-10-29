@@ -19,7 +19,11 @@
         <nav>
             <ul id="navigation-bar">
                 <li>
-                    <a href="/{{FULLPAGENAME}}.mediawiki">View Source</a>
+                    <a href="/{{FULLPAGENAME}}.mediawiki">View Source
+                    {{#if: {{{errors|}}}|
+                    <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
+                    }}
+                    </a>
                 </li>
                 {{#if: {{HISTORY_URL|}}|
                 <li>

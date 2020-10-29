@@ -64,7 +64,7 @@ def create_category_index(page):
     # Also set a variable to indicate the section is set
     variables = {}
     for name in render_templates:
-        variables[name] = "1"
+        variables[f"has_{name}"] = "1"
 
     return wrap_page(page, "Category", variables, render_templates)
 

@@ -32,14 +32,23 @@
             </ul>
         </nav>
         <main>
+            {{#if:{{{has_errors|}}}|
+            <p>
+                The following errors happened during rendering:
+            </p>
+            <ul>
+                {{errors}}
+            </ul>
+            }}
             <textarea style="width: 100%;" rows=50>{{content}}</textarea>
-            <hr>
+            {{#if:{{{has_templates_used|}}}|
             <p>
                 Templates used:
             </p>
             <ul>
                 {{templates_used}}
             </ul>
+            |<p>No templates used</p>}}
         </main>
         <footer>
             <div id="content-bottom-links">

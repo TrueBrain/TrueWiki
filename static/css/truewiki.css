@@ -331,3 +331,20 @@ ul.gallery .gallerytext {
     font-size: 80%;
     padding: 6px 3px 12px 3px !important;
 }
+
+.badge {
+    background-color: #D52D2D;
+    border-radius: 7px;
+    color: white;
+    display: inline-block;
+    font-size: 80%;
+    font-weight: bold;
+    height: 14px;
+    left: 8px;
+    line-height: 1.45;
+    margin-left: -14px;
+    overflow: hidden;
+    position: relative;
+    top: -3px;
+    width: 14px;
+}
