@@ -4,6 +4,7 @@ import logging
 from aiohttp import web
 from openttd_helpers import click_helper
 
+from .metadata import load_metadata
 from .render import (
     render_source,
     render_page,
@@ -58,6 +59,7 @@ async def reload(request):
         return web.HTTPNotFound()
 
     STORAGE.reload()
+    load_metadata(STORAGE.folder)
 
     return web.HTTPNoContent()
 
