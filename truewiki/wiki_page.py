@@ -42,6 +42,14 @@ class WikiPage(Page):
 
         return os.path.exists(f"{self._folder}/{prefix}/{page}.mediawiki")
 
+    def page_ondisk_name(self, page: str) -> str:
+        for special_folder in SPECIAL_FOLDERS:
+            if page.startswith(special_folder):
+                return f"{page}.mediawiki"
+        if page.startswith("File/"):
+            return f"{page}.mediawiki"
+        return f"Page/{page}.mediawiki"
+
     def template_load(self, template: str) -> str:
         with open(f"{self._folder}/Template/{template}.mediawiki") as fp:
             return fp.read()

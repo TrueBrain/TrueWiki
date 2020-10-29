@@ -12,6 +12,9 @@ class Storage:
     def reload(self):
         pass
 
+    def get_history_url(self, page):
+        return ""
+
     @property
     def folder(self):
         return self._folder

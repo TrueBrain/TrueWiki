@@ -6,6 +6,7 @@ from wikitexthtml.render import (
     parser_function,
 )
 
+from . import web_routes
 from .wiki_page import WikiPage
 
 
@@ -19,6 +20,8 @@ def wrap_page(page, wrapper, variables, templates):
 
     arguments = [wikitextparser.Argument(f"|{name}={value}") for name, value in variables.items()]
     parameter.replace(wiki_page, wtp, arguments)
+
+    templates["HISTORY_URL"] = web_routes.STORAGE.get_history_url(wiki_page.page_ondisk_name(page))
 
     for template in reversed(wtp.templates):
         name = template.name.strip()
