@@ -9,7 +9,11 @@ from .wiki_page import WikiPage
 
 log = logging.getLogger(__name__)
 
-SPECIAL_FOLDERS = ("Template/", "Category/")
+NAMESPACE_MAPPING = {
+    "Template/": ":Template:",
+    "Category/": ":Category:",
+    "Page/": "",
+}
 
 
 def create_category_index(page):
@@ -22,17 +26,23 @@ def create_category_index(page):
     language = category_page.split("/")[0]
 
     for page_in_category in metadata.CATEGORIES.get(category_page, []):
-        if page_in_category.startswith("Template/"):
-            page_in_category = page_in_category[len("Template/") :]
-            link = f"<li>[[:Template:{page_in_category}]]</li>"
-            add_func = templates.add
-        elif page_in_category.startswith("Category/"):
-            page_in_category = page_in_category[len("Category/") :]
-            link = f"<li>[[:Category:{page_in_category}]]</li>"
-            add_func = categories.add
+        for namespace, prefix in NAMESPACE_MAPPING.items():
+            if not page_in_category.startswith(namespace):
+                continue
+
+            page_in_category = page_in_category[len(namespace) :]
+            link = f"<li>[[{prefix}{page_in_category}]]</li>"
+
+            if namespace == "Templates/":
+                add_func = templates.add
+            elif namespace == "Category/":
+                add_func = categories.add
+            else:
+                add_func = pages.add
+
+            break
         else:
-            link = f"<li>[[{page_in_category}]]</li>"
-            add_func = pages.add
+            raise RuntimeError(f"{page_in_category} has invalid namespace")
 
         if page_in_category.split("/")[0] != language:
             other_language.add(link)
@@ -86,10 +96,12 @@ def create_language_bar(page, en_page):
 
     language_content = ""
     for url in metadata.TRANSLATIONS.get(en_page, []):
-        if url.startswith(SPECIAL_FOLDERS):
-            language = url.split("/")[1]
-        else:
-            language = url.split("/")[0]
+        if not url.startswith(tuple(NAMESPACE_MAPPING)):
+            raise RuntimeError(f"{url} has invalid namespace")
+
+        language = url.split("/")[1]
+        if url.startswith("Page/"):
+            url = url[len("Page/") :]
 
         wtp = wikitextparser.parse(body)
         for template in reversed(wtp.templates):
