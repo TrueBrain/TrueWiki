@@ -84,6 +84,9 @@ class Storage(local.Storage):
     def reload(self):
         self._fetch_latest()
 
+    def get_history_url(self, page):
+        return f"{_github_url}/commits/master/{page}"
+
 
 @click_helper.extend
 @click.option(

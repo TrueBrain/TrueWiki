@@ -21,9 +21,11 @@
                 <li>
                     <a href="/{{FULLPAGENAME}}.mediawiki">View Source</a>
                 </li>
+                {{#if: {{HISTORY_URL|}}|
                 <li>
-                    <a href="">View History</a>
+                    <a href="{{HISTORY_URL}}">View History</a>
                 </li>
+                }}
                 <li>
                     <a href="">Login</a>
                 </li>
