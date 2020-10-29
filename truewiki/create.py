@@ -3,10 +3,7 @@ import logging
 from wikitexthtml.render import wikilink
 import wikitextparser
 
-from .metadata import (
-    CATEGORIES,
-    TRANSLATIONS,
-)
+from . import metadata
 from .wrapper import wrap_page
 from .wiki_page import WikiPage
 
@@ -24,7 +21,7 @@ def create_category_index(page):
     category_page = page[len("Category/") :]
     language = category_page.split("/")[0]
 
-    for page_in_category in CATEGORIES.get(category_page, []):
+    for page_in_category in metadata.CATEGORIES.get(category_page, []):
         if page_in_category.startswith("Template/"):
             page_in_category = page_in_category[len("Template/") :]
             link = f"<li>[[:Template:{page_in_category}]]</li>"
@@ -88,7 +85,7 @@ def create_language_bar(page, en_page):
         body = fp.read()
 
     language_content = ""
-    for url in TRANSLATIONS.get(en_page, []):
+    for url in metadata.TRANSLATIONS.get(en_page, []):
         if url.startswith(SPECIAL_FOLDERS):
             language = url.split("/")[1]
         else:

@@ -39,6 +39,9 @@ def category_callback(wtp, page):
 
 
 def load_metadata(folder):
+    TRANSLATIONS.clear()
+    CATEGORIES.clear()
+
     scan_folder(f"{folder}/Page", len(f"{folder}/Page/"), [translation_callback, category_callback])
     scan_folder(f"{folder}/Template", len(f"{folder}/"), [translation_callback, category_callback])
     scan_folder(f"{folder}/Category", len(f"{folder}/"), [translation_callback, category_callback])
