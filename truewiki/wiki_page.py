@@ -79,7 +79,5 @@ class WikiPage(Page):
         return f"/File/{url}"
 
     def file_get_img(self, url: str, thumb: Optional[int]) -> str:
-        if thumb:
-            log.error("[%s] Thumb size %d requested but not supported yet", self.page, thumb)
-
+        # TODO -- Support thumb sizes
         return f"/uploads/{url}"
