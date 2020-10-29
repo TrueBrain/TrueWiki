@@ -70,4 +70,4 @@ def main(bind, port, storage):
 
 
 if __name__ == "__main__":
-    main()
+    main(auto_envvar_prefix="TRUEWIKI")
