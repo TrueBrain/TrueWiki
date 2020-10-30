@@ -53,9 +53,27 @@ class WikiPage(Page):
             prefix = "Page"
 
         if prefix == "Folder":
+            # This is /Folder/, which should list all languages.
+            if page == "Main Page":
+                return True
+
+            # /Folder only works with folders, which are extended with
+            # "Main Page" automatically. So remove "Main Page", and check if
+            # the folder exists on disk.
+            if not page.endswith("/Main Page"):
+                return False
+            page = page[: -len("/Main Page")]
             return os.path.exists(f"{self._folder}/Page/{page}")
 
         if prefix == "Category":
+            # This is /Category/, which should list all languages.
+            if page == "Main Page":
+                return True
+            # This is the root of the category of a language; here we list all
+            # categories.
+            if page.endswith("/Main Page") and len(page.split("/")) == 2:
+                return True
+
             # A category might not have a mediawiki page, but has pages
             # in it.
             if page in metadata.CATEGORIES:

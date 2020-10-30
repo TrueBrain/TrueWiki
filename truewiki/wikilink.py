@@ -17,6 +17,9 @@ def category_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
 
 def category_link_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     target = wikilink.target[len(":category:") :]
+    # Language root of a category; used to list all categories of a language.
+    if len(target) == 2:
+        target += "/Main Page"
 
     wikilink.target = "Category/" + target
     return False
@@ -24,6 +27,9 @@ def category_link_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink)
 
 def folder_link_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     target = wikilink.target[len(":folder:") :]
+    if not target.endswith("/"):
+        target += "/"
+    target += "Main Page"
 
     wikilink.target = "Folder/" + target
     return False

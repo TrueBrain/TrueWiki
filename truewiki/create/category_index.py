@@ -2,6 +2,7 @@ import wikitextparser
 
 from wikitexthtml.render import wikilink
 
+from . import folder_index
 from .. import metadata
 from ..wrapper import wrap_page
 from ..wiki_page import WikiPage
@@ -23,29 +24,39 @@ def create(page):
     category_page = page[len("Category/") :]
     language = category_page.split("/")[0]
 
-    for page_in_category in metadata.CATEGORIES.get(category_page, []):
-        for namespace, prefix in NAMESPACE_MAPPING.items():
-            if not page_in_category.startswith(namespace):
+    if language == "Main Page":
+        return folder_index.create("Folder/Main Page", namespace="Category")
+    elif category_page == f"{language}/Main Page":
+        for category in metadata.CATEGORIES:
+            if not category.startswith(f"{language}/"):
                 continue
 
-            page_in_category = page_in_category[len(namespace) :]
-            link = f"<li>[[{prefix}{page_in_category}]]</li>"
+            link = f"<li>[[:Category:{category}]]</li>"
+            categories.add(link)
+    else:
+        for page_in_category in metadata.CATEGORIES.get(category_page, []):
+            for namespace, prefix in NAMESPACE_MAPPING.items():
+                if not page_in_category.startswith(namespace):
+                    continue
 
-            if namespace == "Templates/":
-                add_func = templates.add
-            elif namespace == "Category/":
-                add_func = categories.add
+                page_in_category = page_in_category[len(namespace) :]
+                link = f"<li>[[{prefix}{page_in_category}]]</li>"
+
+                if namespace == "Templates/":
+                    add_func = templates.add
+                elif namespace == "Category/":
+                    add_func = categories.add
+                else:
+                    add_func = pages.add
+
+                break
             else:
-                add_func = pages.add
+                raise RuntimeError(f"{page_in_category} has invalid namespace")
 
-            break
-        else:
-            raise RuntimeError(f"{page_in_category} has invalid namespace")
-
-        if page_in_category.split("/")[0] != language:
-            other_language.add(link)
-        else:
-            add_func(link)
+            if page_in_category.split("/")[0] != language:
+                other_language.add(link)
+            else:
+                add_func(link)
 
     render_templates = {}
 
