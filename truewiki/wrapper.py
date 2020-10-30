@@ -6,7 +6,7 @@ from wikitexthtml.render import (
     parser_function,
 )
 
-from . import web_routes
+from . import singleton
 from .wiki_page import WikiPage
 
 
@@ -21,26 +21,7 @@ def wrap_page(page, wrapper, variables, templates):
     arguments = [wikitextparser.Argument(f"|{name}={value}") for name, value in variables.items()]
     parameter.replace(wiki_page, wtp, arguments)
 
-    spage = page.split("/")
-    breadcrumbs = []
-    breadcrumb = "/"
-    for i, p in enumerate(spage):
-        if p == "Main Page":
-            continue
-
-        if i == len(spage) - 1:
-            breadcrumb += f"{p}"
-        else:
-            breadcrumb += f"{p}/"
-
-        if i == 0:
-            p = "OpenTTD's Wiki"
-
-        breadcrumbs.append(f'<li class="crumb"><a href="{breadcrumb}">{p}</a></li>')
-    breadcrumbs[-1] = breadcrumbs[-1].replace('<li class="crumb">', '<li class="crumb selected">')
-
-    templates["HISTORY_URL"] = web_routes.STORAGE.get_history_url(wiki_page.page_ondisk_name(page))
-    templates["breadcrumbs"] = "\n".join(breadcrumbs)
+    templates["HISTORY_URL"] = singleton.STORAGE.get_history_url(wiki_page.page_ondisk_name(page))
 
     for template in reversed(wtp.templates):
         name = template.name.strip()

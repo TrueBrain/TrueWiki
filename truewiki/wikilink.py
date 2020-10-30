@@ -8,13 +8,6 @@ from .wiki_page import WikiPage
 log = logging.getLogger(__name__)
 
 
-def translation_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
-    page = wikilink.target[len("translation:") :]
-    instance.en_page = page
-    wikilink.string = ""
-    return True
-
-
 def category_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     category = wikilink.target[len("category:") :]
     instance.categories.append(category)
@@ -29,6 +22,13 @@ def category_link_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink)
     return False
 
 
+def folder_link_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
+    target = wikilink.target[len(":folder:") :]
+
+    wikilink.target = "Folder/" + target
+    return False
+
+
 def template_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     target = wikilink.target
 
@@ -40,8 +40,16 @@ def template_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     return False
 
 
-wikilink.register_namespace("translation", translation_replace)
-wikilink.register_namespace("category", category_replace)
+def translation_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
+    page = wikilink.target[len("translation:") :]
+    instance.en_page = page
+    wikilink.string = ""
+    return True
+
+
 wikilink.register_namespace(":category", category_link_replace)
-wikilink.register_namespace("template", template_replace)
+wikilink.register_namespace("category", category_replace)
+wikilink.register_namespace(":folder", folder_link_replace)
 wikilink.register_namespace(":template", template_replace)
+wikilink.register_namespace("template", template_replace)
+wikilink.register_namespace("translation", translation_replace)

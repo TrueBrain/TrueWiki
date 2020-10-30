@@ -1,10 +1,16 @@
-from wikitexthtml.render import wikilink
 import wikitextparser
+
+from wikitexthtml.render import wikilink
 
 from .. import metadata
 from ..wiki_page import WikiPage
 
-NAMESPACES = ("Template/", "Category/", "Page/")
+NAMESPACES = (
+    "Category/",
+    "Folder/",
+    "Page/",
+    "Template/",
+)
 
 
 def create(page, en_page):

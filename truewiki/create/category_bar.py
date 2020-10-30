@@ -1,5 +1,6 @@
-from wikitexthtml.render import wikilink
 import wikitextparser
+
+from wikitexthtml.render import wikilink
 
 from ..wiki_page import WikiPage
 

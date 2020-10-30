@@ -1,14 +1,16 @@
-from wikitexthtml.render import wikilink
 import wikitextparser
+
+from wikitexthtml.render import wikilink
 
 from .. import metadata
 from ..wrapper import wrap_page
 from ..wiki_page import WikiPage
 
 NAMESPACE_MAPPING = {
-    "Template/": ":Template:",
     "Category/": ":Category:",
+    "Folder/": ":Folder:",
     "Page/": "",
+    "Template/": ":Template:",
 }
 
 
