@@ -4,6 +4,7 @@ import logging
 from aiohttp import web
 from openttd_helpers import click_helper
 
+from . import singleton
 from .metadata import load_metadata
 from .render import (
     render_source,
@@ -14,12 +15,11 @@ log = logging.getLogger(__name__)
 routes = web.RouteTableDef()
 
 RELOAD_SECRET = None
-STORAGE = None
 
 
 @routes.get("/")
 async def root(request):
-    return web.HTTPFound("/en/Main Page")
+    return web.HTTPFound("/en/")
 
 
 @routes.get("/{page:.*}.mediawiki")
@@ -58,8 +58,8 @@ async def reload(request):
     if data["secret"] != RELOAD_SECRET:
         return web.HTTPNotFound()
 
-    STORAGE.reload()
-    load_metadata(STORAGE.folder)
+    singleton.STORAGE.reload()
+    load_metadata(singleton.STORAGE.folder)
 
     return web.HTTPNoContent()
 

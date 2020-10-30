@@ -1,0 +1,49 @@
+import glob
+import os
+import wikitextparser
+
+from wikitexthtml.render import wikilink
+
+from .. import singleton
+from ..wrapper import wrap_page
+from ..wiki_page import WikiPage
+
+NAMESPACE_MAPPING = {
+    "Template/": ":Template:",
+    "Category/": ":Category:",
+    "Page/": "",
+}
+
+
+def create(page):
+    pages = set()
+    folders = set()
+
+    folder = page[len("Folder/") :]
+
+    for item in sorted(glob.glob(f"{singleton.STORAGE.folder}/Page/{folder}/*")):
+        item_page = item[len(f"{singleton.STORAGE.folder}/Page/"):]
+        if os.path.isdir(item):
+            folders.add(f"<li>[[:Folder:{item_page}]]</li>")
+        elif item.endswith(".mediawiki"):
+            item_page = item_page[:-len(".mediawiki")]
+            pages.add(f"<li>[[{item_page}]]</li>")
+
+    render_templates = {}
+
+    if folders:
+        wtp = wikitextparser.parse("\n".join(sorted(folders, key=lambda x: x.split("/")[-2])))
+        wikilink.replace(WikiPage(page), wtp)
+        render_templates["folders"] = wtp.string
+
+    if pages:
+        wtp = wikitextparser.parse("\n".join(sorted(pages, key=lambda x: x.split("/")[-2])))
+        wikilink.replace(WikiPage(page), wtp)
+        render_templates["pages"] = wtp.string
+
+    # Also set a variable to indicate the section is set
+    variables = {}
+    for name in render_templates:
+        variables[f"has_{name}"] = "1"
+
+    return wrap_page(page, "Folder", variables, render_templates)

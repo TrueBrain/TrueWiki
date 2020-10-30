@@ -4,11 +4,18 @@ import os
 from typing import Optional
 from wikitexthtml import Page
 
-from . import web_routes
+from . import (
+    metadata,
+    singleton,
+)
 
 log = logging.getLogger(__name__)
 
-SPECIAL_FOLDERS = ("Template/", "Category/")
+SPECIAL_FOLDERS = (
+    "Category/",
+    "Folder/",
+    "Template/",
+)
 
 
 class WikiPage(Page):
@@ -16,7 +23,7 @@ class WikiPage(Page):
         super().__init__(page)
         self.en_page = None
         self.categories = []
-        self._folder = web_routes.STORAGE.folder
+        self._folder = singleton.STORAGE.folder
 
     def page_load(self, page: str) -> str:
         for special_folder in SPECIAL_FOLDERS:
@@ -27,7 +34,12 @@ class WikiPage(Page):
         else:
             prefix = "Page"
 
-        with open(f"{self._folder}/{prefix}/{page}.mediawiki") as fp:
+        filename = f"{self._folder}/{prefix}/{page}.mediawiki"
+
+        if not os.path.exists(filename):
+            return ""
+
+        with open(filename) as fp:
             body = fp.read()
         return body
 
@@ -39,6 +51,17 @@ class WikiPage(Page):
                 break
         else:
             prefix = "Page"
+
+        if prefix == "Folder":
+            return os.path.exists(f"{self._folder}/Page/{page}")
+
+        if prefix == "Category":
+            # A category might not have a mediawiki page, but has pages
+            # in it.
+            if page in metadata.CATEGORIES:
+                return True
+            # Fallthrough; a category might not have anything in it, but
+            # still have a mediawiki page ready for it.
 
         return os.path.exists(f"{self._folder}/{prefix}/{page}.mediawiki")
 
@@ -67,13 +90,14 @@ class WikiPage(Page):
 
     def clean_title(self, title: str) -> str:
         stitle = title.split("/")
-        if title.endswith("Main Page"):
+        if stitle[-1] == "Main Page":
             if len(stitle) > 2:
                 return stitle[-2]
-            else:
-                return "OpenTTD's Wiki"
-        else:
-            return stitle[-1]
+            if stitle[0] + "/" in SPECIAL_FOLDERS:
+                return stitle[0]
+            return "OpenTTD's Wiki"
+
+        return stitle[-1]
 
     def file_get_link(self, url: str) -> str:
         return f"/File/{url}"

@@ -8,7 +8,7 @@ from openttd_helpers import click_helper
 from openttd_helpers.logging_helper import click_logging
 from openttd_helpers.sentry_helper import click_sentry
 
-from . import web_routes
+from . import singleton
 from .metadata import load_metadata
 from .storage.github import click_storage_github
 from .storage.local import click_local_storage
@@ -51,7 +51,7 @@ def main(bind, port, storage):
     instance = storage()
     instance.reload()
 
-    web_routes.STORAGE = instance
+    singleton.STORAGE = instance
 
     log.info("Loading metadata (this can take a while) ...")
 
