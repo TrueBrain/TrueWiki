@@ -3,14 +3,15 @@ import os
 
 from collections import defaultdict
 
-from .wiki_page import WikiPage
-
 TRANSLATIONS = defaultdict(list)
 CATEGORIES = defaultdict(list)
 DEPENDENCIES = defaultdict(list)
 
 
 def scan_folder(folder, ignore_index, callbacks):
+    # Delay the import of WikiPage, as WikiPage needs this module too.
+    from .wiki_page import WikiPage
+
     for node in glob.glob(f"{folder}/*"):
         if os.path.isdir(node):
             scan_folder(node, ignore_index, callbacks)
