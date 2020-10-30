@@ -8,7 +8,10 @@ from openttd_helpers import click_helper
 from openttd_helpers.logging_helper import click_logging
 from openttd_helpers.sentry_helper import click_sentry
 
-from . import singleton
+from . import (
+    singleton,
+    validate,
+)
 from .metadata import load_metadata
 from .storage.github import click_storage_github
 from .storage.local import click_local_storage
@@ -46,12 +49,17 @@ class ErrorOnlyAccessLogger(AccessLogger):
 @click_web_routes
 @click_local_storage
 @click_storage_github
-def main(bind, port, storage):
+@click.option("--validate-all", help="Validate all mediawiki files and report all errors", is_flag=True)
+def main(bind, port, storage, validate_all):
     log.info("Reload storage ..")
     instance = storage()
     instance.reload()
 
     singleton.STORAGE = instance
+
+    if validate_all:
+        validate.all()
+        return
 
     log.info("Loading metadata (this can take a while) ...")
 
