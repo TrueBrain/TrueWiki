@@ -18,6 +18,9 @@
         </header>
         <nav>
             <ul id="navigation-bar">
+                {{breadcrumbs}}
+            </ul>
+            <ul id="navigation-bar" class="right">
                 <li>
                     <a href="/{{FULLPAGENAME}}.mediawiki">View Source
                     {{#if: {{{errors|}}}|
