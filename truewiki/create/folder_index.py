@@ -15,18 +15,21 @@ NAMESPACE_MAPPING = {
 }
 
 
-def create(page):
+def create(page, namespace="Folder"):
     pages = set()
     folders = set()
 
-    folder = page[len("Folder/") :]
+    if not page.endswith("/Main Page"):
+        return ""
+
+    folder = page[len("Folder/") : -len("/Main Page")]
 
     for item in sorted(glob.glob(f"{singleton.STORAGE.folder}/Page/{folder}/*")):
-        item_page = item[len(f"{singleton.STORAGE.folder}/Page/"):]
+        item_page = item[len(f"{singleton.STORAGE.folder}/Page/") :]
         if os.path.isdir(item):
-            folders.add(f"<li>[[:Folder:{item_page}]]</li>")
+            folders.add(f"<li>[[:{namespace}:{item_page}]]</li>")
         elif item.endswith(".mediawiki"):
-            item_page = item_page[:-len(".mediawiki")]
+            item_page = item_page[: -len(".mediawiki")]
             pages.add(f"<li>[[{item_page}]]</li>")
 
     render_templates = {}

@@ -13,16 +13,12 @@ def create(page):
         else:
             breadcrumbs.append('<li class="crumb"><a href="/">OpenTTD\'s Wiki</a></li>')
 
-    is_folder = spage[0] == "Folder"
-
-    breadcrumb = "" if is_folder else "/"
+    breadcrumb = "/"
     for i, p in enumerate(spage):
         if p == "Main Page":
             continue
 
-        if is_folder:
-            breadcrumb += f"/{p}"
-        elif i == len(spage) - 1:
+        if i == len(spage) - 1:
             breadcrumb += f"{p}"
         else:
             breadcrumb += f"{p}/"
