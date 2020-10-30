@@ -24,11 +24,26 @@ main {
 }
 
 #navigation-bar {
+    float: left;
+    padding-left: 10px;
+}
+#navigation-bar li {
+    margin: 0 8px;
+}
+#navigation-bar li a {
+    padding: 0 6px;
+}
+#navigation-bar.right {
     float: right;
     padding-right: 10px;
 }
-#navigation-bar li {
-    padding-right: 10px;
+#navigation-bar li.crumb:not(:first-child)::after {
+    color: white;
+    content: "❱";
+    display: inline-block;
+    left: -10px;
+    position: relative;
+    top: -32px;
 }
 
 a {
