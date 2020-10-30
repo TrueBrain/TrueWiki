@@ -52,9 +52,9 @@ def render_page(page: str) -> str:
         "breadcrumbs": breadcrumb.create(page),
     }
     variables = {}
+
     if len(wikipage.errors):
         variables["errors"] = len(wikipage.errors)
-
     if wikipage.en_page:
         templates["language"] = language_bar.create(page, wikipage.en_page)
     if wikipage.categories:
@@ -62,9 +62,14 @@ def render_page(page: str) -> str:
 
     if page.startswith("Category/"):
         templates["content"] += category_index.create(page)
+        templates["footer"] += folder_bar.create(page, "Category")
     elif page.startswith("Folder/"):
         templates["content"] += folder_index.create(page)
+    elif page.startswith("Template/"):
+        templates["footer"] += folder_bar.create(page, "Template")
+        if page == "Template/Main Page":
+            templates["content"] += folder_index.create("Folder/Template/Main Page", namespace="Template")
     else:
-        templates["footer"] += folder_bar.create(page)
+        templates["footer"] += folder_bar.create(page, "Page")
 
     return wrap_page(page, "Page", variables, templates)

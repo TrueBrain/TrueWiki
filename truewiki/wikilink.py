@@ -41,6 +41,8 @@ def template_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     if target.startswith(":"):
         target = target[1:]
     target = target[len("template:") :]
+    if len(target) == 2:
+        target += "/Main Page"
 
     wikilink.target = "Template/" + target
     return False

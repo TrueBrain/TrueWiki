@@ -21,6 +21,7 @@
                 {{breadcrumbs}}
             </ul>
             <ul id="navigation-bar" class="right">
+                {{#if: {{{has_source|}}}|
                 <li>
                     <a href="/{{FULLPAGENAME}}.mediawiki">View Source
                     {{#if: {{{errors|}}}|
@@ -28,9 +29,10 @@
                     }}
                     </a>
                 </li>
-                {{#if: {{HISTORY_URL|}}|
+                }}
+                {{#if: {{{history_url|}}}|
                 <li>
-                    <a href="{{HISTORY_URL}}">View History</a>
+                    <a href="{{{history_url}}}">View History</a>
                 </li>
                 }}
                 <li>

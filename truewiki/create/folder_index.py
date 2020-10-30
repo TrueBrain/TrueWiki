@@ -24,12 +24,17 @@ def create(page, namespace="Folder"):
 
     folder = page[len("Folder/") : -len("/Main Page")]
 
-    for item in sorted(glob.glob(f"{singleton.STORAGE.folder}/Page/{folder}/*")):
-        item_page = item[len(f"{singleton.STORAGE.folder}/Page/") :]
+    for item in sorted(glob.glob(f"{singleton.STORAGE.folder}/{folder}/*")):
+        item_page = item[len(f"{singleton.STORAGE.folder}/") :]
+        if item_page.startswith(f"{namespace}/"):
+            item_page = item_page[len(f"{namespace}/") :]
+
         if os.path.isdir(item):
             folders.add(f"<li>[[:{namespace}:{item_page}]]</li>")
         elif item.endswith(".mediawiki"):
             item_page = item_page[: -len(".mediawiki")]
+            if item_page.startswith("Page/"):
+                item_page = item_page[len("Page/") :]
             pages.add(f"<li>[[{item_page}]]</li>")
 
     render_templates = {}

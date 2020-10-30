@@ -25,7 +25,7 @@ def create(page):
     language = category_page.split("/")[0]
 
     if language == "Main Page":
-        return folder_index.create("Folder/Main Page", namespace="Category")
+        return folder_index.create("Folder/Category/Main Page", namespace="Category")
     elif category_page == f"{language}/Main Page":
         for category in metadata.CATEGORIES:
             if not category.startswith(f"{language}/"):
