@@ -6,8 +6,8 @@ def create(page):
 
     breadcrumbs = []
 
-    if spage[0] in ("Category", "Folder", "Templates"):
-        if len(spage) > 1:
+    if spage[0] in ("Category", "Folder", "Template"):
+        if len(spage) > 1 and spage[1] != "Main Page":
             language = spage[1]
             breadcrumbs.append(f'<li class="crumb"><a href="/{language}/">OpenTTD\'s Wiki</a></li>')
         else:

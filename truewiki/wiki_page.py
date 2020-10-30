@@ -63,7 +63,7 @@ class WikiPage(Page):
             if not page.endswith("/Main Page"):
                 return False
             page = page[: -len("/Main Page")]
-            return os.path.exists(f"{self._folder}/Page/{page}")
+            return os.path.exists(f"{self._folder}/{page}")
 
         if prefix == "Category":
             # This is /Category/, which should list all languages.
@@ -80,6 +80,12 @@ class WikiPage(Page):
                 return True
             # Fallthrough; a category might not have anything in it, but
             # still have a mediawiki page ready for it.
+
+        if prefix == "Template":
+            # This is /Template/, which should list all languages.
+            if page == "Main Page":
+                return True
+            # Fallthrough; otherwise render a template like a page.
 
         return os.path.exists(f"{self._folder}/{prefix}/{page}.mediawiki")
 
