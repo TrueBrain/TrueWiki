@@ -45,7 +45,9 @@
                 </ul>
             </div>
             {{content}}
-            {{footer}}
+            <div id="content-footer">
+                {{footer}}
+            </div>
         </main>
         <footer>
             <div id="content-bottom-links">
