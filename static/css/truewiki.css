@@ -291,12 +291,15 @@ h6:hover .anchor {
     width: 26px;
 }
 
-#categories {
+#content-footer {
     border-top: 1px solid #aaa;
     clear: both;
     font-size: 80%;
     margin-top: 5px;
-    padding-left: 3px;
+    padding: 0 3px;
+}
+#categories {
+    float: left;
 }
 #categories div {
     display: inline-block;
@@ -318,15 +321,7 @@ h6:hover .anchor {
 }
 
 #folder {
-    border-top: 1px solid #aaa;
-    clear: both;
-    font-size: 80%;
-    margin-top: 5px;
-    padding-left: 3px;
-}
-#categories + #folder {
-    border-top: none;
-    margin-top: 0;
+    float: right;
 }
 
 ul.gallery {
