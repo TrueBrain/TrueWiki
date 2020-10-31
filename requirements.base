@@ -1,4 +1,5 @@
 aiohttp
+aioauth_client
 click
 GitPython
 openttd-helpers

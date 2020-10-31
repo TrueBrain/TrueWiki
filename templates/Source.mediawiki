@@ -29,9 +29,15 @@
                     <a href="{{HISTORY_URL}}">View History</a>
                 </li>
                 }}
+                {{#if: {{{display_name|}}}|
                 <li>
-                    <a href="">Login</a>
+                    <a href="/user/logout">Logout ({{{display_name}}})</a>
                 </li>
+                |
+                <li>
+                    <a href="/user/login">Login</a>
+                </li>
+                }}
             </ul>
         </nav>
         <main>

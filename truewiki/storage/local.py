@@ -28,7 +28,7 @@ class Storage:
     default="data",
     show_default=True,
 )
-def click_local_storage(storage_folder):
+def click_storage_local(storage_folder):
     global _folder
 
     _folder = storage_folder.rstrip("/")

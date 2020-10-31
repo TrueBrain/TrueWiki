@@ -10,11 +10,31 @@ from .create import (
     folder_index,
     language_bar,
 )
+from .user_session import (
+    get_user_method,
+    get_user_methods,
+)
 from .wiki_page import WikiPage
 from .wrapper import wrap_page
 
 
-def render_source(page: str) -> str:
+def render_login(user) -> str:
+    login_methods = []
+    for method_name in get_user_methods():
+        method = get_user_method(method_name)
+        login_methods.append(f'<button type="submit" name="{method_name}">{method.get_description()}</button>')
+
+    templates = {
+        "login_methods": "\n".join(login_methods),
+    }
+    variables = {
+        "display_name": user.display_name if user else "",
+    }
+
+    return wrap_page("Login", "Login", variables, templates)
+
+
+def render_source(user, page: str) -> str:
     body = WikiPage(page).page_load(page)
     wikipage = WikiPage(page).render()
 
@@ -34,12 +54,13 @@ def render_source(page: str) -> str:
     variables = {
         "has_templates_used": "1" if templates_used else "",
         "has_errors": "1" if errors else "",
+        "display_name": user.display_name if user else "",
     }
 
     return wrap_page(page, "Source", variables, templates)
 
 
-def render_page(page: str) -> str:
+def render_page(user, page: str) -> str:
     if page.endswith("/"):
         page += "Main Page"
 
@@ -51,7 +72,9 @@ def render_page(page: str) -> str:
         "footer": "",
         "breadcrumbs": breadcrumb.create(page),
     }
-    variables = {}
+    variables = {
+        "display_name": user.display_name if user else "",
+    }
 
     if len(wikipage.errors):
         variables["errors"] = len(wikipage.errors)
