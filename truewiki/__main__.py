@@ -14,7 +14,12 @@ from . import (
 )
 from .metadata import load_metadata
 from .storage.github import click_storage_github
-from .storage.local import click_local_storage
+from .storage.local import click_storage_local
+from .user.github import click_user_github
+from .user_session import (
+    click_user_session,
+    register_webroutes,
+)
 from .web_routes import (
     click_web_routes,
     routes,
@@ -47,8 +52,10 @@ class ErrorOnlyAccessLogger(AccessLogger):
     callback=click_helper.import_module("truewiki.storage", "Storage"),
 )
 @click_web_routes
-@click_local_storage
+@click_storage_local
 @click_storage_github
+@click_user_session
+@click_user_github
 @click.option("--validate-all", help="Validate all mediawiki files and report all errors", is_flag=True)
 def main(bind, port, storage, validate_all):
     log.info("Reload storage ..")
@@ -70,6 +77,7 @@ def main(bind, port, storage, validate_all):
     webapp = web.Application()
     webapp.router.add_static("/uploads", f"{instance.folder}/File/")
     webapp.router.add_static("/static", "static/")
+    register_webroutes(webapp)
     webapp.add_routes(routes)
 
     web.run_app(webapp, host=bind, port=port, access_log_class=ErrorOnlyAccessLogger)

@@ -7,8 +7,13 @@ from openttd_helpers import click_helper
 from . import singleton
 from .metadata import load_metadata
 from .render import (
+    render_login,
     render_source,
     render_page,
+)
+from .user_session import (
+    SESSION_COOKIE_NAME,
+    get_user_by_bearer,
 )
 
 log = logging.getLogger(__name__)
@@ -22,26 +27,37 @@ async def root(request):
     return web.HTTPFound("/en/")
 
 
+@routes.get("/user/login")
+async def user_login(request):
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+
+    body = render_login(user)
+    return web.Response(body=body, content_type="text/html")
+
+
 @routes.get("/{page:.*}.mediawiki")
 async def source_page(request):
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+
     page = request.match_info["page"]
     # Don't allow path-walking
     if ".." in page:
         raise web.HTTPNotFound()
 
-    body = render_source(page)
+    body = render_source(user, page)
     return web.Response(body=body, content_type="text/html")
 
 
 @routes.get("/{page:.*}")
 async def html_page(request):
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+
     page = request.match_info["page"]
     # Don't allow path-walking
     if ".." in page:
         raise web.HTTPNotFound()
 
-    body = render_page(page)
-
+    body = render_page(user, page)
     return web.Response(body=body, content_type="text/html")
 
 

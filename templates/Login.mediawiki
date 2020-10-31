@@ -17,28 +17,7 @@
             </div>
         </header>
         <nav>
-            <ul id="navigation-bar">
-                {{breadcrumbs}}
-            </ul>
             <ul id="navigation-bar" class="right">
-                {{#if: {{{has_source|}}}|
-                <li>
-                    {{#if: {{{display_name|}}}|
-                    <a href="/edit/{{FULLPAGENAME}}">Edit Page
-                    |
-                    <a href="/{{FULLPAGENAME}}.mediawiki">View Source
-                    }}
-                    {{#if: {{{errors|}}}|
-                    <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
-                    }}
-                    </a>
-                </li>
-                }}
-                {{#if: {{{history_url|}}}|
-                <li>
-                    <a href="{{{history_url}}}">View History</a>
-                </li>
-                }}
                 {{#if: {{{display_name|}}}|
                 <li>
                     <a href="/user/logout">Logout ({{{display_name}}})</a>
@@ -51,15 +30,10 @@
             </ul>
         </nav>
         <main>
-            <div id="language-bar">
-                <ul>
-                    {{language}}
-                </ul>
-            </div>
-            {{content}}
-            <div id="content-footer">
-                {{footer}}
-            </div>
+            <p>OpenTTD's wiki relies on external authentication providers.</p>
+            <form method="post">
+                {{login_methods}}
+            </form>
         </main>
         <footer>
             <div id="content-bottom-links">

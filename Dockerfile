@@ -46,4 +46,4 @@ COPY templates /code/templates
 COPY truewiki /code/truewiki
 
 ENTRYPOINT ["python", "-m", "truewiki"]
-CMD ["--bind", "0.0.0.0", "--storage", "local"]
+CMD ["--bind", "0.0.0.0", "--storage", "local", "--user", "developer"]
