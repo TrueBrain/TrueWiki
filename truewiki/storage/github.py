@@ -77,6 +77,8 @@ class Storage(git.Storage):
             pass
 
     def reload(self):
+        super().reload()
+
         self._fetch_latest()
 
     def get_history_url(self, page):

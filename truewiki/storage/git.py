@@ -16,6 +16,8 @@ class Storage(local.Storage):
         self._git_author = git.Actor(GIT_USERNAME, GIT_EMAIL)
 
     def prepare(self):
+        super().prepare()
+
         try:
             self._git = git.Repo(self.folder)
         except git.exc.NoSuchPathError:

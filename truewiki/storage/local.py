@@ -9,6 +9,9 @@ class Storage:
     def __init__(self) -> None:
         self._folder = STORAGE_FOLDER
 
+    def prepare(self):
+        pass
+
     def reload(self):
         pass
 
