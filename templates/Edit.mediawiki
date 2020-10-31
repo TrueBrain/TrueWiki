@@ -47,8 +47,11 @@
                 {{errors}}
             </ul>
             }}
-            <h3>Source</h3>
-            <textarea style="width: 100%;" rows=50>{{page}}</textarea>
+            <h3>Editing</h3>
+            <form method="post">
+            <textarea name="page" style="width: 100%;" rows=50>{{page}}</textarea>
+            <input type="submit" name="save" value="Save page" /> <input type="submit" name="preview" value="Preview page" />
+            </form>
             <h3>
                 Templates
             </h3>

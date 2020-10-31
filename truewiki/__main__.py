@@ -60,6 +60,7 @@ class ErrorOnlyAccessLogger(AccessLogger):
 def main(bind, port, storage, validate_all):
     log.info("Reload storage ..")
     instance = storage()
+    instance.prepare()
     instance.reload()
 
     singleton.STORAGE = instance

@@ -371,3 +371,10 @@ ul.gallery .gallerytext {
     top: -3px;
     width: 14px;
 }
+
+#preview {
+    background: #D52D2D;
+    color: white;
+    text-align: center;
+    width: 100%;
+}

@@ -1,13 +1,12 @@
 import base64
 import click
-import git
 import logging
 import tempfile
 import os
 
 from openttd_helpers import click_helper
 
-from . import local
+from . import git
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ _github_private_key = None
 _github_url = None
 
 
-class Storage(local.Storage):
+class Storage(git.Storage):
     def __init__(self):
         super().__init__()
 
@@ -30,12 +29,8 @@ class Storage(local.Storage):
         else:
             self._ssh_command = None
 
-        try:
-            self._git = git.Repo(self._folder)
-        except git.exc.NoSuchPathError:
-            self._git = git.Repo.init(self._folder)
-        except git.exc.InvalidGitRepositoryError:
-            self._git = git.Repo.init(self._folder)
+    def prepare(self):
+        super().prepare()
 
         # Make sure the origin is set correctly
         if "origin" not in self._git.remotes:

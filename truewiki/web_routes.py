@@ -7,9 +7,12 @@ from openttd_helpers import click_helper
 from . import singleton
 from .metadata import load_metadata
 from .render import (
+    render_edit,
     render_login,
     render_source,
     render_page,
+    render_preview,
+    save_edit,
 )
 from .user_session import (
     SESSION_COOKIE_NAME,
@@ -33,6 +36,49 @@ async def user_login(request):
 
     body = render_login(user)
     return web.Response(body=body, content_type="text/html")
+
+
+@routes.get("/edit/{page:.*}")
+async def edit_page(request):
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+    if not user:
+        return web.HTTPFound("/user/login")
+
+    page = request.match_info["page"]
+    # Don't allow path-walking
+    if ".." in page:
+        raise web.HTTPNotFound()
+
+    body = render_edit(user, page)
+    return web.Response(body=body, content_type="text/html")
+
+
+@routes.post("/edit/{page:.*}")
+async def edit_page_post(request):
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+    if not user:
+        return web.HTTPFound("/user/login")
+
+    page = request.match_info["page"]
+    # Don't allow path-walking
+    if ".." in page:
+        raise web.HTTPNotFound()
+
+    payload = await request.post()
+    if "page" not in payload:
+        raise web.HTTPNotFound()
+
+    # TODO -- Check if the page is created in a legal place
+
+    if "save" in payload:
+        save_edit(user, page, payload["page"])
+        return web.HTTPFound(f"/{page}")
+
+    if "preview" in payload:
+        body = render_preview(user, page, payload["page"])
+        return web.Response(body=body, content_type="text/html")
+
+    raise web.HTTPNotFound()
 
 
 @routes.get("/{page:.*}.mediawiki")

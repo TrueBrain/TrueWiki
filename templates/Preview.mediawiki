@@ -24,9 +24,9 @@
                 <li>
                     <a href="/{{FULLPAGENAME}}">View Page</a>
                 </li>
-                {{#if: {{HISTORY_URL|}}|
+                {{#if: {{{history_url|}}}|
                 <li>
-                    <a href="{{HISTORY_URL}}">View History</a>
+                    <a href="{{{history_url}}}">View History</a>
                 </li>
                 }}
                 {{#if: {{{display_name|}}}|
@@ -47,8 +47,21 @@
                 {{errors}}
             </ul>
             }}
-            <h3>Source</h3>
-            <textarea style="width: 100%;" rows=50>{{page}}</textarea>
+            <div id="preview">This is a preview. Changes have not yet been saved.</div>
+            <div id="language-bar">
+                <ul>
+                    {{language}}
+                </ul>
+            </div>
+            {{content}}
+            <div id="content-footer">
+                {{footer}}
+            </div>
+            <h3>Editing</h3>
+            <form method="post">
+            <textarea name="page" style="width: 100%;" rows=50>{{page}}</textarea>
+            <input type="submit" name="save" value="Save page" /> <input type="submit" name="preview" value="Preview page" />
+            </form>
             <h3>
                 Templates
             </h3>
@@ -61,10 +74,11 @@
         <footer>
             <div id="content-bottom-links">
                 <a href="https://www.openttd.org/policy.html">Privacy Policy</a> |
-                <a href="https://www.openttd.org/contact.html">Contact</a>
+                <a href="https://www.openttd.org/contact.html">Contact</a> |
+                <a href="https://github.com/TrueBrain/TrueWiki">Powered by TrueWiki</a>
             </div>
             <div id="content-bottom-copyright">
-                Content is available under GNU Free Documentation License.
+                Content is available under GNU Free Documentation License
             </div>
         </footer>
     </body>

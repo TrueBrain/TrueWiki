@@ -2,12 +2,12 @@ import click
 
 from openttd_helpers import click_helper
 
-_folder = None
+STORAGE_FOLDER = None
 
 
 class Storage:
     def __init__(self) -> None:
-        self._folder = _folder
+        self._folder = STORAGE_FOLDER
 
     def reload(self):
         pass
@@ -29,6 +29,6 @@ class Storage:
     show_default=True,
 )
 def click_storage_local(storage_folder):
-    global _folder
+    global STORAGE_FOLDER
 
-    _folder = storage_folder.rstrip("/")
+    STORAGE_FOLDER = storage_folder.rstrip("/")
