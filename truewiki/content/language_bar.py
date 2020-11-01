@@ -3,24 +3,23 @@ import wikitextparser
 from wikitexthtml.render import wikilink
 
 from .. import metadata
-from ..wiki_page import WikiPage
-
-NAMESPACES = (
-    "Category/",
-    "Folder/",
-    "Page/",
-    "Template/",
+from ..wiki_page import (
+    NAMESPACE_MAPPING,
+    WikiPage,
 )
 
 
-def create(page, en_page):
+def create(instance: WikiPage, page: str):
+    if not instance.en_page:
+        return ""
+
     with open("templates/Language.mediawiki", "r") as fp:
         body = fp.read()
 
     language_content = ""
-    for url in metadata.TRANSLATIONS.get(en_page, []):
-        if not url.startswith(NAMESPACES):
-            raise RuntimeError(f"{url} has invalid namespace")
+    for url in metadata.TRANSLATIONS.get(instance.en_page, []):
+        if not url.startswith(tuple(NAMESPACE_MAPPING.keys())):
+            raise RuntimeError(f"{url} has unknown namespace")
 
         language = url.split("/")[1]
         if url.startswith("Page/"):

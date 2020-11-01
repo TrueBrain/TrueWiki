@@ -2,10 +2,10 @@ import wikitextparser
 
 from wikitexthtml.render import wikilink
 
-from ..wiki_page import WikiPage
+from ...wiki_page import WikiPage
 
 
-def create(page, prefix):
+def add_footer(page, prefix):
     folder = "/".join(page.split("/")[:-1])
 
     if folder.startswith(f"{prefix}/"):

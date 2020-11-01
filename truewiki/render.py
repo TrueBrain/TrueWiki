@@ -2,15 +2,8 @@ import wikitextparser
 
 from wikitexthtml.render import wikilink
 
-from .create import (
-    breadcrumb,
-    category_bar,
-    category_index,
-    folder_bar,
-    folder_index,
-    language_bar,
-)
 from . import singleton
+from .content import breadcrumb
 from .user_session import (
     get_user_method,
     get_user_methods,
@@ -94,23 +87,9 @@ def render_preview(user, page: str, body: str) -> str:
         "has_errors": "1" if errors else "",
     }
 
-    if wikipage.en_page:
-        templates["language"] = language_bar.create(page, wikipage.en_page)
-    if wikipage.categories:
-        templates["footer"] += category_bar.create(page, wikipage.categories)
-
-    if page.startswith("Category/"):
-        templates["content"] += category_index.create(page)
-        templates["footer"] += folder_bar.create(page, "Category")
-    elif page.startswith("Folder/"):
-        templates["content"] += folder_index.create(page)
-    elif page.startswith("Template/"):
-        templates["footer"] += folder_bar.create(page, "Template")
-        if page == "Template/Main Page":
-            templates["content"] += folder_index.create("Folder/Template/Main Page", namespace="Template")
-    else:
-        templates["footer"] += folder_bar.create(page, "Page")
-
+    templates["language"] = wikipage.add_language(page)
+    templates["footer"] = wikipage.add_footer(page)
+    templates["content"] += wikipage.add_content(page)
     return wrap_page(page, "Preview", variables, templates)
 
 
@@ -148,31 +127,14 @@ def render_page(user, page: str) -> str:
 
     templates = {
         "content": wikipage.render().html,
-        "language": "",
-        "footer": "",
         "breadcrumbs": breadcrumb.create(page),
     }
     variables = {
         "display_name": user.display_name if user else "",
+        "errors": len(wikipage.errors) if wikipage.errors else "",
     }
 
-    if len(wikipage.errors):
-        variables["errors"] = len(wikipage.errors)
-    if wikipage.en_page:
-        templates["language"] = language_bar.create(page, wikipage.en_page)
-    if wikipage.categories:
-        templates["footer"] += category_bar.create(page, wikipage.categories)
-
-    if page.startswith("Category/"):
-        templates["content"] += category_index.create(page)
-        templates["footer"] += folder_bar.create(page, "Category")
-    elif page.startswith("Folder/"):
-        templates["content"] += folder_index.create(page)
-    elif page.startswith("Template/"):
-        templates["footer"] += folder_bar.create(page, "Template")
-        if page == "Template/Main Page":
-            templates["content"] += folder_index.create("Folder/Template/Main Page", namespace="Template")
-    else:
-        templates["footer"] += folder_bar.create(page, "Page")
-
+    templates["language"] = wikipage.add_language(page)
+    templates["footer"] = wikipage.add_footer(page)
+    templates["content"] += wikipage.add_content(page)
     return wrap_page(page, "Page", variables, templates)

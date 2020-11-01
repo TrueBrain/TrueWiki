@@ -25,7 +25,14 @@ from .web_routes import (
     routes,
 )
 
-from . import wikilink  # noqa
+from .namespaces import (  # noqa
+    category,
+    file,
+    folder,
+    page,
+    template,
+    translation,
+)
 
 
 log = logging.getLogger(__name__)

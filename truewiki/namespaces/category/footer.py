@@ -2,12 +2,15 @@ import wikitextparser
 
 from wikitexthtml.render import wikilink
 
-from ..wiki_page import WikiPage
+from ...wiki_page import WikiPage
 
 
-def create(page, categories):
+def add_footer(instance: WikiPage, page: str):
+    if not instance.categories:
+        return ""
+
     categories_content = set()
-    for category in categories:
+    for category in instance.categories:
         label = "/".join(category.split("/")[1:])
         categories_content.add(f"<li>[[:Category:{category}|{label}]]</li>")
 
