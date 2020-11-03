@@ -1,13 +1,12 @@
 import logging
 import os
 
-from . import (
-    content_language_root,
-    content_root,
-)
 from .. import base
 from ..category import footer as category_footer
-from ..folder import footer as folder_footer
+from ..folder import (
+    content as folder_content,
+    footer as folder_footer,
+)
 from ... import (
     singleton,
     wiki_page,
@@ -76,9 +75,10 @@ class Namespace(base.Namespace):
         assert page.startswith("Template/")
 
         if Namespace._is_root(page):
-            return content_root.add_content(page)
+            return folder_content.add_content("Folder/Template/Main Page", namespace="Template")
         if Namespace._is_language_root(page):
-            return content_language_root.add_content(page)
+            language = page.split("/")[1]
+            return folder_content.add_content(f"Folder/Template/{language}/Main Page", namespace="Template")
 
         return ""
 

@@ -3,12 +3,14 @@ import os
 
 from . import (
     content_language_root,
-    content_root,
     content,
     footer,
 )
 from .. import base
-from ..folder import footer as folder_footer
+from ..folder import (
+    content as folder_content,
+    footer as folder_footer,
+)
 from ... import (
     metadata,
     singleton,
@@ -85,7 +87,7 @@ class Namespace(base.Namespace):
         assert page.startswith("Category/")
 
         if Namespace._is_root(page):
-            return content_root.add_content(page)
+            return folder_content.add_content("Folder/Category/Main Page", namespace="Category")
         if Namespace._is_language_root(page):
             return content_language_root.add_content(page)
         return content.add_content(page)
