@@ -6,7 +6,7 @@ def create(page):
 
     breadcrumbs = []
 
-    if spage[0] in ("Category", "Folder", "Template"):
+    if spage[0] in ("Category", "File", "Folder", "Template"):
         language_index = 1
         if spage[0] == "Folder":
             language_index = 2
