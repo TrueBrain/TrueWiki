@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
+/.cache_metadata.json
 /.env
 /.git/**
 /data/
+/cache/

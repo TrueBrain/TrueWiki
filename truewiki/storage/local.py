@@ -28,7 +28,7 @@ class Storage:
     "--storage-folder",
     help="Folder to use for storage.",
     type=click.Path(dir_okay=True, file_okay=False),
-    default="data",
+    default="./data",
     show_default=True,
 )
 def click_storage_local(storage_folder):
