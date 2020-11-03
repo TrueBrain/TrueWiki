@@ -58,13 +58,13 @@ jobs:
         name: ${{ steps.vars.outputs.name }}
         tag: ${{ steps.vars.outputs.tag }}
 
-    # - if: steps.vars.outputs.dry-run == 'false'
-    #   name: Trigger deployment
-    #   uses: openttd/actions/deployments-create@v2
-    #   with:
-    #     ref: ${{ steps.vars.outputs.sha }}
-    #     environment: ${{ steps.vars.outputs.environment }}
-    #     version: ${{ steps.vars.outputs.version }}
-    #     date: ${{ steps.vars.outputs.date }}
-    #     docker-tag: ${{ steps.publish.outputs.remote-tag }}
-    #     github-token: ${{ secrets.DEPLOYMENT_TOKEN }}
+    - if: steps.vars.outputs.dry-run == 'false'
+      name: Trigger deployment
+      uses: openttd/actions/deployments-create@v2
+      with:
+        ref: ${{ steps.vars.outputs.sha }}
+        environment: ${{ steps.vars.outputs.environment }}
+        version: ${{ steps.vars.outputs.version }}
+        date: ${{ steps.vars.outputs.date }}
+        docker-tag: ${{ steps.publish.outputs.remote-tag }}
+        github-token: ${{ secrets.DEPLOYMENT_TOKEN }}
