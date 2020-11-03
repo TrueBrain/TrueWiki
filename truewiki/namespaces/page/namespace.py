@@ -22,7 +22,7 @@ class Namespace(base.Namespace):
         filename = f"{singleton.STORAGE.folder}/Page/{page}.mediawiki"
 
         if not os.path.exists(filename):
-            return ""
+            return "There is currently no text on this page."
 
         with open(filename) as fp:
             body = fp.read()
