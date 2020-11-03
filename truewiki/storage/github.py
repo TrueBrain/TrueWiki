@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 _github_private_key = None
 _github_url = None
+_github_history_url = None
 
 
 class Storage(git.Storage):
@@ -82,7 +83,7 @@ class Storage(git.Storage):
         self._fetch_latest()
 
     def get_history_url(self, page):
-        return f"{_github_url}/commits/master/{page}"
+        return f"{_github_history_url}/commits/master/{page}"
 
 
 @click_helper.extend
@@ -94,12 +95,23 @@ class Storage(git.Storage):
     metavar="URL",
 )
 @click.option(
+    "--storage-github-history-url",
+    help="Repository URL on GitHub to visit history (defaults to --storage-github-url).",
+    default=None,
+    show_default=True,
+    metavar="URL",
+)
+@click.option(
     "--storage-github-private-key",
     help="Base64-encoded private key to access GitHub." "Always use this via an environment variable!",
 )
-def click_storage_github(storage_github_url, storage_github_private_key):
-    global _github_url, _github_private_key
+def click_storage_github(storage_github_url, storage_github_history_url, storage_github_private_key):
+    global _github_url, _github_history_url, _github_private_key
+
+    if storage_github_history_url is None:
+        storage_github_history_url = storage_github_url
 
     _github_url = storage_github_url
+    _github_history_url = storage_github_history_url
     if storage_github_private_key:
         _github_private_key = base64.b64decode(storage_github_private_key)
