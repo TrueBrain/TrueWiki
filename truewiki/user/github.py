@@ -16,24 +16,24 @@ _github_states = {}
 
 def in_query_github_code(code):
     if code is None:
-        raise web.HTTPBadRequest("code is not set in query-string")
+        raise web.HTTPBadRequest(text="code is not set in query-string")
 
     # This code is sent by GitHub, and should be at least 20 characters.
     # GitHub makes no promises over the length.
     if len(code) < 20:
-        raise web.HTTPBadRequest("code seems to be an invalid GitHub callback code")
+        raise web.HTTPBadRequest(text="code seems to be an invalid GitHub callback code")
 
     return code
 
 
 def in_query_github_state(state):
     if state is None:
-        raise web.HTTPBadRequest("state is not set in query-string")
+        raise web.HTTPBadRequest(text="state is not set in query-string")
 
     # We generated this state with token_hex(16), and as such should always
     # be 32 in length.
     if len(state) != 32:
-        raise web.HTTPBadRequest("state is not a valid uuid")
+        raise web.HTTPBadRequest(text="state is not a valid uuid")
 
     return state
 
