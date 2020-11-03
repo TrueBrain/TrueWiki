@@ -36,6 +36,14 @@ class Namespace(base.Namespace):
     def page_ondisk_name(page: str) -> str:
         return f"Page/{page}.mediawiki"
 
+    @staticmethod
+    def has_source(page: str) -> bool:
+        return Namespace.page_exists(page)
+
+    @staticmethod
+    def has_history(page: str) -> bool:
+        return Namespace.page_exists(page)
+
     @classmethod
     def clean_title(cls, title: str) -> str:
         title = super().clean_title(title)

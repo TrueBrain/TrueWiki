@@ -18,9 +18,9 @@ def wrap_page(page, wrapper, variables, templates):
     body = preprocess.begin(wiki_page, body)
     wtp = wikitextparser.parse(body)
 
-    if not page.startswith("Folder/"):
+    if wiki_page.has_history(page):
         variables["history_url"] = singleton.STORAGE.get_history_url(wiki_page.page_ondisk_name(page))
-        variables["has_source"] = "1"
+    variables["has_source"] = "1" if wiki_page.has_source(page) else ""
 
     arguments = [wikitextparser.Argument(f"|{name}={value}") for name, value in variables.items()]
     parameter.replace(wiki_page, wtp, arguments)
