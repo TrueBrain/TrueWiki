@@ -1,10 +1,7 @@
 import logging
-import os
 
 from typing import Optional
 from wikitexthtml import Page
-
-from . import singleton
 
 log = logging.getLogger(__name__)
 
@@ -12,6 +9,7 @@ log = logging.getLogger(__name__)
 NAMESPACES = {}
 NAMESPACE_DEFAULT_PAGE = None
 NAMESPACE_DEFAULT_TEMPLATE = None
+NAMESPACE_DEFAULT_FILE = None
 NAMESPACE_MAPPING = {}
 
 
@@ -65,27 +63,23 @@ class WikiPage(Page):
 
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_TEMPLATE).template_exists(template)
 
+    def file_exists(self, file: str) -> bool:
+        return NAMESPACE_DEFAULT_FILE.file_exists(file)
+
+    def file_get_link(self, url: str) -> str:
+        return NAMESPACE_DEFAULT_FILE.file_get_link(url)
+
+    def file_get_img(self, url: str, thumb: Optional[int]) -> str:
+        return NAMESPACE_DEFAULT_FILE.file_get_img(url, thumb)
+
     def clean_url(self, url: str) -> str:
         if url.endswith("Main Page"):
             return url[: -len("Main Page")]
         return url
 
-    def file_exists(self, file: str) -> bool:
-        # TODO -- Move to File namespace
-        return os.path.exists(f"{singleton.STORAGE.folder}/File/{file}")
 
-    def file_get_link(self, url: str) -> str:
-        # TODO -- Move to File namespace
-        return f"/File/{url}"
-
-    def file_get_img(self, url: str, thumb: Optional[int]) -> str:
-        # TODO -- Move to File namespace
-        # TODO -- Support thumb sizes
-        return f"/uploads/{url}"
-
-
-def register_namespace(namespace, default_page=False, default_template=False):
-    global NAMESPACE_DEFAULT_PAGE, NAMESPACE_DEFAULT_TEMPLATE
+def register_namespace(namespace, default_page=False, default_template=False, default_file=False):
+    global NAMESPACE_DEFAULT_PAGE, NAMESPACE_DEFAULT_TEMPLATE, NAMESPACE_DEFAULT_FILE
 
     NAMESPACES[namespace.namespace] = namespace
     NAMESPACE_MAPPING[f"{namespace.namespace}/"] = namespace.force_link
@@ -93,3 +87,5 @@ def register_namespace(namespace, default_page=False, default_template=False):
         NAMESPACE_DEFAULT_PAGE = namespace
     if default_template:
         NAMESPACE_DEFAULT_TEMPLATE = namespace
+    if default_file:
+        NAMESPACE_DEFAULT_FILE = namespace
