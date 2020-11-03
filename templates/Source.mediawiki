@@ -24,9 +24,9 @@
                 <li>
                     <a href="/{{FULLPAGENAME}}">View Page</a>
                 </li>
-                {{#if: {{HISTORY_URL|}}|
+                {{#if: {{{history_url|}}}|
                 <li>
-                    <a href="{{HISTORY_URL}}">View History</a>
+                    <a href="{{{history_url}}}">View History</a>
                 </li>
                 }}
                 {{#if: {{{display_name|}}}|
