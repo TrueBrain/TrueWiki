@@ -196,6 +196,12 @@ class ReloadHelper:
     def page_changed(self):
         _page_changed(self.page)
 
+        # Sort all translations and categories; makes it easier for the render.
+        for translation in TRANSLATIONS:
+            TRANSLATIONS[translation] = sorted(TRANSLATIONS[translation], key=lambda name: (name.find("en/") < 0, name))
+        for category in CATEGORIES:
+            CATEGORIES[category] = sorted(CATEGORIES[category])
+
         return TRANSLATIONS, CATEGORIES, PAGES
 
     def load_metadata(self):
