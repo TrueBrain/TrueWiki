@@ -4,6 +4,7 @@ from wikitexthtml.render import wikilink
 
 from . import singleton
 from .content import breadcrumb
+from .metadata import page_changed
 from .user_session import (
     get_user_method,
     get_user_methods,
@@ -36,6 +37,8 @@ def save_edit(user, page: str, change: str) -> None:
     filename = wiki_page.page_ondisk_name(page)
     with open(f"{singleton.STORAGE.folder}/{filename}", "w") as fp:
         fp.write(change)
+
+    page_changed(filename[: -len(".mediawiki")])
 
 
 def render_edit(user, page: str) -> str:
