@@ -1,6 +1,5 @@
 import click
 import logging
-import time
 
 from aiohttp import web
 from aiohttp.web_log import AccessLogger
@@ -76,11 +75,7 @@ def main(bind, port, storage, validate_all):
         validate.all()
         return
 
-    log.info("Loading metadata (this can take a while) ...")
-
-    start = time.time()
-    load_metadata(instance.folder)
-    log.info(f"Loading metadata done; took {time.time() - start:.2f} seconds")
+    load_metadata()
 
     webapp = web.Application()
     webapp.router.add_static("/uploads", f"{instance.folder}/File/")
