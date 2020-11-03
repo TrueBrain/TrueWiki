@@ -1,4 +1,5 @@
 import asyncio
+import click
 import glob
 import hashlib
 import json
@@ -8,6 +9,7 @@ import time
 
 from collections import defaultdict
 from concurrent import futures
+from openttd_helpers import click_helper
 
 from . import singleton
 from .wiki_page import WikiPage
@@ -252,3 +254,16 @@ class ReloadHelper:
 
         log.info(f"Loading metadata done; took {time.time() - start:.2f} seconds")
         return TRANSLATIONS, CATEGORIES, PAGES
+
+
+@click_helper.extend
+@click.option(
+    "--cache-metadata-file",
+    help="File used to cache metadata.",
+    default=".cache_metadata.json",
+    show_default=True,
+)
+def click_metadata(cache_metadata_file):
+    global CACHE_FILENAME
+
+    CACHE_FILENAME = cache_metadata_file
