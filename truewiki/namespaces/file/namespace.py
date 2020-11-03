@@ -1,7 +1,13 @@
 import logging
+import os
+
+from typing import Optional
 
 from .. import base
-from ... import wiki_page
+from ... import (
+    singleton,
+    wiki_page,
+)
 
 log = logging.getLogger(__name__)
 
@@ -20,5 +26,18 @@ class Namespace(base.Namespace):
         # TODO -- Implement
         return False
 
+    @staticmethod
+    def file_exists(file: str) -> bool:
+        return os.path.exists(f"{singleton.STORAGE.folder}/File/{file}")
 
-wiki_page.register_namespace(Namespace)
+    @staticmethod
+    def file_get_link(url: str) -> str:
+        return f"/File/{url}"
+
+    @staticmethod
+    def file_get_img(url: str, thumb: Optional[int]) -> str:
+        # TODO -- Support thumb sizes
+        return f"/uploads/{url}"
+
+
+wiki_page.register_namespace(Namespace, default_file=True)
