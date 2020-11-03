@@ -44,6 +44,7 @@ RUN pip freeze 2>/dev/null > requirements.installed \
 COPY static /code/static
 COPY templates /code/templates
 COPY truewiki /code/truewiki
+RUN mkdir /data
 
 ENTRYPOINT ["python", "-m", "truewiki"]
-CMD ["--bind", "0.0.0.0", "--storage", "local", "--user", "developer"]
+CMD ["--bind", "0.0.0.0", "--storage", "local", "--storage-folder", "/data", "--cache-metadata-file", "/cache/metadata.json", "--user", "developer"]

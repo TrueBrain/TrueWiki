@@ -52,7 +52,7 @@ This will start the server on port 8000 for you to work with locally.
 
 ```bash
 docker build -t truebrain/truewiki:local .
-docker run --rm -p 127.0.0.1:8000:80 -v "`pwd`/data:/code/data" truebrain/truewiki:local
+docker run --rm -p 127.0.0.1:8000:80 -v "`pwd`/data:/data" -v "`pwd`/cache:/cache" truebrain/truewiki:local
 ```
 
 ## Why Yet-Another-Wiki-Server
