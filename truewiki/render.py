@@ -1,3 +1,4 @@
+import os
 import wikitextparser
 
 from wikitexthtml.render import wikilink
@@ -97,7 +98,14 @@ def render_preview(user, page: str, body: str) -> str:
 
 
 def render_source(user, page: str) -> str:
-    body = WikiPage(page).page_load(page)
+    filename = WikiPage(page).page_ondisk_name(page)
+    filename = f"{singleton.STORAGE.folder}/{filename}"
+    if os.path.exists(filename):
+        with open(filename) as fp:
+            body = fp.read()
+    else:
+        body = ""
+
     wikipage = WikiPage(page).render()
 
     templates_used = [f"<li>[[:Template:{template}]]</li>" for template in wikipage.templates]
