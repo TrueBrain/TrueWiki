@@ -13,6 +13,14 @@ class Namespace:
         raise NotImplementedError
 
     @staticmethod
+    def has_source(page: str) -> bool:
+        return False
+
+    @staticmethod
+    def has_history(page: str) -> bool:
+        return False
+
+    @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
         return ""
 

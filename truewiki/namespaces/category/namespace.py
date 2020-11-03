@@ -69,6 +69,14 @@ class Namespace(base.Namespace):
         return os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki")
 
     @staticmethod
+    def has_source(page: str) -> bool:
+        return not Namespace._is_root(page) and not Namespace._is_language_root(page)
+
+    @staticmethod
+    def has_history(page: str) -> bool:
+        return Namespace.page_exists(page)
+
+    @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
         return language_bar.create(instance, page)
 
