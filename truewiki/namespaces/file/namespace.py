@@ -21,4 +21,4 @@ class Namespace(base.Namespace):
         return False
 
 
-wiki_page.register_namespace(Namespace, is_default=True)
+wiki_page.register_namespace(Namespace)

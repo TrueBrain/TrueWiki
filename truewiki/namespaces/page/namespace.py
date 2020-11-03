@@ -56,5 +56,18 @@ class Namespace(base.Namespace):
         footer += folder_footer.add_footer(page, "Page")
         return footer
 
+    @staticmethod
+    def template_load(template: str) -> str:
+        filename = f"{singleton.STORAGE.folder}/Page/{template}.mediawiki"
+        if not os.path.exists(filename):
+            return f'<a href="/{template}" title="{template}">Page:{template}</a>'
 
-wiki_page.register_namespace(Namespace, is_default=True)
+        with open(filename) as fp:
+            return fp.read()
+
+    @staticmethod
+    def template_exists(template: str) -> bool:
+        return os.path.exists(f"{singleton.STORAGE.folder}/Page/{template}.mediawiki")
+
+
+wiki_page.register_namespace(Namespace, default_page=True)
