@@ -10,7 +10,8 @@ log = logging.getLogger(__name__)
 
 
 NAMESPACES = {}
-NAMESPACE_DEFAULT = None
+NAMESPACE_DEFAULT_PAGE = None
+NAMESPACE_DEFAULT_TEMPLATE = None
 NAMESPACE_MAPPING = {}
 
 
@@ -22,49 +23,52 @@ class WikiPage(Page):
 
     def page_load(self, page: str) -> str:
         namespace = page.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT).page_load(page)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_load(page)
 
     def page_exists(self, page: str) -> bool:
         namespace = page.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT).page_exists(page)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_exists(page)
 
     def page_ondisk_name(self, page: str) -> str:
         namespace = page.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT).page_ondisk_name(page)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_ondisk_name(page)
 
     def clean_title(self, title: str) -> str:
         namespace = title.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT).clean_title(title)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).clean_title(title)
 
     def add_language(self, page: str) -> str:
         namespace = page.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT).add_language(self, page)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).add_language(self, page)
 
     def add_content(self, page: str) -> str:
         namespace = page.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT).add_content(self, page)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).add_content(self, page)
 
     def add_footer(self, page: str) -> str:
         namespace = page.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT).add_footer(self, page)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).add_footer(self, page)
+
+    def template_load(self, template: str) -> str:
+        if ":" in template:
+            namespace, _, template = template.partition(":")
+        else:
+            namespace = None
+
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_TEMPLATE).template_load(template)
+
+    def template_exists(self, template: str) -> bool:
+        if ":" in template:
+            namespace, _, template = template.partition(":")
+        else:
+            namespace = None
+
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_TEMPLATE).template_exists(template)
 
     def clean_url(self, url: str) -> str:
         if url.endswith("Main Page"):
             return url[: -len("Main Page")]
         return url
-
-    def template_load(self, template: str) -> str:
-        # TODO -- Move to Template namespace
-        filename = f"{singleton.STORAGE.folder}/Template/{template}.mediawiki"
-        if not os.path.exists(filename):
-            return f'<a href="/Template/{template}" title="{template}">Template/{template}</a>'
-
-        with open(filename) as fp:
-            return fp.read()
-
-    def template_exists(self, template: str) -> bool:
-        # TODO -- Move to Template namespace
-        return os.path.exists(f"{singleton.STORAGE.folder}/Template/{template}.mediawiki")
 
     def file_exists(self, file: str) -> bool:
         # TODO -- Move to File namespace
@@ -80,10 +84,12 @@ class WikiPage(Page):
         return f"/uploads/{url}"
 
 
-def register_namespace(namespace, is_default=False):
-    global NAMESPACE_DEFAULT
+def register_namespace(namespace, default_page=False, default_template=False):
+    global NAMESPACE_DEFAULT_PAGE, NAMESPACE_DEFAULT_TEMPLATE
 
     NAMESPACES[namespace.namespace] = namespace
     NAMESPACE_MAPPING[f"{namespace.namespace}/"] = namespace.force_link
-    if is_default:
-        NAMESPACE_DEFAULT = namespace
+    if default_page:
+        NAMESPACE_DEFAULT_PAGE = namespace
+    if default_template:
+        NAMESPACE_DEFAULT_TEMPLATE = namespace

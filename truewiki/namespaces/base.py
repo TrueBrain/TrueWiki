@@ -39,3 +39,11 @@ class Namespace:
     @staticmethod
     def page_ondisk_name(page: str) -> str:
         return f"{page}.mediawiki"
+
+    @classmethod
+    def template_load(cls, template: str) -> str:
+        return f'<a href="/{cls.namespace}/{template}" title="{template}">{cls.namespace}/{template}</a>'
+
+    @staticmethod
+    def template_exists(template: str) -> bool:
+        return False
