@@ -55,7 +55,11 @@ class WikiPage(Page):
 
     def template_load(self, template: str) -> str:
         # TODO -- Move to Template namespace
-        with open(f"{singleton.STORAGE.folder}/Template/{template}.mediawiki") as fp:
+        filename = f"{singleton.STORAGE.folder}/Template/{template}.mediawiki"
+        if not os.path.exists(filename):
+            return f'<a href="/Template/{template}" title="{template}">Template/{template}</a>'
+
+        with open(filename) as fp:
             return fp.read()
 
     def template_exists(self, template: str) -> bool:
