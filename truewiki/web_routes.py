@@ -121,7 +121,7 @@ async def reload(request):
         return web.HTTPNotFound()
 
     singleton.STORAGE.reload()
-    load_metadata(singleton.STORAGE.folder)
+    load_metadata()
 
     return web.HTTPNoContent()
 
