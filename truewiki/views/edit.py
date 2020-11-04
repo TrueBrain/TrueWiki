@@ -1,3 +1,4 @@
+import os
 import wikitextparser
 
 from wikitexthtml.render import wikilink
@@ -27,11 +28,18 @@ def view(user, page: str) -> str:
     if not wiki_page.page_is_valid(page):
         return None
 
-    body = wiki_page.page_load(page)
-    wikipage = WikiPage(page).render()
+    filename = wiki_page.page_ondisk_name(page)
+    filename = f"{singleton.STORAGE.folder}/{filename}"
+    if os.path.exists(filename):
+        with open(filename) as fp:
+            body = fp.read()
+    else:
+        body = ""
 
-    templates_used = [f"<li>[[:Template:{template}]]</li>" for template in wikipage.templates]
-    errors = [f"<li>{error}</li>" for error in wikipage.errors]
+    wiki_page.render()
+
+    templates_used = [f"<li>[[:Template:{template}]]</li>" for template in wiki_page.templates]
+    errors = [f"<li>{error}</li>" for error in wiki_page.errors]
 
     wtp = wikitextparser.parse("\n".join(sorted(templates_used)))
     wikilink.replace(WikiPage(page), wtp)
