@@ -90,7 +90,7 @@ class Namespace(base.Namespace):
             language = page.split("/")[1]
             return folder_content.add_content(f"Folder/File/{language}/Main Page", namespace="File")
 
-        if Namespace.page_exists(page):
+        if os.path.exists(f"{singleton.STORAGE.folder}/{page}"):
             return content.add_content(page)
         return ""
 
