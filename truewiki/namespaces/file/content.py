@@ -3,8 +3,14 @@ import wikitextparser
 
 from wikitexthtml.render import wikilink
 
-from ... import singleton
-from ...wiki_page import WikiPage
+from ... import (
+    metadata,
+    singleton,
+)
+from ...wiki_page import (
+    NAMESPACE_MAPPING,
+    WikiPage,
+)
 from ...wrapper import wrap_page
 
 FILESIZE_POSTFIX = [
@@ -18,7 +24,7 @@ def add_content(page):
     wiki_page = WikiPage(page)
 
     filename = wiki_page.page_ondisk_name(page)
-    filename = filename[:-len(".mediawiki")]
+    filename = filename[: -len(".mediawiki")]
 
     caption = ""
     if filename:
@@ -34,16 +40,29 @@ def add_content(page):
         # Add in the caption the filesize.
         caption = f'<div class="center">Filesize: {filesize} {FILESIZE_POSTFIX[filesize_magnitude]}</div>'
 
-    # Generate the image via a wikilink.
-    body = f"[[File:{page[len('File/'):]}|center|link=|frame|{caption}]]"
+    used_on_pages = []
+    if filename:
+        for dependency in metadata.FILES[filename[len("File/") :]]:
+            namespace = NAMESPACE_MAPPING[dependency.split("/")[0] + "/"]
+            dependency = "/".join(dependency.split("/")[1:])
+            used_on_pages.append(f"<li>[[{namespace}{dependency}]]</li>")
 
-    # Find the history page of the image itself.
-    history_url = singleton.STORAGE.get_history_url(filename)
-    if history_url:
-        body += f'<h2>File history</h2><a href="{history_url}">Click here to view the history of the file itself</a>.'
+    wtp = wikitextparser.parse("\n".join(used_on_pages))
+    wikilink.replace(WikiPage(page), wtp)
+    used_on_pages = wtp.string
 
-    wtp = wikitextparser.parse(body)
+    wtp = wikitextparser.parse(f"[[File:{page[len('File/'):]}|center|link=|frame|{caption}]]")
     wikilink.replace(wiki_page, wtp)
-    templates = {"content": wtp.string}
+    content = wtp.string
 
-    return wrap_page(page, "File", {}, templates)
+    templates = {
+        "content": content,
+        "used_on_pages": used_on_pages,
+    }
+
+    variables = {
+        "has_used_on_pages": "1" if used_on_pages else "",
+        "file_history_url": singleton.STORAGE.get_history_url(filename),
+    }
+
+    return wrap_page(page, "File", variables, templates)
