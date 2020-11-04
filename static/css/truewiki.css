@@ -127,6 +127,9 @@ a.new {
 .thumbcaption p {
     margin: 0;
 }
+.thumb img {
+    max-width: 900px;
+}
 
 .magnify {
     background: none !important;
