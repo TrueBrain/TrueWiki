@@ -10,7 +10,11 @@ from ..wrapper import wrap_page
 
 
 def view(user, page: str) -> str:
-    filename = WikiPage(page).page_ondisk_name(page)
+    wiki_page = WikiPage(page)
+    if not wiki_page.page_is_valid(page):
+        return None
+
+    filename = wiki_page.page_ondisk_name(page)
     filename = f"{singleton.STORAGE.folder}/{filename}"
     if os.path.exists(filename):
         with open(filename) as fp:
@@ -18,10 +22,10 @@ def view(user, page: str) -> str:
     else:
         body = ""
 
-    wikipage = WikiPage(page).render()
+    wiki_page.render()
 
-    templates_used = [f"<li>[[:Template:{template}]]</li>" for template in wikipage.templates]
-    errors = [f"<li>{error}</li>" for error in wikipage.errors]
+    templates_used = [f"<li>[[:Template:{template}]]</li>" for template in wiki_page.templates]
+    errors = [f"<li>{error}</li>" for error in wiki_page.errors]
 
     wtp = wikitextparser.parse("\n".join(sorted(templates_used)))
     wikilink.replace(WikiPage(page), wtp)

@@ -1,4 +1,3 @@
-import os
 import wikitextparser
 
 from wikitexthtml.render import wikilink
@@ -10,18 +9,24 @@ from ..wiki_page import WikiPage
 from ..wrapper import wrap_page
 
 
-def save(user, page: str, change: str) -> None:
+def save(user, page: str, change: str) -> bool:
     wiki_page = WikiPage(page)
+    if not wiki_page.page_is_valid(page):
+        return False
 
     filename = wiki_page.page_ondisk_name(page)
     with open(f"{singleton.STORAGE.folder}/{filename}", "w") as fp:
         fp.write(change)
 
     page_changed(filename[: -len(".mediawiki")])
+    return True
 
 
 def view(user, page: str) -> str:
     wiki_page = WikiPage(page)
+    if not wiki_page.page_is_valid(page):
+        return None
+
     body = wiki_page.page_load(page)
     wikipage = WikiPage(page).render()
 

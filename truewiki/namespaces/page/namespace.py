@@ -37,12 +37,21 @@ class Namespace(base.Namespace):
         return f"Page/{page}.mediawiki"
 
     @staticmethod
-    def has_source(page: str) -> bool:
-        return Namespace.page_exists(page)
+    def page_is_valid(page: str) -> bool:
+        spage = page.split("/")
+
+        # There should always be a language code in the path.
+        if len(spage) < 2:
+            return False
+        # The language should already exist.
+        if not os.path.isdir(f"{singleton.STORAGE.folder}/Page/{spage[0]}"):
+            return False
+
+        return True
 
     @staticmethod
-    def has_history(page: str) -> bool:
-        return Namespace.page_exists(page)
+    def has_source(page: str) -> bool:
+        return True
 
     @classmethod
     def clean_title(cls, title: str) -> str:

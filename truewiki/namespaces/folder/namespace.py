@@ -49,6 +49,26 @@ class Namespace(base.Namespace):
         return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
 
     @staticmethod
+    def page_is_valid(page: str) -> bool:
+        assert page.startswith("Folder/")
+        spage = page.split("/")
+
+        if Namespace._is_root(page):
+            return True
+        if Namespace._is_namespace_root(page):
+            return os.path.isdir(f"{singleton.STORAGE.folder}/{spage[1]}")
+
+        # There should always be a namespace and language code in the path.
+        if len(spage) < 4:
+            return False
+        # The namespace and language should already exist.
+        return os.path.isdir(f"{singleton.STORAGE.folder}/{spage[1]}/{spage[2]}")
+
+    @staticmethod
+    def page_ondisk_name(page: str) -> str:
+        return None
+
+    @staticmethod
     def add_content(instance: wiki_page.WikiPage, page: str) -> str:
         return content.add_content(page)
 

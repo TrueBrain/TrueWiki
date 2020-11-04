@@ -7,10 +7,13 @@ def view(user, page: str, body: str) -> str:
     if page.endswith("/"):
         page += "Main Page"
 
-    wikipage = WikiPage(page)
-    wtp = wikipage.prepare(body)
-    content = wikipage.render_page(wtp)
-    errors = [f"<li>{error}</li>" for error in wikipage.errors]
+    wiki_page = WikiPage(page)
+    if not wiki_page.page_is_valid(page):
+        return None
+
+    wtp = wiki_page.prepare(body)
+    content = wiki_page.render_page(wtp)
+    errors = [f"<li>{error}</li>" for error in wiki_page.errors]
 
     templates = {
         "content": content,
@@ -25,7 +28,7 @@ def view(user, page: str, body: str) -> str:
         "has_errors": "1" if errors else "",
     }
 
-    templates["language"] = wikipage.add_language(page)
-    templates["footer"] = wikipage.add_footer(page)
-    templates["content"] += wikipage.add_content(page)
+    templates["language"] = wiki_page.add_language(page)
+    templates["footer"] = wiki_page.add_footer(page)
+    templates["content"] += wiki_page.add_content(page)
     return wrap_page(page, "Preview", variables, templates)
