@@ -37,6 +37,30 @@ async def user_login(request):
     return web.Response(body=body, content_type="text/html")
 
 
+@routes.post("/reload")
+async def reload(request):
+    if RELOAD_SECRET is None:
+        return web.HTTPNotFound()
+
+    data = await request.json()
+
+    if "secret" not in data:
+        return web.HTTPNotFound()
+
+    if data["secret"] != RELOAD_SECRET:
+        return web.HTTPNotFound()
+
+    singleton.STORAGE.reload()
+    load_metadata()
+
+    return web.HTTPNoContent()
+
+
+@routes.get("/healthz")
+async def healthz_handler(request):
+    return web.HTTPOk()
+
+
 @routes.get("/edit/{page:.*}")
 async def edit_page(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
@@ -111,30 +135,6 @@ async def html_page(request):
     if body is None:
         raise web.HTTPNotFound()
     return web.Response(body=body, content_type="text/html")
-
-
-@routes.post("/reload")
-async def reload(request):
-    if RELOAD_SECRET is None:
-        return web.HTTPNotFound()
-
-    data = await request.json()
-
-    if "secret" not in data:
-        return web.HTTPNotFound()
-
-    if data["secret"] != RELOAD_SECRET:
-        return web.HTTPNotFound()
-
-    singleton.STORAGE.reload()
-    load_metadata()
-
-    return web.HTTPNoContent()
-
-
-@routes.get("/healthz")
-async def healthz_handler(request):
-    return web.HTTPOk()
 
 
 @routes.route("*", "/{tail:.*}")
