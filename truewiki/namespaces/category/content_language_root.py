@@ -19,7 +19,7 @@ def add_content(page: str) -> str:
         link = f"<li>[[:Category:{category}]]</li>"
         categories.append(link)
 
-    wtp = wikitextparser.parse("\n".join(sorted(categories, key=lambda x: x.split("/")[-2])))
+    wtp = wikitextparser.parse("\n".join(categories))
     wikilink.replace(WikiPage(page), wtp)
 
     templates = {

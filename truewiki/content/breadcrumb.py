@@ -30,7 +30,7 @@ def create(page):
         title = breadcrumb[1:]
         if title.endswith("/"):
             title += "Main Page"
-        title = WikiPage(breadcrumb).clean_title(title)
+        title = WikiPage(breadcrumb[1:]).clean_title(title)
 
         breadcrumbs.append(f'<li class="crumb"><a href="{breadcrumb}">{title}</a></li>')
     breadcrumbs[-1] = breadcrumbs[-1].replace('<li class="crumb">', '<li class="crumb selected">')

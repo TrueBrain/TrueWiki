@@ -12,10 +12,10 @@ from ...wrapper import wrap_page
 
 def add_content(page: str) -> str:
     items = {
-        "templates": set(),
-        "pages": set(),
-        "categories": set(),
-        "other_language": set(),
+        "templates": [],
+        "pages": [],
+        "categories": [],
+        "other_language": [],
     }
 
     category_page = page[len("Category/") :]
@@ -30,26 +30,26 @@ def add_content(page: str) -> str:
             link = f"<li>[[{prefix}{page_in_category}]]</li>"
 
             if namespace == "Templates/":
-                add_func = items["templates"].add
+                append = items["templates"].append
             elif namespace == "Category/":
-                add_func = items["categories"].add
+                append = items["categories"].append
             else:
-                add_func = items["pages"].add
+                append = items["pages"].append
 
             break
         else:
             raise RuntimeError(f"{page_in_category} has invalid namespace")
 
         if page_in_category.split("/")[0] != language:
-            items["other_language"].add(link)
-        else:
-            add_func(link)
+            append = items["other_language"].append
+
+        append(link)
 
     templates = {}
     variables = {}
     for name, values in items.items():
         if values:
-            wtp = wikitextparser.parse("\n".join(sorted(values, key=lambda x: x.split("/")[-2])))
+            wtp = wikitextparser.parse("\n".join(values))
             wikilink.replace(WikiPage(page), wtp)
             templates[name] = wtp.string
             variables[f"has_{name}"] = "1"

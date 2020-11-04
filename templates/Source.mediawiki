@@ -57,6 +57,14 @@
                 {{templates_used}}
             </ul>
             |<p>No templates used</p>}}
+            <h3>
+                Used on pages
+            </h3>
+            {{#if:{{{has_used_on_pages|}}}|
+            <ul>
+                {{used_on_pages}}
+            </ul>
+            |<p>Not used on any page</p>}}
         </main>
         <footer>
             <div id="content-bottom-links">

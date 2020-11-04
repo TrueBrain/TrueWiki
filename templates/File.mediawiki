@@ -1,3 +1,20 @@
 <hr />
 
 {{content}}
+
+
+{{#if:{{{file_history_url|}}}|
+<h3>
+    File history
+</h3>
+<a href="{{{file_history_url}}}">Click here to view the history of the file itself</a>.
+}}
+
+<h3>
+    Used on pages
+</h3>
+{{#if:{{{has_used_on_pages|}}}|
+<ul>
+    {{used_on_pages}}
+</ul>
+|<p>Not used on any page</p>}}
