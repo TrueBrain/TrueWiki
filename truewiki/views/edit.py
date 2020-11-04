@@ -16,6 +16,11 @@ def save(user, page: str, change: str) -> bool:
         return False
 
     filename = wiki_page.page_ondisk_name(page)
+    dirname = "/".join(filename.split("/")[:-1])
+
+    # Make sure the folder exists.
+    os.makedirs(f"{singleton.STORAGE.folder}/{dirname}", exist_ok=True)
+    # Write the new source.
     with open(f"{singleton.STORAGE.folder}/{filename}", "w") as fp:
         fp.write(change)
 
