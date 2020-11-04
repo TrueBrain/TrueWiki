@@ -49,6 +49,8 @@ async def edit_page(request):
         raise web.HTTPNotFound()
 
     body = edit.view(user, page)
+    if body is None:
+        raise web.HTTPNotFound()
     return web.Response(body=body, content_type="text/html")
 
 
@@ -67,14 +69,15 @@ async def edit_page_post(request):
     if "page" not in payload:
         raise web.HTTPNotFound()
 
-    # TODO -- Check if the page is created in a legal place
-
     if "save" in payload:
-        edit.save(user, page, payload["page"])
+        if not edit.save(user, page, payload["page"]):
+            raise web.HTTPNotFound()
         return web.HTTPFound(f"/{page}")
 
     if "preview" in payload:
         body = preview.view(user, page, payload["page"])
+        if body is None:
+            raise web.HTTPNotFound()
         return web.Response(body=body, content_type="text/html")
 
     raise web.HTTPNotFound()
@@ -90,6 +93,8 @@ async def source_page(request):
         raise web.HTTPNotFound()
 
     body = source.view(user, page)
+    if body is None:
+        raise web.HTTPNotFound()
     return web.Response(body=body, content_type="text/html")
 
 
@@ -103,6 +108,8 @@ async def html_page(request):
         raise web.HTTPNotFound()
 
     body = view_page.view(user, page)
+    if body is None:
+        raise web.HTTPNotFound()
     return web.Response(body=body, content_type="text/html")
 
 

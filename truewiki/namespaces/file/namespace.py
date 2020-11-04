@@ -60,12 +60,25 @@ class Namespace(base.Namespace):
         return os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki")
 
     @staticmethod
-    def has_source(page: str) -> bool:
-        return not Namespace._is_root(page) and not Namespace._is_language_root(page)
+    def page_is_valid(page: str) -> bool:
+        assert page.startswith("File/")
+        spage = page.split("/")
+
+        if Namespace._is_root(page):
+            return True
+
+        # There should always be a language code in the path.
+        if len(spage) < 3:
+            return False
+        # The language should already exist.
+        if not os.path.isdir(f"{singleton.STORAGE.folder}/File/{spage[1]}"):
+            return False
+
+        return True
 
     @staticmethod
-    def has_history(page: str) -> bool:
-        return Namespace.page_exists(page)
+    def has_source(page: str) -> bool:
+        return not Namespace._is_root(page) and not Namespace._is_language_root(page)
 
     @staticmethod
     def add_content(instance: wiki_page.WikiPage, page: str) -> str:
@@ -77,7 +90,9 @@ class Namespace(base.Namespace):
             language = page.split("/")[1]
             return folder_content.add_content(f"Folder/File/{language}/Main Page", namespace="File")
 
-        return content.add_content(page)
+        if Namespace.page_exists(page):
+            return content.add_content(page)
+        return ""
 
     @staticmethod
     def add_footer(instance: wiki_page.WikiPage, page: str) -> str:

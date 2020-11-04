@@ -31,6 +31,10 @@ class WikiPage(Page):
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_ondisk_name(page)
 
+    def page_is_valid(self, page: str) -> bool:
+        namespace = page.split("/")[0]
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_is_valid(page)
+
     def has_source(self, page: str) -> bool:
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).has_source(page)

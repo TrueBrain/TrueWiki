@@ -19,7 +19,9 @@ def wrap_page(page, wrapper, variables, templates):
     wtp = wikitextparser.parse(body)
 
     if wiki_page.has_history(page):
-        variables["history_url"] = singleton.STORAGE.get_history_url(wiki_page.page_ondisk_name(page))
+        filename = wiki_page.page_ondisk_name(page)
+        if filename:
+            variables["history_url"] = singleton.STORAGE.get_history_url(filename)
     variables["has_source"] = "1" if wiki_page.has_source(page) else ""
 
     arguments = [wikitextparser.Argument(f"|{name}={value}") for name, value in variables.items()]
