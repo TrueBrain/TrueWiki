@@ -6,13 +6,12 @@ from openttd_helpers import click_helper
 
 from . import singleton
 from .metadata import load_metadata
-from .render import (
-    render_edit,
-    render_login,
-    render_source,
-    render_page,
-    render_preview,
-    save_edit,
+from .views import (
+    edit,
+    login,
+    source,
+    page as view_page,
+    preview,
 )
 from .user_session import (
     SESSION_COOKIE_NAME,
@@ -34,7 +33,7 @@ async def root(request):
 async def user_login(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
 
-    body = render_login(user)
+    body = login.view(user)
     return web.Response(body=body, content_type="text/html")
 
 
@@ -49,7 +48,7 @@ async def edit_page(request):
     if ".." in page:
         raise web.HTTPNotFound()
 
-    body = render_edit(user, page)
+    body = edit.view(user, page)
     return web.Response(body=body, content_type="text/html")
 
 
@@ -71,11 +70,11 @@ async def edit_page_post(request):
     # TODO -- Check if the page is created in a legal place
 
     if "save" in payload:
-        save_edit(user, page, payload["page"])
+        edit.save(user, page, payload["page"])
         return web.HTTPFound(f"/{page}")
 
     if "preview" in payload:
-        body = render_preview(user, page, payload["page"])
+        body = preview.view(user, page, payload["page"])
         return web.Response(body=body, content_type="text/html")
 
     raise web.HTTPNotFound()
@@ -90,7 +89,7 @@ async def source_page(request):
     if ".." in page:
         raise web.HTTPNotFound()
 
-    body = render_source(user, page)
+    body = source.view(user, page)
     return web.Response(body=body, content_type="text/html")
 
 
@@ -103,7 +102,7 @@ async def html_page(request):
     if ".." in page:
         raise web.HTTPNotFound()
 
-    body = render_page(user, page)
+    body = view_page.view(user, page)
     return web.Response(body=body, content_type="text/html")
 
 
