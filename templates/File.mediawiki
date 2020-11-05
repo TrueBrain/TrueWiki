@@ -7,7 +7,7 @@
 <h3>
     File history
 </h3>
-<a href="{{{file_history_url}}}">Click here to view the history of the file itself</a>.
+<a href="{{{file_history_url}}}" target="_new">Click here to view the history of the file itself</a>.
 }}
 
 <h3>
