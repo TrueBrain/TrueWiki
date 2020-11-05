@@ -381,3 +381,18 @@ ul.gallery .gallerytext {
     text-align: center;
     width: 100%;
 }
+
+ul.category-files img {
+    border: 1px solid #aaa;
+}
+ul.category-files .thumb {
+    border: 0;
+}
+ul.category-files .thumbinner {
+    outline: 0;
+}
+ul.category-files .thumbcaption {
+    margin-top: 3px;
+    margin-bottom: 12px;
+    width: 130px;
+}

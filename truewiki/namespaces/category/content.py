@@ -15,6 +15,7 @@ def add_content(page: str) -> str:
         "templates": [],
         "pages": [],
         "categories": [],
+        "files": [],
         "other_language": [],
     }
 
@@ -33,6 +34,10 @@ def add_content(page: str) -> str:
                 append = items["templates"].append
             elif namespace == "Category/":
                 append = items["categories"].append
+            elif namespace == "File/":
+                caption = f'[[:File:{page_in_category}|{page_in_category.split("/")[-1]}]]'
+                link = f"<li>[[File:{page_in_category}|none|frame|130px|{caption}]]</li>"
+                append = items["files"].append
             else:
                 append = items["pages"].append
 
