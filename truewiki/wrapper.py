@@ -27,10 +27,10 @@ def wrap_page(page, wrapper, variables, templates):
     arguments = [wikitextparser.Argument(f"|{name}={value}") for name, value in variables.items()]
     parameter.replace(wiki_page, wtp, arguments)
 
+    parser_function.replace(wiki_page, wtp)
     for template in reversed(wtp.templates):
         name = template.name.strip()
         if name in templates:
             template.string = templates[name]
-    parser_function.replace(wiki_page, wtp)
 
     return wtp.string
