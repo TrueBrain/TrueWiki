@@ -32,6 +32,9 @@ class WikiPage(Page):
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_ondisk_name(page)
 
     def page_is_valid(self, page: str) -> bool:
+        if "/" not in page:
+            return False
+
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_is_valid(page)
 
