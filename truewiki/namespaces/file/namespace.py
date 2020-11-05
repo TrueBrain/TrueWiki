@@ -63,7 +63,7 @@ class Namespace(base.Namespace):
             return True
 
         if cls._is_root_of_folder(page):
-            page = page[:-len("Main Page")]
+            page = page[: -len("Main Page")]
             return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
 
         return os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki")
@@ -100,7 +100,9 @@ class Namespace(base.Namespace):
         if cls._is_root(page):
             return folder_content.add_content("Folder/File/Main Page", namespace="File", folder_label="Languages")
         if cls._is_root_of_folder(page):
-            return folder_content.add_content(f"Folder/{page}", namespace="File", namespace_for_folder=True, page_label="Files")
+            return folder_content.add_content(
+                f"Folder/{page}", namespace="File", namespace_for_folder=True, page_label="Files"
+            )
 
         if os.path.exists(f"{singleton.STORAGE.folder}/{page}"):
             return content.add_content(page)

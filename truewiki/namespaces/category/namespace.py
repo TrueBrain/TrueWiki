@@ -64,7 +64,7 @@ class Namespace(base.Namespace):
             return True
 
         if cls._is_root_of_folder(page):
-            page = page[:-len("Main Page")]
+            page = page[: -len("Main Page")]
             return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
 
         # If we know the category, the page exists; it might not have a
@@ -106,9 +106,13 @@ class Namespace(base.Namespace):
         assert page.startswith("Category/")
 
         if cls._is_root(page):
-            return folder_content.add_content("Folder/Category/Main Page", namespace="Category", folder_label="Languages")
+            return folder_content.add_content(
+                "Folder/Category/Main Page", namespace="Category", folder_label="Languages"
+            )
         if cls._is_root_of_folder(page):
-            return folder_content.add_content(f"Folder/{page}", namespace="Category", namespace_for_folder=True, page_label="Categories")
+            return folder_content.add_content(
+                f"Folder/{page}", namespace="Category", namespace_for_folder=True, page_label="Categories"
+            )
 
         return content.add_content(page)
 
