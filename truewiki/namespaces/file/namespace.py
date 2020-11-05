@@ -5,6 +5,7 @@ from typing import Optional
 
 from . import content
 from .. import base
+from ..category import footer as category_footer
 from ..folder import (
     content as folder_content,
     footer as folder_footer,
@@ -13,6 +14,7 @@ from ... import (
     singleton,
     wiki_page,
 )
+from ...content import language_bar
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +32,10 @@ class Namespace(base.Namespace):
         return page.endswith("/Main Page") and len(page.split("/")) == 3
 
     @staticmethod
+    def _is_root_of_folder(page: str) -> bool:
+        return page.endswith("/Main Page")
+
+    @staticmethod
     def page_load(page: str) -> str:
         assert page.startswith("File/")
 
@@ -38,6 +44,8 @@ class Namespace(base.Namespace):
 
         if Namespace._is_language_root(page):
             return "All the files that belong to this language."
+        if Namespace._is_root_of_folder(page):
+            return "All the files that belong to this folder."
 
         filename = f"{singleton.STORAGE.folder}/{page}.mediawiki"
         if not os.path.exists(filename):
@@ -54,8 +62,9 @@ class Namespace(base.Namespace):
         if Namespace._is_root(page):
             return True
 
-        if Namespace._is_language_root(page):
-            return os.path.isdir(f"{singleton.STORAGE.folder}/File/{page.split('/')[1]}")
+        if Namespace._is_root_of_folder(page):
+            page = page[:-len("Main Page")]
+            return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
 
         return os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki")
 
@@ -78,17 +87,20 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def has_source(page: str) -> bool:
-        return not Namespace._is_root(page) and not Namespace._is_language_root(page)
+        return not Namespace._is_root(page) and not Namespace._is_root_of_folder(page)
+
+    @staticmethod
+    def add_language(instance: wiki_page.WikiPage, page: str) -> str:
+        return language_bar.create(instance, page)
 
     @staticmethod
     def add_content(instance: wiki_page.WikiPage, page: str) -> str:
         assert page.startswith("File/")
 
         if Namespace._is_root(page):
-            return folder_content.add_content("Folder/File/Main Page", namespace="File")
-        if Namespace._is_language_root(page):
-            language = page.split("/")[1]
-            return folder_content.add_content(f"Folder/File/{language}/Main Page", namespace="File")
+            return folder_content.add_content("Folder/File/Main Page", namespace="File", folder_label="Languages")
+        if Namespace._is_root_of_folder(page):
+            return folder_content.add_content(f"Folder/{page}", namespace="File", namespace_for_folder=True, page_label="Files")
 
         if os.path.exists(f"{singleton.STORAGE.folder}/{page}"):
             return content.add_content(page)
@@ -97,6 +109,7 @@ class Namespace(base.Namespace):
     @staticmethod
     def add_footer(instance: wiki_page.WikiPage, page: str) -> str:
         footer = ""
+        footer += category_footer.add_footer(instance, page)
         footer += folder_footer.add_footer(page, "File")
         return footer
 
