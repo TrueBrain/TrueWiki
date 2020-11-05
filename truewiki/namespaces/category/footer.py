@@ -11,7 +11,7 @@ def add_footer(instance: WikiPage, page: str):
 
     categories_content = set()
     for category in instance.categories:
-        label = "/".join(category.split("/")[1:])
+        label = category.split("/")[-1]
         categories_content.add(f"<li>[[:Category:{category}|{label}]]</li>")
 
     wtp = wikitextparser.parse("\n".join(sorted(categories_content)))

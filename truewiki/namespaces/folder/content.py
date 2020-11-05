@@ -9,10 +9,10 @@ from ...wiki_page import WikiPage
 from ...wrapper import wrap_page
 
 
-def add_content(page, namespace="Folder"):
+def add_content(page, namespace="Folder", namespace_for_folder=False, folder_label="Folders", page_label="Pages"):
     items = {
-        "pages": set(),
-        "folders": set(),
+        "pages": [],
+        "folders": [],
     }
 
     if not page.endswith("/Main Page"):
@@ -24,12 +24,12 @@ def add_content(page, namespace="Folder"):
         item_page = item[len(f"{singleton.STORAGE.folder}/") :]
 
         if os.path.isdir(item):
-            if namespace != "Folder" and len(item_page.split("/")) == 2:
+            if namespace != "Folder" and (len(item_page.split("/")) == 2 or namespace_for_folder):
                 item_page = item_page[len(f"{namespace}/") :]
-                items["folders"].add(f"<li>[[:{namespace}:{item_page}]]</li>")
+                items["folders"].append(f"<li>[[:{namespace}:{item_page}/Main Page]]</li>")
                 continue
 
-            items["folders"].add(f"<li>[[:Folder:{item_page}]]</li>")
+            items["folders"].append(f"<li>[[:Folder:{item_page}]]</li>")
             continue
 
         if item.endswith(".mediawiki"):
@@ -40,14 +40,17 @@ def add_content(page, namespace="Folder"):
             if namespace == "Folder":
                 if item_page.startswith("Page/"):
                     item_page = item_page[len("Page/") :]
-                items["pages"].add(f"<li>[[{item_page}]]</li>")
+                items["pages"].append(f"<li>[[{item_page}]]</li>")
                 continue
 
-            items["pages"].add(f"<li>[[:{namespace}:{item_page}]]</li>")
+            items["pages"].append(f"<li>[[:{namespace}:{item_page}]]</li>")
             continue
 
     templates = {}
-    variables = {}
+    variables = {
+        "folder_label": folder_label,
+        "page_label": page_label,
+    }
     for name, values in items.items():
         if values:
             wtp = wikitextparser.parse("\n".join(sorted(values, key=lambda x: x.split("/")[-2])))

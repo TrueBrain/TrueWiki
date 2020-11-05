@@ -1,14 +1,14 @@
 <hr />
 
 {{#if:{{{has_folders|}}}|
-<h2>Folders</h2>
+<h2>{{{folder_label}}}</h2>
 <ul>
     {{folders}}
 </ul>
 }}
 
 {{#if:{{{has_pages|}}}|
-<h2>Pages</h2>
+<h2>{{{page_label}}}</h2>
 <ul>
     {{pages}}
 </ul>

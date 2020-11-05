@@ -2,7 +2,6 @@ import logging
 import os
 
 from . import (
-    content_language_root,
     content,
     footer,
 )
@@ -34,6 +33,10 @@ class Namespace(base.Namespace):
         return page.endswith("/Main Page") and len(page.split("/")) == 3
 
     @staticmethod
+    def _is_root_of_folder(page: str) -> bool:
+        return page.endswith("/Main Page")
+
+    @staticmethod
     def page_load(page: str) -> str:
         assert page.startswith("Category/")
 
@@ -41,7 +44,9 @@ class Namespace(base.Namespace):
             return "A list of all the languages which have one or more categories."
 
         if Namespace._is_language_root(page):
-            return "All the categories that belong to this language"
+            return "All the categories that belong to this language."
+        if Namespace._is_root_of_folder(page):
+            return "All the categories that belong to this folder."
 
         filename = f"{singleton.STORAGE.folder}/{page}.mediawiki"
         if not os.path.exists(filename):
@@ -58,8 +63,9 @@ class Namespace(base.Namespace):
         if Namespace._is_root(page):
             return True
 
-        if Namespace._is_language_root(page):
-            return os.path.isdir(f"{singleton.STORAGE.folder}/Category/{page.split('/')[1]}")
+        if Namespace._is_root_of_folder(page):
+            page = page[:-len("Main Page")]
+            return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
 
         # If we know the category, the page exists; it might not have a
         # .mediawiki file (yet), but the page still exists.
@@ -89,7 +95,7 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def has_source(page: str) -> bool:
-        return not Namespace._is_root(page) and not Namespace._is_language_root(page)
+        return not Namespace._is_root(page) and not Namespace._is_root_of_folder(page)
 
     @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
@@ -100,9 +106,10 @@ class Namespace(base.Namespace):
         assert page.startswith("Category/")
 
         if Namespace._is_root(page):
-            return folder_content.add_content("Folder/Category/Main Page", namespace="Category")
-        if Namespace._is_language_root(page):
-            return content_language_root.add_content(page)
+            return folder_content.add_content("Folder/Category/Main Page", namespace="Category", folder_label="Languages")
+        if Namespace._is_root_of_folder(page):
+            return folder_content.add_content(f"Folder/{page}", namespace="Category", namespace_for_folder=True, page_label="Categories")
+
         return content.add_content(page)
 
     @staticmethod
