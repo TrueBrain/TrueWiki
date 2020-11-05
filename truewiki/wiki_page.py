@@ -45,7 +45,7 @@ class WikiPage(Page):
 
     def clean_title(self, title: str) -> str:
         namespace = title.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).clean_title(title)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).clean_title(self.page, title)
 
     def add_language(self, page: str) -> str:
         namespace = page.split("/")[0]

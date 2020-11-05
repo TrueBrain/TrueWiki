@@ -37,16 +37,42 @@ class Namespace:
         return ""
 
     @classmethod
-    def clean_title(cls, title: str) -> str:
+    def clean_title(cls, page: str, title: str, root_name: str = None) -> str:
+        spage = page.split("/")
         stitle = title.split("/")
 
+        postfix = ""
+
+        # Find the language indicator for the page.
+        if spage[0] == "Folder":
+            language_page = spage[2] if len(spage) > 3 else ""
+        elif spage[0] in ("Category", "File", "Template"):
+            language_page = spage[1] if len(spage) > 2 else ""
+        else:
+            language_page = spage[0]
+
+        # Find the language indicator for the title.
+        if stitle[0] == "Folder":
+            language_title = stitle[2] if len(stitle) > 3 else ""
+        elif stitle[0] in ("Category", "File", "Template"):
+            language_title = stitle[1] if len(stitle) > 2 else ""
+        else:
+            language_title = stitle[0]
+
+        # If the language of the page differs from the title, indicate to the
+        # user he will change language when clicking the link.
+        if language_page and language_title and language_page != language_title:
+            postfix = f" ({language_title})"
+
         if stitle[-1] != "Main Page":
-            return stitle[-1]
+            return stitle[-1] + postfix
 
         if len(stitle) > 2:
-            return stitle[-2]
+            return stitle[-2] + postfix
 
-        return cls.namespace
+        if root_name:
+            return root_name + postfix
+        return cls.namespace + postfix
 
     @staticmethod
     def page_ondisk_name(page: str) -> str:

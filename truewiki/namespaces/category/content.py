@@ -16,11 +16,9 @@ def add_content(page: str) -> str:
         "pages": [],
         "categories": [],
         "files": [],
-        "other_language": [],
     }
 
     category_page = page[len("Category/") :]
-    language = category_page.split("/")[0]
 
     for page_in_category in metadata.CATEGORIES.get(category_page, []):
         for namespace, prefix in NAMESPACE_MAPPING.items():
@@ -31,24 +29,19 @@ def add_content(page: str) -> str:
             link = f"<li>[[{prefix}{page_in_category}]]</li>"
 
             if namespace == "Templates/":
-                append = items["templates"].append
+                items["templates"].append(link)
             elif namespace == "Category/":
-                append = items["categories"].append
+                items["categories"].append(link)
             elif namespace == "File/":
                 caption = f'[[:File:{page_in_category}|{page_in_category.split("/")[-1]}]]'
                 link = f"<li>[[File:{page_in_category}|none|frame|130px|{caption}]]</li>"
-                append = items["files"].append
+                items["files"].append(link)
             else:
-                append = items["pages"].append
+                items["pages"].append(link)
 
             break
         else:
             raise RuntimeError(f"{page_in_category} has invalid namespace")
-
-        if page_in_category.split("/")[0] != language:
-            append = items["other_language"].append
-
-        append(link)
 
     templates = {}
     variables = {}
