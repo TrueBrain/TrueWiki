@@ -54,12 +54,8 @@ class Namespace(base.Namespace):
         return True
 
     @classmethod
-    def clean_title(cls, title: str) -> str:
-        title = super().clean_title(title)
-
-        if title == "Page":
-            return "OpenTTD's Wiki"
-
+    def clean_title(cls, page: str, title: str) -> str:
+        title = super().clean_title(page, title, root_name="OpenTTD's Wiki")
         return title
 
     @staticmethod

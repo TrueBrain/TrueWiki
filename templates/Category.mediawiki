@@ -27,10 +27,3 @@
     {{files}}
 </ul>
 }}
-
-{{#if:{{{has_other_language|}}}|
-<h2>Entries that don't belong to the language of this category</h2>
-<ul class="category-other-languages">
-    {{other_language}}
-</ul>
-}}
