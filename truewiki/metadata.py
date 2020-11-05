@@ -105,6 +105,10 @@ def _analyze_page(page):
     if page in PAGES:
         _forget_page(page)
 
+    # This file is removed since our last scan; forget about it.
+    if not os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki"):
+        return
+
     # Analyze the file.
     with open(f"{singleton.STORAGE.folder}/{page}.mediawiki", "r") as fp:
         body = fp.read()
