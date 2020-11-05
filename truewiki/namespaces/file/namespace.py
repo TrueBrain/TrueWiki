@@ -35,16 +35,16 @@ class Namespace(base.Namespace):
     def _is_root_of_folder(page: str) -> bool:
         return page.endswith("/Main Page")
 
-    @staticmethod
-    def page_load(page: str) -> str:
+    @classmethod
+    def page_load(cls, page: str) -> str:
         assert page.startswith("File/")
 
-        if Namespace._is_root(page):
+        if cls._is_root(page):
             return "A list of all the languages which have one or more files."
 
-        if Namespace._is_language_root(page):
+        if cls._is_language_root(page):
             return "All the files that belong to this language."
-        if Namespace._is_root_of_folder(page):
+        if cls._is_root_of_folder(page):
             return "All the files that belong to this folder."
 
         filename = f"{singleton.STORAGE.folder}/{page}.mediawiki"
@@ -55,25 +55,25 @@ class Namespace(base.Namespace):
             body = fp.read()
         return body
 
-    @staticmethod
-    def page_exists(page: str) -> bool:
+    @classmethod
+    def page_exists(cls, page: str) -> bool:
         assert page.startswith("File/")
 
-        if Namespace._is_root(page):
+        if cls._is_root(page):
             return True
 
-        if Namespace._is_root_of_folder(page):
+        if cls._is_root_of_folder(page):
             page = page[:-len("Main Page")]
             return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
 
         return os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki")
 
-    @staticmethod
-    def page_is_valid(page: str) -> bool:
+    @classmethod
+    def page_is_valid(cls, page: str) -> bool:
         assert page.startswith("File/")
         spage = page.split("/")
 
-        if Namespace._is_root(page):
+        if cls._is_root(page):
             return True
 
         # There should always be a language code in the path.
@@ -85,21 +85,21 @@ class Namespace(base.Namespace):
 
         return True
 
-    @staticmethod
-    def has_source(page: str) -> bool:
-        return not Namespace._is_root(page) and not Namespace._is_root_of_folder(page)
+    @classmethod
+    def has_source(cls, page: str) -> bool:
+        return not cls._is_root(page) and not cls._is_root_of_folder(page)
 
     @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
         return language_bar.create(instance, page)
 
-    @staticmethod
-    def add_content(instance: wiki_page.WikiPage, page: str) -> str:
+    @classmethod
+    def add_content(cls, instance: wiki_page.WikiPage, page: str) -> str:
         assert page.startswith("File/")
 
-        if Namespace._is_root(page):
+        if cls._is_root(page):
             return folder_content.add_content("Folder/File/Main Page", namespace="File", folder_label="Languages")
-        if Namespace._is_root_of_folder(page):
+        if cls._is_root_of_folder(page):
             return folder_content.add_content(f"Folder/{page}", namespace="File", namespace_for_folder=True, page_label="Files")
 
         if os.path.exists(f"{singleton.STORAGE.folder}/{page}"):
