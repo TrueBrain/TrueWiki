@@ -216,13 +216,15 @@ class ReloadHelper:
     def _sort(self):
         # Sort everything so we don't have to on render time.
         for translation in TRANSLATIONS:
-            TRANSLATIONS[translation] = sorted(TRANSLATIONS[translation], key=lambda name: (name.find("en/") < 0, name))
+            TRANSLATIONS[translation] = sorted(
+                set(TRANSLATIONS[translation]), key=lambda name: (name.find("en/") < 0, name)
+            )
         for category in CATEGORIES:
-            CATEGORIES[category] = sorted(CATEGORIES[category], key=lambda x: list(reversed(x.split("/"))))
+            CATEGORIES[category] = sorted(set(CATEGORIES[category]), key=lambda x: list(reversed(x.split("/"))))
         for file in FILES:
-            FILES[file] = sorted(FILES[file], key=lambda x: list(reversed(x.split("/"))))
+            FILES[file] = sorted(set(FILES[file]), key=lambda x: list(reversed(x.split("/"))))
         for template in TEMPLATES:
-            TEMPLATES[template] = sorted(TEMPLATES[template], key=lambda x: list(reversed(x.split("/"))))
+            TEMPLATES[template] = sorted(set(TEMPLATES[template]), key=lambda x: list(reversed(x.split("/"))))
 
     def page_changed(self):
         _page_changed(self.page)
