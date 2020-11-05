@@ -226,6 +226,13 @@ class ReloadHelper:
         for template in TEMPLATES:
             TEMPLATES[template] = sorted(set(TEMPLATES[template]), key=lambda x: list(reversed(x.split("/"))))
 
+        # Ensure thare are no duplicated in PAGES too
+        for page in PAGES.values():
+            page["translations"] = list(set(page["translations"]))
+            page["categories"] = list(set(page["categories"]))
+            page["files"] = list(set(page["files"]))
+            page["templates"] = list(set(page["templates"]))
+
     def page_changed(self):
         _page_changed(self.page)
         self._sort()
