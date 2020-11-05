@@ -20,9 +20,9 @@ class Namespace:
     def has_source(page: str) -> bool:
         return False
 
-    @staticmethod
-    def has_history(page: str) -> bool:
-        return Namespace.has_source(page) and Namespace.page_exists(page)
+    @classmethod
+    def has_history(cls, page: str) -> bool:
+        return cls.has_source(page) and cls.page_exists(page)
 
     @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
