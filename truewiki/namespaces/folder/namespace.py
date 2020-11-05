@@ -23,23 +23,23 @@ class Namespace(base.Namespace):
     def _is_namespace_root(page: str) -> bool:
         return page.endswith("/Main Page") and len(page.split("/")) == 3
 
-    @staticmethod
-    def page_load(page: str) -> str:
+    @classmethod
+    def page_load(cls, page: str) -> str:
         assert page.startswith("Folder/")
 
-        if Namespace._is_root(page):
+        if cls._is_root(page):
             return "A list of all namespaces with files and folders."
 
-        if Namespace._is_namespace_root(page):
+        if cls._is_namespace_root(page):
             return "A list of all the languages within this namespace."
 
         return "All the pages and folders inside this folder."
 
-    @staticmethod
-    def page_exists(page: str) -> bool:
+    @classmethod
+    def page_exists(cls, page: str) -> bool:
         assert page.startswith("Folder/")
 
-        if Namespace._is_root(page):
+        if cls._is_root(page):
             return True
 
         if not page.endswith("/Main Page"):
@@ -48,14 +48,14 @@ class Namespace(base.Namespace):
         page = page[len("Folder/") : -len("/Main Page")]
         return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
 
-    @staticmethod
-    def page_is_valid(page: str) -> bool:
+    @classmethod
+    def page_is_valid(cls, page: str) -> bool:
         assert page.startswith("Folder/")
         spage = page.split("/")
 
-        if Namespace._is_root(page):
+        if cls._is_root(page):
             return True
-        if Namespace._is_namespace_root(page):
+        if cls._is_namespace_root(page):
             return os.path.isdir(f"{singleton.STORAGE.folder}/{spage[1]}")
 
         # There should always be a namespace and language code in the path.
