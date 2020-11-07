@@ -16,6 +16,7 @@ def view(user, location: str = None) -> str:
     }
     variables = {
         "display_name": user.display_name if user else "",
+        "user_settings_url": user.get_settings_url() if user else "",
         "location": location if location else "",
     }
 
