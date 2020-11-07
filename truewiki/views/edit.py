@@ -134,5 +134,5 @@ def view(user, page: str) -> web.Response:
             f'Page name "{page}" conflicts with "{correct_page}". Did you mean to edit [[{correct_page}]]?',
         )
 
-    body = source.create_body(wiki_page, user, "Edit")
+    body = source.create_body(wiki_page, user, "Edit", new_page=page)
     return web.Response(body=body, content_type="text/html")
