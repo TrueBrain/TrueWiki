@@ -53,7 +53,7 @@
             </ul>
             }}
             <h3>Source</h3>
-            <textarea style="width: 100%;" rows=50>{{page}}</textarea>
+            <textarea style="width: 100%;" rows=30>{{page}}</textarea>
             <h3>
                 Templates
             </h3>

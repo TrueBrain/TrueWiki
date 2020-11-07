@@ -146,5 +146,46 @@ class Namespace(base.Namespace):
         # TODO -- Support thumb sizes
         return f"/uploads/{url}"
 
+    @staticmethod
+    def add_edit_content() -> str:
+        return """
+<hr />
+Upload new file: <input type="file" name="file" />
+<p>Please ensure the upload has a license that is compatible with the license of this wiki.</p>
+<p>Any new upload will overwrite the existing upload at this location. Preview won't work for new uploads.</p>
+<hr />
+        """
+
+    @staticmethod
+    def edit_callback(page: str, payload, execute: bool = False):
+        if not payload.get("file"):
+            return None
+
+        payload["file"].file.seek(0)
+        data = payload["file"].file.read()
+
+        if payload["file"].content_type == "image/png":
+            # See http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.PNG-file-signature
+            if not data.startswith(b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a"):
+                return f'Uploaded file "{payload["file"].filename}" is not a valid PNG image.'
+        elif payload["file"].content_type == "image/jpeg":
+            # See https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format#File_format_structure
+            if not data.startswith(b"\xff\xd8") or not data.endswith(b"\xff\xd9"):
+                return f'Uploaded file "{payload["file"].filename}" is not a valid JPEG image.'
+        else:
+            return f'Uploaded file "{payload["file"].filename}" is not a valid image. Only PNG and JPEG is supported.'
+
+        if execute:
+            with open(f"{singleton.STORAGE.folder}/{page}", "wb") as fp:
+                fp.write(data)
+
+        return None
+
+    @staticmethod
+    def edit_rename(old_page: str, new_page: str):
+        assert old_page.startswith("File/")
+        assert new_page.startswith("File/")
+
+        os.rename(f"{singleton.STORAGE.folder}/{old_page}", f"{singleton.STORAGE.folder}/{new_page}")
 
 wiki_page.register_namespace(Namespace, default_file=True)

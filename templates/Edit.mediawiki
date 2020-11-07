@@ -70,7 +70,7 @@
             <h3>Create new page</h3>
             }}
 
-            <form method="post">
+            <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
 
             {{#if:{{{has_used_on_pages|}}}|
             <input type="text" value="{{{new_page}}}" style="width: 100%;" disabled />
@@ -79,8 +79,12 @@
             <input type="text" name="page" value="{{{new_page}}}" style="width: 100%;" />
             }}
 
-            <textarea name="content" style="width: 100%;" rows=50>{{page}}</textarea>
+            <textarea name="content" style="width: 100%;" rows=30>{{page}}</textarea>
+
+            {{namespace_edit}}
+
             <input type="submit" name="save" value="Save page" /> <input type="submit" name="preview" value="Preview page" />
+
             </form>
             <h3>
                 Templates

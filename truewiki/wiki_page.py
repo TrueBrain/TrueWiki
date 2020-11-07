@@ -74,6 +74,18 @@ class WikiPage(Page):
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).add_footer(self, page)
 
+    def add_edit_content(self) -> str:
+        namespace = self.page.split("/")[0]
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).add_edit_content()
+
+    def edit_callback(self, payload, execute: bool = False) -> str:
+        namespace = self.page.split("/")[0]
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).edit_callback(self.page, payload, execute)
+
+    def edit_rename(self, old_page: str, new_page: str) -> str:
+        namespace = self.page.split("/")[0]
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).edit_rename(old_page, new_page)
+
     def template_load(self, template: str) -> str:
         if ":" in template:
             namespace, _, template = template.partition(":")

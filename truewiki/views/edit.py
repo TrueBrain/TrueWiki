@@ -49,7 +49,7 @@ def _check_illegal_names(user, page: str, new_page: str) -> Optional[web.Respons
     return None
 
 
-def save(user, old_page: str, new_page: str, content: str) -> web.Response:
+def save(user, old_page: str, new_page: str, content: str, payload) -> web.Response:
     wiki_page = WikiPage(old_page)
     if not wiki_page.page_is_valid(old_page):
         return error.view(user, old_page, "Error 404 - File not found")
@@ -98,9 +98,17 @@ def save(user, old_page: str, new_page: str, content: str) -> web.Response:
         if wiki_page.page_exists(old_page) and metadata.TEMPLATES[old_filename[: -len(".mediawiki")]]:
             return error.view(user, old_page, "Cannot rename page as other pages depend on it.")
 
+    # Check with the namespace callback if there is an error.
+    namespace_error = wiki_page.edit_callback(payload)
+    if namespace_error:
+        return error.view(user, old_page, namespace_error)
+
     changed = []
 
     if old_page != new_page:
+        # Inform the namespace of the change in name.
+        wiki_page.edit_rename(old_page, new_page)
+
         # Remove the old file.
         os.unlink(f"{singleton.STORAGE.folder}/{old_filename}")
         changed.append(old_filename[: -len(".mediawiki")])
@@ -113,6 +121,9 @@ def save(user, old_page: str, new_page: str, content: str) -> web.Response:
     # Write the new source.
     with open(f"{singleton.STORAGE.folder}/{new_filename}", "w") as fp:
         fp.write(content)
+
+    # Inform the namespace of the edit.
+    wiki_page.edit_callback(payload, execute=True)
 
     changed.append(new_filename[: -len(".mediawiki")])
     page_changed(changed)
