@@ -17,16 +17,22 @@ from ..wiki_page import (
 from ..wrapper import wrap_page
 
 
-def create_body(wiki_page, user, wrapper, extra_variables=None) -> str:
+def create_body(wiki_page, user, wrapper, preview=None) -> str:
     ondisk_name = wiki_page.page_ondisk_name(wiki_page.page)
-    filename = f"{singleton.STORAGE.folder}/{ondisk_name}"
-    if os.path.exists(filename):
-        with open(filename) as fp:
-            body = fp.read()
-    else:
-        body = ""
 
-    content = wiki_page.render().html
+    if preview:
+        body = preview
+        wtp = wiki_page.prepare(preview)
+        content = wiki_page.render_page(wtp)
+    else:
+        filename = f"{singleton.STORAGE.folder}/{ondisk_name}"
+        if os.path.exists(filename):
+            with open(filename) as fp:
+                body = fp.read()
+        else:
+            body = ""
+
+        content = wiki_page.render().html
 
     templates_used = [f"<li>[[:Template:{template}]]</li>" for template in wiki_page.templates]
     errors = [f"<li>{error}</li>" for error in wiki_page.errors]
@@ -61,9 +67,8 @@ def create_body(wiki_page, user, wrapper, extra_variables=None) -> str:
         "has_errors": "1" if errors else "",
         "display_name": user.display_name if user else "",
         "user_settings_url": user.get_settings_url() if user else "",
+        "is_preview": "1" if preview else "",
     }
-    if extra_variables:
-        variables.update(extra_variables)
 
     templates["language"] = wiki_page.add_language(wiki_page.page)
     templates["footer"] = wiki_page.add_footer(wiki_page.page)
