@@ -116,10 +116,10 @@ async def source_page(request):
     if ".." in page:
         raise web.HTTPNotFound()
 
-    body = source.view(user, page)
+    status_code, body = source.view(user, page)
     if body is None:
         raise web.HTTPNotFound()
-    return web.Response(body=body, content_type="text/html")
+    return web.Response(body=body, content_type="text/html", status=status_code)
 
 
 @routes.get("/{page:.*}")
@@ -131,10 +131,10 @@ async def html_page(request):
     if ".." in page:
         raise web.HTTPNotFound()
 
-    body = view_page.view(user, page)
+    status_code, body = view_page.view(user, page)
     if body is None:
         raise web.HTTPNotFound()
-    return web.Response(body=body, content_type="text/html")
+    return web.Response(body=body, content_type="text/html", status=status_code)
 
 
 @routes.route("*", "/{tail:.*}")

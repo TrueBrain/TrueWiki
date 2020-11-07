@@ -61,4 +61,9 @@ def view(user, page: str) -> str:
         "display_name": user.display_name if user else "",
     }
 
-    return wrap_page(page, "Source", variables, templates)
+    if wiki_page.page_exists(page):
+        status_code = 200
+    else:
+        status_code = 404
+
+    return status_code, wrap_page(page, "Source", variables, templates)
