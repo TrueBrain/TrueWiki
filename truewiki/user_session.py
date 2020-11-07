@@ -113,7 +113,12 @@ async def user_login(request):
     else:
         return web.HTTPNotFound()
 
-    user = create_user_with_method(method, "/")
+    redirect_uri = "/" + post_data.get("location", "")
+    # Don't allow a redirect URI that contains any protocol/domain change.
+    if "://" in redirect_uri or not redirect_uri.startswith("/"):
+        redirect_uri = "/"
+
+    user = create_user_with_method(method, redirect_uri)
     return user.get_authorize_page()
 
 
@@ -122,7 +127,13 @@ async def user_logout(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
     if user:
         user.logout()
-    return web.HTTPFound(location="/")
+
+    redirect_uri = "/" + request.query.get("location", "")
+    # Don't allow a redirect URI that contains any protocol/domain change.
+    if "://" in redirect_uri or not redirect_uri.startswith("/"):
+        redirect_uri = "/"
+
+    return web.HTTPFound(location=redirect_uri)
 
 
 @click_helper.extend

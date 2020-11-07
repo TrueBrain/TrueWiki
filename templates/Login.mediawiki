@@ -33,6 +33,7 @@
             <p>OpenTTD's wiki relies on external authentication providers.</p>
             <form method="post">
                 {{login_methods}}
+                <input type="hidden" name="location" value="{{{location}}}" />
             </form>
         </main>
         <footer>

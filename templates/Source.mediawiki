@@ -31,11 +31,11 @@
                 }}
                 {{#if: {{{display_name|}}}|
                 <li>
-                    <a href="/user/logout">Logout ({{{display_name}}})</a>
+                    <a href="/user/logout?location={{FULLPAGENAME}}">Logout ({{{display_name}}})</a>
                 </li>
                 |
                 <li>
-                    <a href="/user/login">Login</a>
+                    <a href="/user/login?location={{FULLPAGENAME}}">Login</a>
                 </li>
                 }}
             </ul>

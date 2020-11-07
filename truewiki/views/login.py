@@ -5,7 +5,7 @@ from ..user_session import (
 from ..wrapper import wrap_page
 
 
-def view(user) -> str:
+def view(user, location: str = None) -> str:
     login_methods = []
     for method_name in get_user_methods():
         method = get_user_method(method_name)
@@ -16,6 +16,7 @@ def view(user) -> str:
     }
     variables = {
         "display_name": user.display_name if user else "",
+        "location": location if location else "",
     }
 
     return wrap_page("Login", "Login", variables, templates)
