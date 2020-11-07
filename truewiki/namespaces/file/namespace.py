@@ -54,6 +54,10 @@ class Namespace(base.Namespace):
 
         with open(filename) as fp:
             body = fp.read()
+
+        if not body:
+            body = "This file has no description yet."
+
         return body
 
     @classmethod
@@ -89,7 +93,7 @@ class Namespace(base.Namespace):
     @staticmethod
     def get_used_on_pages(page: str) -> list:
         assert page.startswith("File/")
-        return metadata.FILES[page[len("File/"):]]
+        return metadata.FILES[page[len("File/") :]]
 
     @classmethod
     def has_source(cls, page: str) -> bool:
@@ -124,6 +128,10 @@ class Namespace(base.Namespace):
 
         if os.path.exists(f"{singleton.STORAGE.folder}/{page}"):
             return content.add_content(page)
+
+        if cls.page_exists(page):
+            return "<hr /><small>(no file uploaded yet)</small>"
+
         return ""
 
     @staticmethod
@@ -157,9 +165,19 @@ Upload new file: <input type="file" name="file" />
         """
 
     @staticmethod
-    def edit_callback(page: str, payload, execute: bool = False):
+    def edit_callback(old_page: str, new_page: str, payload, execute: bool = False):
+        if old_page.split(".")[-1] != new_page.split(".")[-1]:
+            return "Cannot rename extension of a file."
+
+        # Someone is renaming the File to another namespace. This is most
+        # likely not what the user wants, but let him do it anyway.
+        if not new_page.startswith("File/"):
+            return
+
+        # Someone is making a File without adding a file. This is not ideal,
+        # but for the same reason as the case above, we let him do it anyway.
         if not payload.get("file"):
-            return None
+            return
 
         payload["file"].file.seek(0)
         data = payload["file"].file.read()
@@ -168,15 +186,21 @@ Upload new file: <input type="file" name="file" />
             # See http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.PNG-file-signature
             if not data.startswith(b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a"):
                 return f'Uploaded file "{payload["file"].filename}" is not a valid PNG image.'
+
+            if not new_page.endswith(".png"):
+                return f'Page name "{new_page}" should end with ".png" if uploading a PNG.'
         elif payload["file"].content_type == "image/jpeg":
             # See https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format#File_format_structure
             if not data.startswith(b"\xff\xd8") or not data.endswith(b"\xff\xd9"):
                 return f'Uploaded file "{payload["file"].filename}" is not a valid JPEG image.'
+
+            if not new_page.endswith(".jpeg"):
+                return f'Page name "{new_page}" should end with ".jpeg" if uploading a JPEG.'
         else:
             return f'Uploaded file "{payload["file"].filename}" is not a valid image. Only PNG and JPEG is supported.'
 
         if execute:
-            with open(f"{singleton.STORAGE.folder}/{page}", "wb") as fp:
+            with open(f"{singleton.STORAGE.folder}/{new_page}", "wb") as fp:
                 fp.write(data)
 
         return None
@@ -184,8 +208,21 @@ Upload new file: <input type="file" name="file" />
     @staticmethod
     def edit_rename(old_page: str, new_page: str):
         assert old_page.startswith("File/")
-        assert new_page.startswith("File/")
 
-        os.rename(f"{singleton.STORAGE.folder}/{old_page}", f"{singleton.STORAGE.folder}/{new_page}")
+        old_filename = f"{singleton.STORAGE.folder}/{old_page}"
+        new_filename = f"{singleton.STORAGE.folder}/{new_page}"
+
+        # If the old file didn't exist, it is a File without a file. We don't
+        # have to do anything for the rename.
+        if not os.path.exists(old_filename):
+            return
+
+        # If we move the page outside of File, remove the file.
+        if not new_page.startswith("File/"):
+            os.unlink(old_filename)
+            return
+
+        os.rename(old_filename, new_filename)
+
 
 wiki_page.register_namespace(Namespace, default_file=True)
