@@ -38,6 +38,7 @@
             </ul>
         </nav>
         <main>
+            <h2>Error</h2>
             {{content}}
         </main>
         <footer>
