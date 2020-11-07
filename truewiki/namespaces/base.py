@@ -106,7 +106,7 @@ class Namespace:
         return ""
 
     @staticmethod
-    def edit_callback(page: str, payload, execute: bool = False):
+    def edit_callback(old_page: str, new_page: str, payload, execute: bool = False):
         pass
 
     @staticmethod

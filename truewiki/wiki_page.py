@@ -78,12 +78,12 @@ class WikiPage(Page):
         namespace = self.page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).add_edit_content()
 
-    def edit_callback(self, payload, execute: bool = False) -> str:
-        namespace = self.page.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).edit_callback(self.page, payload, execute)
+    def edit_callback(self, old_page: str, new_page: str, payload, execute: bool = False) -> str:
+        namespace = old_page.split("/")[0]
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).edit_callback(old_page, new_page, payload, execute)
 
     def edit_rename(self, old_page: str, new_page: str) -> str:
-        namespace = self.page.split("/")[0]
+        namespace = old_page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).edit_rename(old_page, new_page)
 
     def template_load(self, template: str) -> str:

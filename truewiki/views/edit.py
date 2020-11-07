@@ -99,7 +99,7 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
             return error.view(user, old_page, "Cannot rename page as other pages depend on it.")
 
     # Check with the namespace callback if there is an error.
-    namespace_error = wiki_page.edit_callback(payload)
+    namespace_error = wiki_page.edit_callback(old_page, new_page, payload)
     if namespace_error:
         return error.view(user, old_page, namespace_error)
 
@@ -123,7 +123,7 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
         fp.write(content)
 
     # Inform the namespace of the edit.
-    wiki_page.edit_callback(payload, execute=True)
+    wiki_page.edit_callback(old_page, new_page, payload, execute=True)
 
     changed.append(new_filename[: -len(".mediawiki")])
     page_changed(changed)

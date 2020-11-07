@@ -3,10 +3,7 @@ import wikitextparser
 
 from wikitexthtml.render import wikilink
 
-from ... import (
-    metadata,
-    singleton,
-)
+from ... import singleton
 from ...wiki_page import (
     NAMESPACE_MAPPING,
     WikiPage,

@@ -5,10 +5,7 @@ from aiohttp import web
 from wikitexthtml.render import wikilink
 
 from . import error
-from .. import (
-    metadata,
-    singleton,
-)
+from .. import singleton
 from ..content import breadcrumb
 from ..wiki_page import (
     NAMESPACE_MAPPING,
