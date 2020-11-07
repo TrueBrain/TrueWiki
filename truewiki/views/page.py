@@ -9,7 +9,7 @@ def view(user, page: str) -> str:
 
     wiki_page = WikiPage(page)
     if not wiki_page.page_is_valid(page):
-        return None
+        return 404, None
 
     templates = {
         "content": wiki_page.render().html,

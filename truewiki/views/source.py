@@ -18,7 +18,7 @@ from ..wrapper import wrap_page
 def view(user, page: str) -> str:
     wiki_page = WikiPage(page)
     if not wiki_page.page_is_valid(page):
-        return None
+        return 404, None
 
     ondisk_name = wiki_page.page_ondisk_name(page)
     filename = f"{singleton.STORAGE.folder}/{ondisk_name}"
