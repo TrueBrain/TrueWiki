@@ -1,15 +1,67 @@
 import os
-import wikitextparser
 
 from aiohttp import web
-from wikitexthtml.render import wikilink
 
-from . import error
+from . import (
+    error,
+    source,
+)
 from .. import singleton
-from ..content import breadcrumb
 from ..metadata import page_changed
 from ..wiki_page import WikiPage
-from ..wrapper import wrap_page
+
+
+def rename(user, old_page: str, new_page: str) -> web.Response:
+    if new_page == old_page:
+        return web.HTTPFound(f"/{old_page}")
+
+    wiki_page = WikiPage(old_page)
+    if not wiki_page.page_is_valid(old_page):
+        return error.view(user, old_page, "Error 404 - File not found")
+
+    # If we are not renaming to the same page (in lower-case), ensure we are
+    # not renaming to a page similar but with different casing.
+    if old_page.lower() != new_page.lower():
+        if wiki_page.page_exists(new_page):
+            return error.view(
+                user,
+                old_page,
+                f'Page name "{new_page}" already exists.',
+            )
+
+        correct_page = wiki_page.page_get_correct_case(new_page)
+        if correct_page != new_page:
+            return error.view(
+                user,
+                old_page,
+                f'Page name "{new_page}" conflicts with "{correct_page}", which already exists.',
+            )
+
+    # Read the old file from disk.
+    old_filename = wiki_page.page_ondisk_name(old_page)
+    with open(f"{singleton.STORAGE.folder}/{old_filename}") as fp:
+        body = fp.read()
+
+    new_filename = wiki_page.page_ondisk_name(new_page)
+    new_dirname = "/".join(new_filename.split("/")[:-1])
+
+    # Remove the old file.
+    os.unlink(f"{singleton.STORAGE.folder}/{old_filename}")
+
+    # Make sure the folder exists.
+    os.makedirs(f"{singleton.STORAGE.folder}/{new_dirname}", exist_ok=True)
+    # Write the new source.
+    with open(f"{singleton.STORAGE.folder}/{new_filename}", "w") as fp:
+        fp.write(body)
+
+    page_changed(
+        [
+            old_filename[: -len(".mediawiki")],
+            new_filename[: -len(".mediawiki")],
+        ]
+    )
+
+    return web.HTTPFound(f"/{new_page}")
 
 
 def save(user, page: str, change: str) -> web.Response:
@@ -35,7 +87,7 @@ def save(user, page: str, change: str) -> web.Response:
     with open(f"{singleton.STORAGE.folder}/{filename}", "w") as fp:
         fp.write(change)
 
-    page_changed(filename[: -len(".mediawiki")])
+    page_changed([filename[: -len(".mediawiki")]])
 
     return web.HTTPFound(f"/{page}")
 
@@ -54,36 +106,5 @@ def view(user, page: str) -> web.Response:
             f'Page name "{page}" conflicts with "{correct_page}". Did you mean to edit [[{correct_page}]]?',
         )
 
-    filename = wiki_page.page_ondisk_name(page)
-    filename = f"{singleton.STORAGE.folder}/{filename}"
-    if os.path.exists(filename):
-        with open(filename) as fp:
-            body = fp.read()
-    else:
-        body = ""
-
-    wiki_page.render()
-
-    templates_used = [f"<li>[[:Template:{template}]]</li>" for template in wiki_page.templates]
-    errors = [f"<li>{error}</li>" for error in wiki_page.errors]
-
-    wtp = wikitextparser.parse("\n".join(sorted(templates_used)))
-    wikilink.replace(WikiPage(page), wtp)
-    templates_used = wtp.string
-
-    templates = {
-        "page": body,
-        "templates_used": templates_used,
-        "errors": "\n".join(errors),
-        "breadcrumbs": breadcrumb.create(page),
-    }
-    variables = {
-        "has_templates_used": "1" if templates_used else "",
-        "has_errors": "1" if errors else "",
-        "display_name": user.display_name if user else "",
-        "user_settings_url": user.get_settings_url() if user else "",
-    }
-
-    body = wrap_page(page, "Edit", variables, templates)
-
+    body = source.create_body(wiki_page, user, "Edit")
     return web.Response(body=body, content_type="text/html")

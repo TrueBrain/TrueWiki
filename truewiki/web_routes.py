@@ -91,14 +91,24 @@ async def edit_page_post(request):
         return web.HTTPFound(f"/user/login?location=edit/{page}")
 
     payload = await request.post()
-    if "page" not in payload:
+    if "rename" in payload:
+        if "page" not in payload:
+            raise web.HTTPNotFound()
+
+        new_page = payload["page"]
+        # Don't allow path-walking
+        if ".." in new_page:
+            raise web.HTTPNotFound()
+        return edit.rename(user, page, new_page)
+
+    if "content" not in payload:
         raise web.HTTPNotFound()
 
     if "save" in payload:
-        return edit.save(user, page, payload["page"])
+        return edit.save(user, page, payload["content"])
 
     if "preview" in payload:
-        return preview.view(user, page, payload["page"])
+        return preview.view(user, page, payload["content"])
 
     raise web.HTTPNotFound()
 
