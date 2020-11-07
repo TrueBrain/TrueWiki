@@ -25,6 +25,7 @@ def view(user, page: str, body: str) -> str:
     }
     variables = {
         "display_name": user.display_name if user else "",
+        "user_settings_url": user.get_settings_url() if user else "",
         "has_errors": "1" if errors else "",
     }
 

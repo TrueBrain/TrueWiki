@@ -60,6 +60,7 @@ def view(user, page: str) -> str:
         "has_templates_used": "1" if templates_used else "",
         "has_errors": "1" if errors else "",
         "display_name": user.display_name if user else "",
+        "user_settings_url": user.get_settings_url() if user else "",
     }
 
     return wrap_page(page, "Edit", variables, templates)

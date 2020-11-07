@@ -17,6 +17,7 @@ def view(user, page: str) -> str:
     }
     variables = {
         "display_name": user.display_name if user else "",
+        "user_settings_url": user.get_settings_url() if user else "",
         "errors": len(wiki_page.errors) if wiki_page.errors else "",
     }
 

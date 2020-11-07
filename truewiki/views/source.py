@@ -59,6 +59,7 @@ def view(user, page: str) -> str:
         "has_used_on_pages": "1" if used_on_pages else "",
         "has_errors": "1" if errors else "",
         "display_name": user.display_name if user else "",
+        "user_settings_url": user.get_settings_url() if user else "",
     }
 
     if wiki_page.page_exists(page):

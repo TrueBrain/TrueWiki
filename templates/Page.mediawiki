@@ -15,6 +15,11 @@
             <div id="openttd-logo">
                 <div id="openttd-logo-text"><a href="/en/"><img src="/static/img/layout/openttd-logo.png" alt="OpenTTD" /></a></div>
             </div>
+            {{#if: {{{user_settings_url}}}|
+            <div id="review-access">
+                <a href="{{{user_settings_url}}}">Review access</a>
+            </div>
+            }}
         </header>
         <nav>
             <ul id="navigation-bar">
