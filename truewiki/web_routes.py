@@ -96,9 +96,6 @@ async def edit_page_post(request):
             raise web.HTTPNotFound()
 
         new_page = payload["page"]
-        # Don't allow path-walking
-        if ".." in new_page:
-            raise web.HTTPNotFound()
         return edit.rename(user, page, new_page)
 
     if "content" not in payload:

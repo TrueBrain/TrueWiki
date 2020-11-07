@@ -8,7 +8,7 @@ from ..wiki_page import WikiPage
 from ..wrapper import wrap_page
 
 
-def view(user, page: str, message: str) -> web.Response:
+def view(user, page: str, message: str, status: int = 404) -> web.Response:
     wiki_page = WikiPage(page)
 
     variables = {
@@ -24,4 +24,4 @@ def view(user, page: str, message: str) -> web.Response:
         "breadcrumbs": breadcrumb.create(page),
     }
     body = wrap_page(page, "Error", variables, templates)
-    return web.Response(body=body, content_type="text/html", status=404)
+    return web.Response(body=body, content_type="text/html", status=status)

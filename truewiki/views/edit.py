@@ -1,4 +1,5 @@
 import os
+import unicodedata
 
 from aiohttp import web
 
@@ -11,12 +12,39 @@ from ..metadata import page_changed
 from ..wiki_page import WikiPage
 
 
+def _check_illegal_names(user, page: str, new_page: str) -> web.Response:
+    if ".." in new_page or new_page.strip(" .") != new_page:
+        return error.view(
+            user,
+            page,
+            f"Page '{new_page}' contain '..' and/or starts/ends with a space and/or dot, which is not allowed.",
+            status=401,
+        )
+
+    for letter in new_page:
+        if unicodedata.category(letter)[0] == "C":
+            return error.view(
+                user,
+                page,
+                f'Page "{new_page}" contains '
+                '<a href="https://en.wikipedia.org/wiki/Control_character" target="_new">Control Characters</a>, '
+                "which is not allowed.",
+                status=401,
+            )
+
+    return None
+
+
 def rename(user, old_page: str, new_page: str) -> web.Response:
     if new_page == old_page:
         return web.HTTPFound(f"/{old_page}")
 
+    response = _check_illegal_names(user, old_page, new_page)
+    if response:
+        return response
+
     wiki_page = WikiPage(old_page)
-    if not wiki_page.page_is_valid(old_page):
+    if not wiki_page.page_exists(old_page):
         return error.view(user, old_page, "Error 404 - File not found")
 
     # If we are not renaming to the same page (in lower-case), ensure we are
@@ -68,6 +96,10 @@ def save(user, page: str, change: str) -> web.Response:
     wiki_page = WikiPage(page)
     if not wiki_page.page_is_valid(page):
         return error.view(user, page, "Error 404 - File not found")
+
+    response = _check_illegal_names(user, page, page)
+    if response:
+        return response
 
     # If there is a difference in case, nicely point this out to users.
     correct_page = wiki_page.page_get_correct_case(page)
