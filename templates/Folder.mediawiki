@@ -1,5 +1,10 @@
 <hr />
 
+{{#if:{{{has_folders|}}}{{{has_pages|}}}||
+<h2>{{{page_label}}}</h2>
+<small>(this folder is empty)</small>
+}}
+
 {{#if:{{{has_folders|}}}|
 <h2>{{{folder_label}}}</h2>
 <ul>

@@ -1,5 +1,10 @@
 <hr />
 
+{{#if:{{{has_categories|}}}{{{has_pages|}}}{{{has_templates|}}}{{{has_files|}}}||
+<h2>Pages</h2>
+<small>(this category is empty)</small>
+}}
+
 {{#if:{{{has_categories|}}}|
 <h2>Subcategories</h2>
 <ul class="category-subcategories">
