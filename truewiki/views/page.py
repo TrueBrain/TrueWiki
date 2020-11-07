@@ -23,4 +23,10 @@ def view(user, page: str) -> str:
     templates["language"] = wiki_page.add_language(page)
     templates["footer"] = wiki_page.add_footer(page)
     templates["content"] += wiki_page.add_content(page)
-    return wrap_page(page, "Page", variables, templates)
+
+    if wiki_page.page_exists(page):
+        status_code = 200
+    else:
+        status_code = 404
+
+    return status_code, wrap_page(page, "Page", variables, templates)
