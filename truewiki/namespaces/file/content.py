@@ -42,7 +42,7 @@ def add_content(page):
 
     used_on_pages = []
     if filename:
-        for dependency in metadata.FILES[filename[len("File/") :]]:
+        for dependency in wiki_page.get_used_on_pages():
             namespace = NAMESPACE_MAPPING[dependency.split("/")[0] + "/"]
             dependency = "/".join(dependency.split("/")[1:])
             used_on_pages.append(f"<li>[[{namespace}{dependency}]]</li>")

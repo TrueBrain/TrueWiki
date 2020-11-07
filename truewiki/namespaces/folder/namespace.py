@@ -68,6 +68,10 @@ class Namespace(base.Namespace):
     def page_ondisk_name(page: str) -> str:
         return None
 
+    @staticmethod
+    def get_used_on_pages(page: str) -> list:
+        return None
+
     @classmethod
     def get_create_page_name(cls, page: str) -> str:
         assert page.startswith("Folder/")

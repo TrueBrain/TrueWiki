@@ -54,6 +54,10 @@ class WikiPage(Page):
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).get_create_page_name(page)
 
+    def get_used_on_pages(self) -> str:
+        namespace = self.page.split("/")[0]
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).get_used_on_pages(self.page)
+
     def clean_title(self, title: str) -> str:
         namespace = title.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).clean_title(self.page, title)

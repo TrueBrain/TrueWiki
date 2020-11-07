@@ -38,7 +38,7 @@ def create_body(wiki_page, user, wrapper, preview=None, new_page=None) -> str:
     errors = [f"<li>{error}</li>" for error in wiki_page.errors]
 
     used_on_pages = []
-    for dependency in metadata.TEMPLATES[ondisk_name[: -len(".mediawiki")]]:
+    for dependency in wiki_page.get_used_on_pages():
         namespace = NAMESPACE_MAPPING[dependency.split("/")[0] + "/"]
         dependency = "/".join(dependency.split("/")[1:])
         used_on_pages.append(f"<li>[[{namespace}{dependency}]]</li>")
