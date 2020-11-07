@@ -2,6 +2,7 @@ import os
 import unicodedata
 
 from aiohttp import web
+from typing import Optional
 
 from . import (
     error,
@@ -15,12 +16,22 @@ from ..metadata import page_changed
 from ..wiki_page import WikiPage
 
 
-def _check_illegal_names(user, page: str, new_page: str) -> web.Response:
+def _check_illegal_names(user, page: str, new_page: str) -> Optional[web.Response]:
     if ".." in new_page or new_page.strip(" .") != new_page:
         return error.view(
             user,
             page,
-            f"Page name '{new_page}' contain '..' and/or starts/ends with a space and/or dot, which is not allowed.",
+            f'Page name "{new_page}" contain ".." and/or starts/ends with a space and/or dot, which is not allowed.',
+            status=401,
+        )
+
+    if new_page.endswith("/"):
+        return error.view(
+            user,
+            page,
+            f'Page name "{new_page}" cannot end with a "/". If you want to create a main page for this folder, '
+            'create a page called "Main Page" in this folder. '
+            '"Main Page" cannot be translated, and is always written in English, no matter the language you are in.',
             status=401,
         )
 

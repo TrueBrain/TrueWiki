@@ -85,6 +85,10 @@ class Namespace:
     def page_get_correct_case(page: str) -> str:
         return metadata.PAGES_LC.get(page.lower(), page)
 
+    @staticmethod
+    def get_create_page_name(page: str) -> str:
+        return ""
+
     @classmethod
     def template_load(cls, template: str) -> str:
         return f'<a href="/{cls.namespace}/{template}" title="{template}">{cls.namespace}/{template}</a>'

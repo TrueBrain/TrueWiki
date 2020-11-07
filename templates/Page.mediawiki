@@ -29,15 +29,30 @@
                 {{#if: {{{has_source|}}}|
                 <li>
                     {{#if: {{{display_name|}}}|
-                    <a href="/edit/{{FULLPAGENAME}}">{{#if: {{{does_exist|}}}|Edit Page|Create Page}}
-                    |
-                    <a href="/{{FULLPAGENAME}}.mediawiki">View Source
-                    }}
-                    {{#if: {{{errors|}}}|
-                    <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
-                    }}
+                    <a href="/edit/{{FULLPAGENAME}}">
+                        {{#if: {{{does_exist|}}}|Edit Page|Create Page}}
+                        {{#if: {{{errors|}}}|
+                            <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
+                        }}
                     </a>
+                    |
+                    {{#if: {{{does_exist|}}}|
+                        <a href="/{{FULLPAGENAME}}.mediawiki">
+                        View Source
+                        {{#if: {{{errors|}}}|
+                            <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
+                        }}
+                        </a>
+                    }}
+                    }}
                 </li>
+                }}
+                {{#if: {{{display_name|}}}|
+                    {{#if: {{{create_page_name|}}}|
+                    <li>
+                        <a href="/edit/{{{create_page_name}}}">Create Page</a>
+                    </li>
+                }}
                 }}
                 {{#if: {{{history_url|}}}|
                 <li>

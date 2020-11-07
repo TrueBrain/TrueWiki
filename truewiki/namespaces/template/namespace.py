@@ -28,6 +28,10 @@ class Namespace(base.Namespace):
     def _is_language_root(page: str) -> bool:
         return page.endswith("/Main Page") and len(page.split("/")) == 3
 
+    @staticmethod
+    def _is_root_of_folder(page: str) -> bool:
+        return page.endswith("/Main Page")
+
     @classmethod
     def page_load(cls, page: str) -> str:
         assert page.startswith("Template/")
@@ -78,6 +82,18 @@ class Namespace(base.Namespace):
     @classmethod
     def has_source(cls, page: str) -> bool:
         return not cls._is_root(page) and not cls._is_language_root(page)
+
+    @classmethod
+    def get_create_page_name(cls, page: str) -> str:
+        assert page.startswith("Template/")
+
+        if not cls._is_root_of_folder(page):
+            return ""
+        if cls._is_root(page):
+            return ""
+
+        page = page[: -len("/Main Page")]
+        return f"{page}/?newpage"
 
     @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
