@@ -11,6 +11,7 @@ from ..folder import (
     footer as folder_footer,
 )
 from ... import (
+    metadata,
     singleton,
     wiki_page,
 )
@@ -84,6 +85,11 @@ class Namespace(base.Namespace):
             return False
 
         return True
+
+    @staticmethod
+    def get_used_on_pages(page: str) -> list:
+        assert page.startswith("File/")
+        return metadata.FILES[page[len("File/"):]]
 
     @classmethod
     def has_source(cls, page: str) -> bool:

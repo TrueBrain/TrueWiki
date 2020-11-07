@@ -5,6 +5,7 @@ from .. import base
 from ..category import footer as category_footer
 from ..folder import footer as folder_footer
 from ... import (
+    metadata,
     singleton,
     wiki_page,
 )
@@ -35,6 +36,10 @@ class Namespace(base.Namespace):
     @staticmethod
     def page_ondisk_name(page: str) -> str:
         return f"Page/{page}.mediawiki"
+
+    @staticmethod
+    def get_used_on_pages(page: str) -> list:
+        return metadata.TEMPLATES[f"Page/{page}"]
 
     @staticmethod
     def page_is_valid(page: str) -> bool:

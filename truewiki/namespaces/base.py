@@ -82,6 +82,10 @@ class Namespace:
         return f"{page}.mediawiki"
 
     @staticmethod
+    def get_used_on_pages(page: str) -> list:
+        return metadata.TEMPLATES[page]
+
+    @staticmethod
     def page_get_correct_case(page: str) -> str:
         return metadata.PAGES_LC.get(page.lower(), page)
 
