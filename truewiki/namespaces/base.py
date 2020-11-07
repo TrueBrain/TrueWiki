@@ -100,3 +100,15 @@ class Namespace:
     @staticmethod
     def template_exists(template: str) -> bool:
         return False
+
+    @staticmethod
+    def add_edit_content() -> str:
+        return ""
+
+    @staticmethod
+    def edit_callback(page: str, payload, execute: bool = False):
+        pass
+
+    @staticmethod
+    def edit_rename(old_page: str, new_page: str):
+        pass

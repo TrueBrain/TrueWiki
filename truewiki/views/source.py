@@ -17,7 +17,7 @@ from ..wiki_page import (
 from ..wrapper import wrap_page
 
 
-def create_body(wiki_page, user, wrapper, preview=None, new_page=None) -> str:
+def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None) -> str:
     ondisk_name = wiki_page.page_ondisk_name(wiki_page.page)
 
     if preview is not None:
@@ -60,6 +60,7 @@ def create_body(wiki_page, user, wrapper, preview=None, new_page=None) -> str:
         "footer": "",
         "errors": "\n".join(errors),
         "breadcrumbs": breadcrumb.create(wiki_page.page),
+        "namespace_edit": wiki_page.add_edit_content() if new_page else "",
     }
     variables = {
         "has_templates_used": "1" if templates_used else "",
