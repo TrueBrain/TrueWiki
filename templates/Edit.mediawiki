@@ -73,10 +73,10 @@
             <form method="post">
 
             {{#if:{{{has_used_on_pages|}}}|
-            <input type="text" value="{{FULLPAGENAME}}" style="width: 100%;" disabled />
+            <input type="text" value="{{{new_page}}}" style="width: 100%;" disabled />
             <span id="no-rename">Pages cannot be renamed if they are used by other pages. Still want to rename? Create a <a href="{{{repository_url}}}/pulls" target="_new">Pull Request</a> or <a href="{{{repository_url}}}/issues" target="_new">Issue</a>.</span>
             |
-            <input type="text" name="page" value="{{FULLPAGENAME}}" style="width: 100%;" />
+            <input type="text" name="page" value="{{{new_page}}}" style="width: 100%;" />
             }}
 
             <textarea name="content" style="width: 100%;" rows=50>{{page}}</textarea>
