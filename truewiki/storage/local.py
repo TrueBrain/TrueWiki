@@ -18,6 +18,9 @@ class Storage:
     def get_history_url(self, page):
         return ""
 
+    def get_repository_url(self):
+        return ""
+
     @property
     def folder(self):
         return self._folder

@@ -108,6 +108,9 @@ def _analyze_page(page):
 
     # This file is removed since our last scan; forget about it.
     if not os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki"):
+        # If the file is gone, remove it from our index completely.
+        if page in PAGES:
+            del PAGES[page]
         return
 
     # Analyze the file.
@@ -180,19 +183,19 @@ def load_metadata():
     loop.create_task(out_of_process("load_metadata", None))
 
 
-def page_changed(page):
+def page_changed(pages):
     loop = asyncio.get_event_loop()
-    loop.create_task(out_of_process("page_changed", page))
+    loop.create_task(out_of_process("page_changed", pages))
 
 
-async def out_of_process(func, page):
+async def out_of_process(func, pages):
     global TRANSLATIONS, CATEGORIES, FILES, TEMPLATES, PAGES, PAGES_LC
 
     await RELOAD_BUSY.wait()
     RELOAD_BUSY.clear()
 
     try:
-        reload_helper = ReloadHelper(page)
+        reload_helper = ReloadHelper(pages)
 
         # Run the reload in a new process, so we don't block the rest of the
         # server while doing this job.
@@ -212,8 +215,8 @@ async def out_of_process(func, page):
 
 
 class ReloadHelper:
-    def __init__(self, page):
-        self.page = page
+    def __init__(self, pages):
+        self.pages = pages
 
     def _post(self):
         # Sort everything so we don't have to on render time.
@@ -240,7 +243,8 @@ class ReloadHelper:
             PAGES_LC[page.lower()] = page
 
     def page_changed(self):
-        _page_changed(self.page)
+        for page in self.pages:
+            _page_changed(page)
         self._post()
 
         return CATEGORIES, FILES, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
@@ -281,6 +285,7 @@ class ReloadHelper:
                 pages_known.remove(page)
         for page in pages_known:
             _forget_page(page)
+            del PAGES[page]
 
         self._post()
 

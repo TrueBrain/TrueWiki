@@ -85,6 +85,9 @@ class Storage(git.Storage):
     def get_history_url(self, page):
         return f"{_github_history_url}/commits/master/{page}"
 
+    def get_repository_url(self):
+        return _github_history_url
+
 
 @click_helper.extend
 @click.option(
