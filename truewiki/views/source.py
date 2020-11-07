@@ -1,8 +1,10 @@
 import os
 import wikitextparser
 
+from aiohttp import web
 from wikitexthtml.render import wikilink
 
+from . import error
 from .. import (
     metadata,
     singleton,
@@ -15,10 +17,19 @@ from ..wiki_page import (
 from ..wrapper import wrap_page
 
 
-def view(user, page: str) -> str:
+def view(user, page: str) -> web.Response:
     wiki_page = WikiPage(page)
     if not wiki_page.page_is_valid(page):
-        return 404, None
+        return error.view(user, page, "Error 404 - File not found")
+
+    # If there is a difference in case, nicely point this out to users.
+    correct_page = wiki_page.page_get_correct_case(page)
+    if correct_page != page:
+        return error.view(
+            user,
+            page,
+            f'"{page}" does not exist; did you mean [[{correct_page}]]?',
+        )
 
     ondisk_name = wiki_page.page_ondisk_name(page)
     filename = f"{singleton.STORAGE.folder}/{ondisk_name}"
@@ -62,9 +73,7 @@ def view(user, page: str) -> str:
         "user_settings_url": user.get_settings_url() if user else "",
     }
 
-    if wiki_page.page_exists(page):
-        status_code = 200
-    else:
-        status_code = 404
+    body = wrap_page(page, "Source", variables, templates)
 
-    return status_code, wrap_page(page, "Source", variables, templates)
+    status_code = 200 if wiki_page.page_exists(page) else 404
+    return web.Response(body=body, content_type="text/html", status=status_code)

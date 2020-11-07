@@ -1,4 +1,7 @@
-from .. import wiki_page
+from .. import (
+    metadata,
+    wiki_page,
+)
 
 
 class Namespace:
@@ -77,6 +80,10 @@ class Namespace:
     @staticmethod
     def page_ondisk_name(page: str) -> str:
         return f"{page}.mediawiki"
+
+    @staticmethod
+    def page_get_correct_case(page: str) -> str:
+        return metadata.PAGES_LC.get(page.lower(), page)
 
     @classmethod
     def template_load(cls, template: str) -> str:
