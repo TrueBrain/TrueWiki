@@ -31,9 +31,13 @@ async def root(request):
 
 @routes.get("/user/login")
 async def user_login(request):
-    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+    location = request.query.get("location")
 
-    body = login.view(user)
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+    if user:
+        return web.HTTPFound(location=f"/{location}")
+
+    body = login.view(user, location=location)
     return web.Response(body=body, content_type="text/html")
 
 
