@@ -68,6 +68,21 @@ class Namespace(base.Namespace):
     def page_ondisk_name(page: str) -> str:
         return None
 
+    @classmethod
+    def get_create_page_name(cls, page: str) -> str:
+        assert page.startswith("Folder/")
+        assert page.endswith("/Main Page")
+
+        if cls._is_root(page):
+            return ""
+        if cls._is_namespace_root(page):
+            return ""
+
+        page = page[len("Folder/") : -len("/Main Page")]
+        if page.startswith("Page/"):
+            page = page[len("Page/") :]
+        return f"{page}/?newpage"
+
     @staticmethod
     def add_content(instance: wiki_page.WikiPage, page: str) -> str:
         return content.add_content(page)

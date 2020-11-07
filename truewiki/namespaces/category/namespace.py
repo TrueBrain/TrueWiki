@@ -97,6 +97,18 @@ class Namespace(base.Namespace):
     def has_source(cls, page: str) -> bool:
         return not cls._is_root(page) and not cls._is_root_of_folder(page)
 
+    @classmethod
+    def get_create_page_name(cls, page: str) -> str:
+        assert page.startswith("Category/")
+
+        if not cls._is_root_of_folder(page):
+            return ""
+        if cls._is_root(page):
+            return ""
+
+        page = page[: -len("/Main Page")]
+        return f"{page}/?newpage"
+
     @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
         return language_bar.create(instance, page)
