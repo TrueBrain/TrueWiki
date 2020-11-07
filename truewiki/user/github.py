@@ -109,13 +109,19 @@ class User(BaseUser):
     @staticmethod
     @routes.get("/user/github-callback")
     async def login_github_callback(request):
-        code = in_query_github_code(request.query.get("code"))
         state = in_query_github_state(request.query.get("state"))
-
         user = User.get_by_state(state)
         if user is None:
             return web.HTTPNotFound()
 
+        # If "code" is not set, this is most likely a "Cancel" action of the
+        # user on the GitHub Authorize page. So do the only thing we can do ..
+        # redirect the user to the redirect-uri, and let him continue his
+        # journey.
+        if "code" not in request.query:
+            return web.HTTPFound(location=f"{user.redirect_uri}")
+
+        code = in_query_github_code(request.query.get("code"))
         await user.get_user_information(code)
         return user.validate()
 
