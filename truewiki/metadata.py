@@ -35,6 +35,7 @@ CATEGORIES = defaultdict(list)
 FILES = defaultdict(list)
 TEMPLATES = defaultdict(list)
 PAGES = defaultdict(page)
+PAGES_LC = {}
 
 RELOAD_BUSY = asyncio.Event()
 RELOAD_BUSY.set()
@@ -185,7 +186,7 @@ def page_changed(page):
 
 
 async def out_of_process(func, page):
-    global TRANSLATIONS, CATEGORIES, FILES, TEMPLATES, PAGES
+    global TRANSLATIONS, CATEGORIES, FILES, TEMPLATES, PAGES, PAGES_LC
 
     await RELOAD_BUSY.wait()
     RELOAD_BUSY.clear()
@@ -204,6 +205,7 @@ async def out_of_process(func, page):
                 TEMPLATES,
                 TRANSLATIONS,
                 PAGES,
+                PAGES_LC,
             ) = await task
     finally:
         RELOAD_BUSY.set()
@@ -213,7 +215,7 @@ class ReloadHelper:
     def __init__(self, page):
         self.page = page
 
-    def _sort(self):
+    def _post(self):
         # Sort everything so we don't have to on render time.
         for translation in TRANSLATIONS:
             TRANSLATIONS[translation] = sorted(
@@ -226,18 +228,22 @@ class ReloadHelper:
         for template in TEMPLATES:
             TEMPLATES[template] = sorted(set(TEMPLATES[template]), key=lambda x: list(reversed(x.split("/"))))
 
-        # Ensure thare are no duplicated in PAGES too
-        for page in PAGES.values():
-            page["translations"] = list(set(page["translations"]))
-            page["categories"] = list(set(page["categories"]))
-            page["files"] = list(set(page["files"]))
-            page["templates"] = list(set(page["templates"]))
+        # Ensure thare are no duplicated in PAGES too, and fill the PAGES_LC
+        # with a mapping from lowercase to real page name.
+        PAGES_LC.clear()
+        for page, page_data in PAGES.items():
+            page_data["translations"] = list(set(page_data["translations"]))
+            page_data["categories"] = list(set(page_data["categories"]))
+            page_data["files"] = list(set(page_data["files"]))
+            page_data["templates"] = list(set(page_data["templates"]))
+
+            PAGES_LC[page.lower()] = page
 
     def page_changed(self):
         _page_changed(self.page)
-        self._sort()
+        self._post()
 
-        return CATEGORIES, FILES, TEMPLATES, TRANSLATIONS, PAGES
+        return CATEGORIES, FILES, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
 
     def load_metadata(self):
         start = time.time()
@@ -276,7 +282,7 @@ class ReloadHelper:
         for page in pages_known:
             _forget_page(page)
 
-        self._sort()
+        self._post()
 
         with open(CACHE_FILENAME, "w") as fp:
             fp.write(
@@ -293,7 +299,7 @@ class ReloadHelper:
             )
 
         log.info(f"Loading metadata done; took {time.time() - start:.2f} seconds")
-        return CATEGORIES, FILES, TEMPLATES, TRANSLATIONS, PAGES
+        return CATEGORIES, FILES, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
 
 
 @click_helper.extend

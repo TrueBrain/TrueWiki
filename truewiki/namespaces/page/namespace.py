@@ -49,6 +49,13 @@ class Namespace(base.Namespace):
 
         return True
 
+    @classmethod
+    def page_get_correct_case(cls, page: str) -> str:
+        correct_page = super().page_get_correct_case(f"Page/{page}")
+        if correct_page.startswith("Page/"):
+            correct_page = correct_page[len("Page/") :]
+        return correct_page
+
     @staticmethod
     def has_source(page: str) -> bool:
         return True

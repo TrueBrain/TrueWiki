@@ -1,8 +1,10 @@
 import os
 import wikitextparser
 
+from aiohttp import web
 from wikitexthtml.render import wikilink
 
+from . import error
 from .. import singleton
 from ..content import breadcrumb
 from ..metadata import page_changed
@@ -10,10 +12,19 @@ from ..wiki_page import WikiPage
 from ..wrapper import wrap_page
 
 
-def save(user, page: str, change: str) -> bool:
+def save(user, page: str, change: str) -> web.Response:
     wiki_page = WikiPage(page)
     if not wiki_page.page_is_valid(page):
-        return False
+        return error.view(user, page, "Error 404 - File not found")
+
+    # If there is a difference in case, nicely point this out to users.
+    correct_page = wiki_page.page_get_correct_case(page)
+    if correct_page != page:
+        return error.view(
+            user,
+            page,
+            f'Page name "{page}" conflicts with "{correct_page}". Did you mean to edit [[{correct_page}]]?',
+        )
 
     filename = wiki_page.page_ondisk_name(page)
     dirname = "/".join(filename.split("/")[:-1])
@@ -25,13 +36,23 @@ def save(user, page: str, change: str) -> bool:
         fp.write(change)
 
     page_changed(filename[: -len(".mediawiki")])
-    return True
+
+    return web.HTTPFound(f"/{page}")
 
 
-def view(user, page: str) -> str:
+def view(user, page: str) -> web.Response:
     wiki_page = WikiPage(page)
     if not wiki_page.page_is_valid(page):
-        return None
+        return error.view(user, page, "Error 404 - File not found")
+
+    # If there is a difference in case, nicely point this out to users.
+    correct_page = wiki_page.page_get_correct_case(page)
+    if correct_page != page:
+        return error.view(
+            user,
+            page,
+            f'Page name "{page}" conflicts with "{correct_page}". Did you mean to edit [[{correct_page}]]?',
+        )
 
     filename = wiki_page.page_ondisk_name(page)
     filename = f"{singleton.STORAGE.folder}/{filename}"
@@ -63,4 +84,6 @@ def view(user, page: str) -> str:
         "user_settings_url": user.get_settings_url() if user else "",
     }
 
-    return wrap_page(page, "Edit", variables, templates)
+    body = wrap_page(page, "Edit", variables, templates)
+
+    return web.Response(body=body, content_type="text/html")

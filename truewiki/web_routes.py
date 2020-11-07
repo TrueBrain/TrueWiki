@@ -67,46 +67,38 @@ async def healthz_handler(request):
 
 @routes.get("/edit/{page:.*}")
 async def edit_page(request):
-    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
-    if not user:
-        return web.HTTPFound("/user/login")
-
     page = request.match_info["page"]
     # Don't allow path-walking
     if ".." in page:
         raise web.HTTPNotFound()
 
-    body = edit.view(user, page)
-    if body is None:
-        raise web.HTTPNotFound()
-    return web.Response(body=body, content_type="text/html")
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+    if not user:
+        return web.HTTPFound(f"/user/login?location=edit/{page}")
+
+    return edit.view(user, page)
 
 
 @routes.post("/edit/{page:.*}")
 async def edit_page_post(request):
-    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
-    if not user:
-        return web.HTTPFound("/user/login")
-
     page = request.match_info["page"]
     # Don't allow path-walking
     if ".." in page:
         raise web.HTTPNotFound()
+
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+    if not user:
+        return web.HTTPFound(f"/user/login?location=edit/{page}")
 
     payload = await request.post()
     if "page" not in payload:
         raise web.HTTPNotFound()
 
     if "save" in payload:
-        if not edit.save(user, page, payload["page"]):
-            raise web.HTTPNotFound()
-        return web.HTTPFound(f"/{page}")
+        return edit.save(user, page, payload["page"])
 
     if "preview" in payload:
-        body = preview.view(user, page, payload["page"])
-        if body is None:
-            raise web.HTTPNotFound()
-        return web.Response(body=body, content_type="text/html")
+        return preview.view(user, page, payload["page"])
 
     raise web.HTTPNotFound()
 
@@ -120,10 +112,7 @@ async def source_page(request):
     if ".." in page:
         raise web.HTTPNotFound()
 
-    status_code, body = source.view(user, page)
-    if body is None:
-        raise web.HTTPNotFound()
-    return web.Response(body=body, content_type="text/html", status=status_code)
+    return source.view(user, page)
 
 
 @routes.get("/{page:.*}")
@@ -135,10 +124,7 @@ async def html_page(request):
     if ".." in page:
         raise web.HTTPNotFound()
 
-    status_code, body = view_page.view(user, page)
-    if body is None:
-        raise web.HTTPNotFound()
-    return web.Response(body=body, content_type="text/html", status=status_code)
+    return view_page.view(user, page)
 
 
 @routes.route("*", "/{tail:.*}")
