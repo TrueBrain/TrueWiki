@@ -1,5 +1,4 @@
 import logging
-import os
 
 from . import (
     content,
@@ -48,13 +47,11 @@ class Namespace(base.Namespace):
         if cls._is_root_of_folder(page):
             return "All the categories that belong to this folder."
 
-        filename = f"{singleton.STORAGE.folder}/{page}.mediawiki"
-        if not os.path.exists(filename):
+        filename = f"{page}.mediawiki"
+        if not singleton.STORAGE.file_exists(filename):
             return "There is currently no additional text for this category."
 
-        with open(filename) as fp:
-            body = fp.read()
-        return body
+        return singleton.STORAGE.file_read(filename)
 
     @classmethod
     def page_exists(cls, page: str) -> bool:
@@ -65,7 +62,7 @@ class Namespace(base.Namespace):
 
         if cls._is_root_of_folder(page):
             page = page[: -len("Main Page")]
-            return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
+            return singleton.STORAGE.dir_exists(page)
 
         # If we know the category, the page exists; it might not have a
         # .mediawiki file (yet), but the page still exists.
@@ -74,7 +71,7 @@ class Namespace(base.Namespace):
 
         # The category is empty but if there is a mediawiki file for it, it
         # is also a valid category.
-        return os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki")
+        return singleton.STORAGE.file_exists(f"{page}.mediawiki")
 
     @classmethod
     def page_is_valid(cls, page: str) -> bool:
@@ -88,7 +85,7 @@ class Namespace(base.Namespace):
         if len(spage) < 3:
             return False
         # The language should already exist.
-        if not os.path.isdir(f"{singleton.STORAGE.folder}/Category/{spage[1]}"):
+        if not singleton.STORAGE.dir_exists(f"Category/{spage[1]}"):
             return False
 
         return True

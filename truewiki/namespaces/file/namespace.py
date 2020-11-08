@@ -1,5 +1,4 @@
 import logging
-import os
 
 from typing import Optional
 
@@ -48,12 +47,11 @@ class Namespace(base.Namespace):
         if cls._is_root_of_folder(page):
             return "All the files that belong to this folder."
 
-        filename = f"{singleton.STORAGE.folder}/{page}.mediawiki"
-        if not os.path.exists(filename):
+        filename = f"{page}.mediawiki"
+        if not singleton.STORAGE.file_exists(filename):
             return "There is currently no file with that name."
 
-        with open(filename) as fp:
-            body = fp.read()
+        body = singleton.STORAGE.file_read(filename)
 
         if not body:
             body = "This file has no description yet."
@@ -69,9 +67,9 @@ class Namespace(base.Namespace):
 
         if cls._is_root_of_folder(page):
             page = page[: -len("Main Page")]
-            return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
+            return singleton.STORAGE.dir_exists(page)
 
-        return os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki")
+        return singleton.STORAGE.file_exists(f"{page}.mediawiki")
 
     @classmethod
     def page_is_valid(cls, page: str) -> bool:
@@ -85,7 +83,7 @@ class Namespace(base.Namespace):
         if len(spage) < 3:
             return False
         # The language should already exist.
-        if not os.path.isdir(f"{singleton.STORAGE.folder}/File/{spage[1]}"):
+        if not singleton.STORAGE.dir_exists(f"File/{spage[1]}"):
             return False
 
         return True
@@ -126,7 +124,7 @@ class Namespace(base.Namespace):
                 f"Folder/{page}", namespace="File", namespace_for_folder=True, page_label="Files"
             )
 
-        if os.path.exists(f"{singleton.STORAGE.folder}/{page}"):
+        if singleton.STORAGE.file_exists(f"{page}"):
             return content.add_content(page)
 
         if cls.page_exists(page):
@@ -143,7 +141,7 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def file_exists(file: str) -> bool:
-        return os.path.exists(f"{singleton.STORAGE.folder}/File/{file}")
+        return singleton.STORAGE.file_exists(f"File/{file}")
 
     @staticmethod
     def file_get_link(url: str) -> str:
@@ -200,8 +198,7 @@ Upload new file: <input type="file" name="file" />
             return f'Uploaded file "{payload["file"].filename}" is not a valid image. Only PNG and JPEG is supported.'
 
         if execute:
-            with open(f"{singleton.STORAGE.folder}/{new_page}", "wb") as fp:
-                fp.write(data)
+            singleton.STORAGE.file_write(new_page, data, "wb")
 
         return None
 
@@ -209,20 +206,17 @@ Upload new file: <input type="file" name="file" />
     def edit_rename(old_page: str, new_page: str):
         assert old_page.startswith("File/")
 
-        old_filename = f"{singleton.STORAGE.folder}/{old_page}"
-        new_filename = f"{singleton.STORAGE.folder}/{new_page}"
-
         # If the old file didn't exist, it is a File without a file. We don't
         # have to do anything for the rename.
-        if not os.path.exists(old_filename):
+        if not singleton.STORAGE.file_exists(old_page):
             return
 
         # If we move the page outside of File, remove the file.
         if not new_page.startswith("File/"):
-            os.unlink(old_filename)
+            singleton.STORAGE.file_remove(old_page)
             return
 
-        os.rename(old_filename, new_filename)
+        singleton.STORAGE.file_rename(old_page, new_page)
 
 
 wiki_page.register_namespace(Namespace, default_file=True)

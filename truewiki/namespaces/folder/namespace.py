@@ -1,5 +1,4 @@
 import logging
-import os
 
 from . import content
 from .. import base
@@ -46,7 +45,7 @@ class Namespace(base.Namespace):
             return False
 
         page = page[len("Folder/") : -len("/Main Page")]
-        return os.path.isdir(f"{singleton.STORAGE.folder}/{page}")
+        return singleton.STORAGE.dir_exists(page)
 
     @classmethod
     def page_is_valid(cls, page: str) -> bool:
@@ -56,13 +55,13 @@ class Namespace(base.Namespace):
         if cls._is_root(page):
             return True
         if cls._is_namespace_root(page):
-            return os.path.isdir(f"{singleton.STORAGE.folder}/{spage[1]}")
+            return singleton.STORAGE.dir_exists(spage[1])
 
         # There should always be a namespace and language code in the path.
         if len(spage) < 4:
             return False
         # The namespace and language should already exist.
-        return os.path.isdir(f"{singleton.STORAGE.folder}/{spage[1]}/{spage[2]}")
+        return singleton.STORAGE.dir_exists(f"{spage[1]}/{spage[2]}")
 
     @staticmethod
     def page_ondisk_name(page: str) -> str:

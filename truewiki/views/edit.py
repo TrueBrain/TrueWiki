@@ -1,4 +1,3 @@
-import os
 import unicodedata
 
 from aiohttp import web
@@ -110,17 +109,16 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
         wiki_page.edit_rename(old_page, new_page)
 
         # Remove the old file.
-        os.unlink(f"{singleton.STORAGE.folder}/{old_filename}")
+        singleton.STORAGE.file_remove(old_filename)
         changed.append(old_filename[: -len(".mediawiki")])
 
     new_filename = wiki_page.page_ondisk_name(new_page)
     new_dirname = "/".join(new_filename.split("/")[:-1])
 
     # Make sure the folder exists.
-    os.makedirs(f"{singleton.STORAGE.folder}/{new_dirname}", exist_ok=True)
+    singleton.STORAGE.dir_make(new_dirname)
     # Write the new source.
-    with open(f"{singleton.STORAGE.folder}/{new_filename}", "w") as fp:
-        fp.write(content)
+    singleton.STORAGE.file_write(new_filename, content)
 
     # Inform the namespace of the edit.
     wiki_page.edit_callback(old_page, new_page, payload, execute=True)

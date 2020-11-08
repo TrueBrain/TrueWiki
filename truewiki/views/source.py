@@ -1,4 +1,3 @@
-import os
 import wikitextparser
 
 from aiohttp import web
@@ -22,10 +21,8 @@ def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None)
         wtp = wiki_page.prepare(preview)
         content = wiki_page.render_page(wtp)
     else:
-        filename = f"{singleton.STORAGE.folder}/{ondisk_name}"
-        if os.path.exists(filename):
-            with open(filename) as fp:
-                body = fp.read()
+        if singleton.STORAGE.file_exists(ondisk_name):
+            body = singleton.STORAGE.file_read(ondisk_name)
         else:
             body = ""
 
