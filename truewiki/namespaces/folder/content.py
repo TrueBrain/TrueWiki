@@ -1,5 +1,3 @@
-import glob
-import os
 import wikitextparser
 
 from wikitexthtml.render import wikilink
@@ -20,30 +18,28 @@ def add_content(page, namespace="Folder", namespace_for_folder=False, folder_lab
 
     folder = page[len("Folder/") : -len("/Main Page")]
 
-    for item in sorted(glob.glob(f"{singleton.STORAGE.folder}/{folder}/*")):
-        item_page = item[len(f"{singleton.STORAGE.folder}/") :]
-
-        if os.path.isdir(item):
-            if namespace != "Folder" and (len(item_page.split("/")) == 2 or namespace_for_folder):
-                item_page = item_page[len(f"{namespace}/") :]
-                items["folders"].append(f"<li>[[:{namespace}:{item_page}/Main Page]]</li>")
+    for item in sorted(singleton.STORAGE.dir_listing(folder)):
+        if singleton.STORAGE.dir_exists(item):
+            if namespace != "Folder" and (len(item.split("/")) == 2 or namespace_for_folder):
+                item = item[len(f"{namespace}/") :]
+                items["folders"].append(f"<li>[[:{namespace}:{item}/Main Page]]</li>")
                 continue
 
-            items["folders"].append(f"<li>[[:Folder:{item_page}]]</li>")
+            items["folders"].append(f"<li>[[:Folder:{item}]]</li>")
             continue
 
         if item.endswith(".mediawiki"):
             if namespace != "Folder":
-                item_page = item_page[len(f"{namespace}/") :]
-            item_page = item_page[: -len(".mediawiki")]
+                item = item[len(f"{namespace}/") :]
+            item = item[: -len(".mediawiki")]
 
             if namespace == "Folder":
-                if item_page.startswith("Page/"):
-                    item_page = item_page[len("Page/") :]
-                items["pages"].append(f"<li>[[{item_page}]]</li>")
+                if item.startswith("Page/"):
+                    item = item[len("Page/") :]
+                items["pages"].append(f"<li>[[{item}]]</li>")
                 continue
 
-            items["pages"].append(f"<li>[[:{namespace}:{item_page}]]</li>")
+            items["pages"].append(f"<li>[[:{namespace}:{item}]]</li>")
             continue
 
     templates = {}

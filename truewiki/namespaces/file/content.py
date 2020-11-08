@@ -1,4 +1,3 @@
-import os
 import wikitextparser
 
 from wikitexthtml.render import wikilink
@@ -25,7 +24,7 @@ def add_content(page):
 
     caption = ""
     if filename:
-        filesize = os.path.getsize(f"{singleton.STORAGE.folder}/{filename}")
+        filesize = singleton.STORAGE.file_getsize(filename)
 
         # Find a nice magnitude to present the filesize in.
         filesize_magnitude = 0

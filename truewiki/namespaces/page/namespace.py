@@ -1,5 +1,4 @@
 import logging
-import os
 
 from .. import base
 from ..category import footer as category_footer
@@ -20,18 +19,16 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def page_load(page: str) -> str:
-        filename = f"{singleton.STORAGE.folder}/Page/{page}.mediawiki"
+        filename = f"Page/{page}.mediawiki"
 
-        if not os.path.exists(filename):
+        if not singleton.STORAGE.file_exists(filename):
             return "There is currently no text on this page."
 
-        with open(filename) as fp:
-            body = fp.read()
-        return body
+        return singleton.STORAGE.file_read(filename)
 
     @staticmethod
     def page_exists(page: str) -> bool:
-        return os.path.exists(f"{singleton.STORAGE.folder}/Page/{page}.mediawiki")
+        return singleton.STORAGE.file_exists(f"Page/{page}.mediawiki")
 
     @staticmethod
     def page_ondisk_name(page: str) -> str:
@@ -49,7 +46,7 @@ class Namespace(base.Namespace):
         if len(spage) < 2:
             return False
         # The language should already exist.
-        if not os.path.isdir(f"{singleton.STORAGE.folder}/Page/{spage[0]}"):
+        if not singleton.STORAGE.dir_exists(f"Page/{spage[0]}"):
             return False
 
         return True
@@ -83,16 +80,15 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def template_load(template: str) -> str:
-        filename = f"{singleton.STORAGE.folder}/Page/{template}.mediawiki"
-        if not os.path.exists(filename):
+        filename = f"Page/{template}.mediawiki"
+        if not singleton.STORAGE.file_exists(filename):
             return f'<a href="/{template}" title="{template}">Page:{template}</a>'
 
-        with open(filename) as fp:
-            return fp.read()
+        return singleton.STORAGE.file_read(filename)
 
     @staticmethod
     def template_exists(template: str) -> bool:
-        return os.path.exists(f"{singleton.STORAGE.folder}/Page/{template}.mediawiki")
+        return singleton.STORAGE.file_exists(f"Page/{template}.mediawiki")
 
 
 wiki_page.register_namespace(Namespace, default_page=True)

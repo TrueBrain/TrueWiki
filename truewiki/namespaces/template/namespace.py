@@ -1,5 +1,4 @@
 import logging
-import os
 
 from .. import base
 from ..category import footer as category_footer
@@ -42,13 +41,10 @@ class Namespace(base.Namespace):
         if cls._is_language_root(page):
             return "All the templates that belong to this language."
 
-        filename = f"{singleton.STORAGE.folder}/{page}.mediawiki"
-        if not os.path.exists(filename):
+        if not singleton.STORAGE.file_exists(f"{page}.mediawiki"):
             return "There is currently no text on this page."
 
-        with open(filename) as fp:
-            body = fp.read()
-        return body
+        return singleton.STORAGE.file_read(f"{page}.mediawiki")
 
     @classmethod
     def page_exists(cls, page: str) -> bool:
@@ -58,9 +54,9 @@ class Namespace(base.Namespace):
             return True
 
         if cls._is_language_root(page):
-            return os.path.isdir(f"{singleton.STORAGE.folder}/Template/{page.split('/')[1]}")
+            return singleton.STORAGE.dir_exists(f"Template/{page.split('/')[1]}")
 
-        return os.path.exists(f"{singleton.STORAGE.folder}/{page}.mediawiki")
+        return singleton.STORAGE.file_exists(f"{page}.mediawiki")
 
     @classmethod
     def page_is_valid(cls, page: str) -> bool:
@@ -74,7 +70,7 @@ class Namespace(base.Namespace):
         if len(spage) < 3:
             return False
         # The language should already exist.
-        if not os.path.isdir(f"{singleton.STORAGE.folder}/Template/{spage[1]}"):
+        if not singleton.STORAGE.dir_exists(f"Template/{spage[1]}"):
             return False
 
         return True
@@ -120,16 +116,15 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def template_load(template: str) -> str:
-        filename = f"{singleton.STORAGE.folder}/Template/{template}.mediawiki"
-        if not os.path.exists(filename):
+        filename = f"Template/{template}.mediawiki"
+        if not singleton.STORAGE.file_exists(filename):
             return f'<a href="/Template/{template}" title="{template}">Template/{template}</a>'
 
-        with open(filename) as fp:
-            return fp.read()
+        return singleton.STORAGE.file_read(filename)
 
     @staticmethod
     def template_exists(template: str) -> bool:
-        return os.path.exists(f"{singleton.STORAGE.folder}/Template/{template}.mediawiki")
+        return singleton.STORAGE.file_exists(f"Template/{template}.mediawiki")
 
 
 wiki_page.register_namespace(Namespace, default_template=True)
