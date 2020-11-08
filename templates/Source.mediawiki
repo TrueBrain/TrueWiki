@@ -78,7 +78,7 @@
                 <a href="https://github.com/TrueBrain/TrueWiki">Powered by TrueWiki</a>
             </div>
             <div id="content-bottom-copyright">
-                Content is available under GNU Free Documentation License
+                Content is available under <a href="/License">GNU Free Documentation License</a>
             </div>
         </footer>
     </body>

@@ -9,6 +9,7 @@ from . import singleton
 from .metadata import load_metadata
 from .views import (
     edit,
+    license as license_page,
     login,
     source,
     page as view_page,
@@ -64,6 +65,12 @@ async def reload(request):
 @routes.get("/healthz")
 async def healthz_handler(request):
     return web.HTTPOk()
+
+
+@routes.get("/License")
+async def license(request):
+    user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
+    return license_page.view(user)
 
 
 @routes.get("/edit/{page:.*}")
