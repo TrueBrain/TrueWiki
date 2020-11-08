@@ -15,6 +15,7 @@ from .metadata import (
     click_metadata,
     load_metadata,
 )
+from .storage.git import click_storage_git
 from .storage.github import click_storage_github
 from .storage.local import click_storage_local
 from .user.github import click_user_github
@@ -63,6 +64,7 @@ class ErrorOnlyAccessLogger(AccessLogger):
 @click_web_routes
 @click_metadata
 @click_storage_local
+@click_storage_git
 @click_storage_github
 @click_user_session
 @click_user_github

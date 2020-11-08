@@ -77,6 +77,9 @@ class User(BaseUser):
         authorize_url = self._github.get_authorize_url(state=self._state)
         return web.HTTPFound(location=authorize_url)
 
+    def get_git_author(self) -> str:
+        return (self.display_name, f"{self.display_name.lower()}@users.noreply.github.com")
+
     @staticmethod
     def get_by_state(state):
         if state not in _github_states:
