@@ -54,7 +54,7 @@ class Namespace(base.Namespace):
         body = singleton.STORAGE.file_read(filename)
 
         if not body:
-            body = "This file has no description yet."
+            return "This file has no description yet."
 
         return body
 
