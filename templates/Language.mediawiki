@@ -1,4 +1,4 @@
 <li>
-    <a href="/{{url}}"><img src="/uploads/{{language}}/Flag.png"></a>
+    <a href="/{{safe_url}}"><img src="/uploads/{{language}}/Flag.png"></a>
     [[{{url}}|{{language}}]]
 </li>

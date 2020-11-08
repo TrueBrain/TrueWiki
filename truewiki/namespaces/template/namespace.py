@@ -1,4 +1,6 @@
+import html
 import logging
+import urllib
 
 from .. import base
 from ..category import footer as category_footer
@@ -89,7 +91,7 @@ class Namespace(base.Namespace):
             return ""
 
         page = page[: -len("/Main Page")]
-        return f"{page}/?newpage"
+        return f"{page}/"
 
     @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
@@ -118,7 +120,9 @@ class Namespace(base.Namespace):
     def template_load(template: str) -> str:
         filename = f"Template/{template}.mediawiki"
         if not singleton.STORAGE.file_exists(filename):
-            return f'<a href="/Template/{template}" title="{template}">Template/{template}</a>'
+            href = urllib.parse.quote(template)
+            template = html.escape(template)
+            return f'<a class="new" href="/Template/{href}" title="{template}">Template:{template}</a>'
 
         return singleton.STORAGE.file_read(filename)
 

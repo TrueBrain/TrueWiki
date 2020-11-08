@@ -27,7 +27,7 @@
             </ul>
             <ul id="navigation-bar" class="right">
                 <li>
-                    <a href="/{{FULLPAGENAME}}">View Page</a>
+                    <a href="/{{urlencode:{{FULLPAGENAME}}}}">View Page</a>
                 </li>
                 {{#if: {{{history_url|}}}|
                 <li>
@@ -36,11 +36,11 @@
                 }}
                 {{#if: {{{display_name|}}}|
                 <li>
-                    <a href="/user/logout?location={{FULLPAGENAME}}">Logout ({{{display_name}}})</a>
+                    <a href="/user/logout?location={{urlencode:{{FULLPAGENAME}}}}">Logout ({{{display_name}}})</a>
                 </li>
                 |
                 <li>
-                    <a href="/user/login?location={{FULLPAGENAME}}">Login</a>
+                    <a href="/user/login?location={{urlencode:{{FULLPAGENAME}}}}">Login</a>
                 </li>
                 }}
             </ul>

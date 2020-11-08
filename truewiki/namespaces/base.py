@@ -1,3 +1,6 @@
+import html
+import urllib
+
 from .. import (
     metadata,
     wiki_page,
@@ -95,7 +98,9 @@ class Namespace:
 
     @classmethod
     def template_load(cls, template: str) -> str:
-        return f'<a href="/{cls.namespace}/{template}" title="{template}">{cls.namespace}/{template}</a>'
+        href = urllib.parse.quote(template)
+        template = html.escape(template)
+        return f'<a href="/{cls.namespace}/{href}" title="{template}">{cls.namespace}/{template}</a>'
 
     @staticmethod
     def template_exists(template: str) -> bool:

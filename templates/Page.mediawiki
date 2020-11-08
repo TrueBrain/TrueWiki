@@ -29,7 +29,7 @@
                 {{#if: {{{has_source|}}}|
                 <li>
                     {{#if: {{{display_name|}}}|
-                    <a href="/edit/{{FULLPAGENAME}}">
+                    <a href="/edit/{{urlencode:{{FULLPAGENAME}}}}">
                         {{#if: {{{does_exist|}}}|Edit Page|Create Page}}
                         {{#if: {{{errors|}}}|
                             <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
@@ -37,7 +37,7 @@
                     </a>
                     |
                     {{#if: {{{does_exist|}}}|
-                        <a href="/{{FULLPAGENAME}}.mediawiki">
+                        <a href="/{{urlencode:{{FULLPAGENAME}}}}.mediawiki">
                         View Source
                         {{#if: {{{errors|}}}|
                             <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
@@ -50,7 +50,7 @@
                 {{#if: {{{display_name|}}}|
                     {{#if: {{{create_page_name|}}}|
                     <li>
-                        <a href="/edit/{{{create_page_name}}}">Create Page</a>
+                        <a href="/edit/{{urlencode:{{{create_page_name}}}}}">Create Page</a>
                     </li>
                 }}
                 }}
@@ -61,11 +61,11 @@
                 }}
                 {{#if: {{{display_name|}}}|
                 <li>
-                    <a href="/user/logout?location={{FULLPAGENAME}}">Logout ({{{display_name}}})</a>
+                    <a href="/user/logout?location={{urlencode:{{FULLPAGENAME}}}}">Logout ({{{display_name}}})</a>
                 </li>
                 |
                 <li>
-                    <a href="/user/login?location={{FULLPAGENAME}}">Login</a>
+                    <a href="/user/login?location={{urlencode:{{FULLPAGENAME}}}}">Login</a>
                 </li>
                 }}
             </ul>

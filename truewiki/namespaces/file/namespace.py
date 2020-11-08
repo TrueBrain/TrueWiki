@@ -107,7 +107,7 @@ class Namespace(base.Namespace):
             return ""
 
         page = page[: -len("/Main Page")]
-        return f"{page}/?newpage"
+        return f"{page}/"
 
     @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:
@@ -148,7 +148,7 @@ class Namespace(base.Namespace):
         return f"/File/{url}"
 
     @staticmethod
-    def file_get_img(url: str, thumb: Optional[int]) -> str:
+    def file_get_img(url: str, thumb: Optional[int] = None) -> str:
         # TODO -- Support thumb sizes
         return f"/uploads/{url}"
 

@@ -1,5 +1,6 @@
 import click
 import logging
+import urllib
 
 from aiohttp import web
 from openttd_helpers import click_helper
@@ -74,7 +75,8 @@ async def edit_page(request):
 
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
     if not user:
-        return web.HTTPFound(f"/user/login?location=edit/{page}")
+        location = urllib.parse.quote(page)
+        return web.HTTPFound(f"/user/login?location=edit/{location}")
 
     return edit.view(user, page)
 
@@ -88,7 +90,8 @@ async def edit_page_post(request):
 
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
     if not user:
-        return web.HTTPFound(f"/user/login?location=edit/{page}")
+        location = urllib.parse.quote(page)
+        return web.HTTPFound(f"/user/login?location=edit/{location}")
 
     payload = await request.post()
     if "content" not in payload:

@@ -1,4 +1,5 @@
 import unicodedata
+import urllib
 
 from aiohttp import web
 from typing import Optional
@@ -168,7 +169,8 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
     changed.append(new_filename[: -len(".mediawiki")])
     page_changed(changed)
 
-    return web.HTTPFound(f"/{new_page}")
+    location = urllib.parse.quote(new_page)
+    return web.HTTPFound(f"/{location}")
 
 
 def view(user, page: str) -> web.Response:
