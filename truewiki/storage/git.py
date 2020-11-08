@@ -15,6 +15,7 @@ class Storage(local.Storage):
 
         self._git_commiter = git.Actor(GIT_USERNAME, GIT_EMAIL)
         self._files_added = []
+        self._files_changed = []
         self._files_removed = []
 
     def prepare(self):
@@ -38,18 +39,21 @@ class Storage(local.Storage):
         )
 
     def commit(self, user, commit_message):
-        # If there is no diff for any of these items, the user reverted back
-        # to the original state. In this case, do not make a commit, as it
-        # would be an empty commit.
-        if not self._git.index.diff(other=None, paths=self._files_added + self._files_removed):
-            return
+        if not self._files_added and not self._files_removed:
+            # If there is no diff for any of these items, the user reverted back
+            # to the original state. In this case, do not make a commit, as it
+            # would be an empty commit.
+            if not self._git.index.diff(other=None, paths=self._files_changed):
+                return
 
         # Update the index with the added/removed files.
-        for filename in self._files_added:
+        for filename in self._files_added + self._files_changed:
             self._git.index.add(filename)
         for filename in self._files_removed:
             self._git.index.remove(filename)
         self._files_added.clear()
+        self._files_changed.clear()
+        self._files_removed.clear()
 
         git_author = git.Actor(*user.get_git_author())
 
@@ -60,17 +64,23 @@ class Storage(local.Storage):
         )
 
     def file_write(self, filename: str, content, mode="w") -> None:
+        if self.file_exists(filename):
+            self._files_changed.append(filename)
+        else:
+            self._files_added.append(filename)
+
         super().file_write(filename, content, mode)
-        self._files_added.append(filename)
 
     def file_remove(self, filename: str) -> None:
-        super().file_remove(filename)
         self._files_removed.append(filename)
 
+        super().file_remove(filename)
+
     def file_rename(self, old_filename: str, new_filename: str) -> None:
-        super().file_rename(old_filename, new_filename)
         self._files_removed.append(old_filename)
         self._files_added.append(new_filename)
+
+        super().file_rename(old_filename, new_filename)
 
 
 @click_helper.extend
