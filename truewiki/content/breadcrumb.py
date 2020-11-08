@@ -5,6 +5,9 @@ from ..wiki_page import WikiPage
 
 
 def create(page):
+    if not page:
+        return '<li class="crumb"><a href="/">OpenTTD\'s Wiki</a></li>'
+
     spage = page.split("/")
 
     breadcrumbs = []

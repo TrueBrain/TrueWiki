@@ -24,6 +24,10 @@ class WikiPage(Page):
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_load(page)
 
     def page_exists(self, page: str) -> bool:
+        # "License" is a special page that always exists.
+        if page == "License":
+            return True
+
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_exists(page)
 
@@ -43,6 +47,10 @@ class WikiPage(Page):
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_get_correct_case(page)
 
     def has_source(self, page: str) -> bool:
+        # "License" is a special page, of which we never show the source.
+        if page == "License":
+            return False
+
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).has_source(page)
 
@@ -59,6 +67,10 @@ class WikiPage(Page):
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).get_used_on_pages(self.page)
 
     def clean_title(self, title: str) -> str:
+        # "License" is a special page that is called "License"
+        if title == "License":
+            return "License"
+
         namespace = title.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).clean_title(self.page, title)
 
