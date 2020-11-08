@@ -51,7 +51,12 @@ class Namespace(base.Namespace):
         if not singleton.STORAGE.file_exists(filename):
             return "There is currently no additional text for this category."
 
-        return singleton.STORAGE.file_read(filename)
+        body = singleton.STORAGE.file_read(filename)
+
+        if not body:
+            return "There is currently no additional text for this category."
+
+        return body
 
     @classmethod
     def page_exists(cls, page: str) -> bool:

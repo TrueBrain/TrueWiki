@@ -26,7 +26,12 @@ class Namespace(base.Namespace):
         if not singleton.STORAGE.file_exists(filename):
             return "There is currently no text on this page."
 
-        return singleton.STORAGE.file_read(filename)
+        body = singleton.STORAGE.file_read(filename)
+
+        if not body:
+            return "There is currently no text on this page."
+
+        return body
 
     @staticmethod
     def page_exists(page: str) -> bool:

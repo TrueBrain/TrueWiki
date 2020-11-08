@@ -46,7 +46,12 @@ class Namespace(base.Namespace):
         if not singleton.STORAGE.file_exists(f"{page}.mediawiki"):
             return "There is currently no text on this page."
 
-        return singleton.STORAGE.file_read(f"{page}.mediawiki")
+        body = singleton.STORAGE.file_read(f"{page}.mediawiki")
+
+        if not body:
+            return "There is currently no text on this page."
+
+        return body
 
     @classmethod
     def page_exists(cls, page: str) -> bool:
