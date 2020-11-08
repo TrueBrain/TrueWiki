@@ -1,12 +1,13 @@
 import base64
 import click
+import git
 import logging
 import tempfile
 import os
 
 from openttd_helpers import click_helper
 
-from . import git
+from .git import Storage as GitStorage
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ _github_url = None
 _github_history_url = None
 
 
-class Storage(git.Storage):
+class Storage(GitStorage):
     def __init__(self):
         super().__init__()
 

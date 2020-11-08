@@ -69,8 +69,10 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
     if not wiki_page.page_exists(old_page):
         create_new = True
         old_page = new_page
+        commit_message = f"new page: {old_page}"
     else:
         create_new = False
+        commit_message = f"modified: {old_page}"
 
     old_filename = wiki_page.page_ondisk_name(old_page)
 
@@ -105,6 +107,8 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
     changed = []
 
     if old_page != new_page:
+        commit_message = f"renamed: {old_page} -> {new_page}"
+
         # Inform the namespace of the change in name.
         wiki_page.edit_rename(old_page, new_page)
 
@@ -118,10 +122,12 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
     # Make sure the folder exists.
     singleton.STORAGE.dir_make(new_dirname)
     # Write the new source.
-    singleton.STORAGE.file_write(new_filename, content)
+    singleton.STORAGE.file_write(new_filename, content.replace("\r", ""))
 
     # Inform the namespace of the edit.
     wiki_page.edit_callback(old_page, new_page, payload, execute=True)
+
+    singleton.STORAGE.commit(user, commit_message)
 
     changed.append(new_filename[: -len(".mediawiki")])
     page_changed(changed)

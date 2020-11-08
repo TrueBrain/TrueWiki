@@ -29,6 +29,9 @@ class User(BaseUser):
         self.id = username
         self.display_name = username
 
+    def get_git_author(self) -> str:
+        return (self.display_name, "developer@localhost")
+
     @staticmethod
     @routes.post("/user/developer")
     async def login_github_callback(request):

@@ -18,6 +18,9 @@ class Storage:
     def reload(self):
         pass
 
+    def commit(self, user, commit_message):
+        pass
+
     def get_history_url(self, page):
         return ""
 

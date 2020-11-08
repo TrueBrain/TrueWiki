@@ -63,6 +63,9 @@ class User:
         response.set_cookie(SESSION_COOKIE_NAME, self.bearer_token, max_age=get_session_expire(), httponly=True)
         return response
 
+    def get_git_author(self) -> str:
+        raise NotImplementedError()
+
     def get_authorize_page(self):
         raise NotImplementedError()
 
