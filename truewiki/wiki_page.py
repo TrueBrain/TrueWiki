@@ -108,7 +108,7 @@ class WikiPage(Page):
     def file_get_link(self, url: str) -> str:
         return NAMESPACE_DEFAULT_FILE.file_get_link(url)
 
-    def file_get_img(self, url: str, thumb: Optional[int]) -> str:
+    def file_get_img(self, url: str, thumb: Optional[int] = None) -> str:
         return NAMESPACE_DEFAULT_FILE.file_get_img(url, thumb)
 
     def clean_url(self, url: str) -> str:

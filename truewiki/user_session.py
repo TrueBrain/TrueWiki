@@ -1,6 +1,7 @@
 import asyncio
 import click
 import secrets
+import urllib
 
 from aiohttp import web
 from openttd_helpers import click_helper
@@ -133,7 +134,8 @@ async def user_logout(request):
     if "://" in redirect_uri or not redirect_uri.startswith("/"):
         redirect_uri = "/"
 
-    return web.HTTPFound(location=redirect_uri)
+    location = urllib.parse.quote(redirect_uri)
+    return web.HTTPFound(location=location)
 
 
 @click_helper.extend

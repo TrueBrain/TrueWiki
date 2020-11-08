@@ -104,7 +104,7 @@ class Namespace(base.Namespace):
             return ""
 
         page = page[: -len("/Main Page")]
-        return f"{page}/?newpage"
+        return f"{page}/"
 
     @staticmethod
     def add_language(instance: wiki_page.WikiPage, page: str) -> str:

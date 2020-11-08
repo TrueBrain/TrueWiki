@@ -1,3 +1,5 @@
+import html
+
 from ..user_session import (
     get_user_method,
     get_user_methods,
@@ -17,7 +19,7 @@ def view(user, location: str = None) -> str:
     variables = {
         "display_name": user.display_name if user else "",
         "user_settings_url": user.get_settings_url() if user else "",
-        "location": location if location else "",
+        "location": html.escape(location) if location else "",
     }
 
     return wrap_page("Login", "Login", variables, templates)

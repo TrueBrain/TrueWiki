@@ -1,4 +1,6 @@
+import html
 import logging
+import urllib
 
 from .. import base
 from ..category import footer as category_footer
@@ -82,7 +84,9 @@ class Namespace(base.Namespace):
     def template_load(template: str) -> str:
         filename = f"Page/{template}.mediawiki"
         if not singleton.STORAGE.file_exists(filename):
-            return f'<a href="/{template}" title="{template}">Page:{template}</a>'
+            href = urllib.parse.quote(template)
+            template = html.escape(template)
+            return f'<a class="new" href="/{href}" title="{template}">Page:{template}</a>'
 
         return singleton.STORAGE.file_read(filename)
 

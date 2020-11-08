@@ -1,3 +1,4 @@
+import urllib
 import wikitextparser
 
 from wikitexthtml.render import wikilink
@@ -29,6 +30,8 @@ def create(instance: WikiPage, page: str):
         for template in reversed(wtp.templates):
             if template.name == "language":
                 template.string = language
+            elif template.name == "safe_url":
+                template.string = urllib.parse.quote(url)
             elif template.name == "url":
                 template.string = url
 

@@ -4,6 +4,7 @@ import git
 import logging
 import tempfile
 import os
+import urllib
 
 from openttd_helpers import click_helper
 
@@ -84,6 +85,7 @@ class Storage(GitStorage):
         self._fetch_latest()
 
     def get_history_url(self, page):
+        page = urllib.parse.quote(page)
         return f"{_github_history_url}/commits/master/{page}"
 
     def get_repository_url(self):

@@ -84,7 +84,7 @@ class Namespace(base.Namespace):
         page = page[len("Folder/") : -len("/Main Page")]
         if page.startswith("Page/"):
             page = page[len("Page/") :]
-        return f"{page}/?newpage"
+        return f"{page}/"
 
     @staticmethod
     def add_content(instance: wiki_page.WikiPage, page: str) -> str:

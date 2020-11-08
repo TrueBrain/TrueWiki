@@ -1,3 +1,4 @@
+import html
 import wikitextparser
 
 from aiohttp import web
@@ -47,7 +48,7 @@ def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None)
 
     templates = {
         "content": content,
-        "page": body,
+        "page": html.escape(body),
         "templates_used": templates_used,
         "used_on_pages": used_on_pages,
         "language": "",
@@ -60,10 +61,10 @@ def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None)
         "has_templates_used": "1" if templates_used else "",
         "has_used_on_pages": "1" if used_on_pages else "",
         "has_errors": "1" if errors else "",
-        "display_name": user.display_name if user else "",
+        "display_name": html.escape(user.display_name) if user else "",
         "user_settings_url": user.get_settings_url() if user else "",
         "is_preview": "1" if preview is not None else "",
-        "new_page": new_page if new_page else "",
+        "new_page": html.escape(new_page) if new_page else "",
     }
 
     templates["language"] = wiki_page.add_language(wiki_page.page)
