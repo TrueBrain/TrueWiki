@@ -11,8 +11,8 @@ from ...wrapper import wrap_page
 
 FILESIZE_POSTFIX = [
     "bytes",
-    "kB",
-    "MB",
+    "KiB",
+    "MiB",
 ]
 
 
