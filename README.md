@@ -63,7 +63,7 @@ Parameters like `thumb`, `frame`, `left`, `link=` etc are all supported.
 
 `[[:File:en/MyFile.png]]` adds a link to the file.
 
-Files have to be either PNG (with `.png` extension) or JPEG (with `.jpeg` extension).
+Files have to be either PNG (with `.png` extension), GIF (with `.gif` extension), or JPEG (with `.jpeg` extension).
 No other formats are supported, and you have to upload the correct type for the given extension.
 
 #### Folder

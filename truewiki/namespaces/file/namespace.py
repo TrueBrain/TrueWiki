@@ -194,8 +194,18 @@ Upload new file: <input type="file" name="file" />
 
             if not new_page.endswith(".jpeg"):
                 return f'Page name "{new_page}" should end with ".jpeg" if uploading a JPEG.'
+        elif payload["file"].content_type == "image/gif":
+            # See https://en.wikipedia.org/wiki/GIF#File_format
+            if not data.startswith(b"GIF87a") and not data.startswith(b"GIF89a"):
+                return f'Uploaded file "{payload["file"].filename}" is not a valid GIF image.'
+
+            if not new_page.endswith(".gif"):
+                return f'Page name "{new_page}" should end with ".gif" if uploading a GIF.'
         else:
-            return f'Uploaded file "{payload["file"].filename}" is not a valid image. Only PNG and JPEG is supported.'
+            return (
+                f'Uploaded file "{payload["file"].filename}" is not a valid image. '
+                "Only PNG, GIF, and JPEG is supported."
+            )
 
         if execute:
             singleton.STORAGE.file_write(new_page, data, "wb")
