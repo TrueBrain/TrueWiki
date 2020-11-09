@@ -103,12 +103,13 @@ async def edit_page_post(request):
     payload = await request.post()
     if "content" not in payload:
         raise web.HTTPNotFound()
+    content = payload["content"].replace("\r", "")
 
     if "save" in payload:
-        return edit.save(user, page, payload.get("page", page), payload["content"], payload)
+        return edit.save(user, page, payload.get("page", page), content, payload)
 
     if "preview" in payload:
-        return preview.view(user, page, payload.get("page", page), payload["content"])
+        return preview.view(user, page, payload.get("page", page), content)
 
     raise web.HTTPNotFound()
 

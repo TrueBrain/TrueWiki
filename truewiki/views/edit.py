@@ -159,7 +159,7 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
     # Make sure the folder exists.
     singleton.STORAGE.dir_make(new_dirname)
     # Write the new source.
-    singleton.STORAGE.file_write(new_filename, content.replace("\r", ""))
+    singleton.STORAGE.file_write(new_filename, content)
 
     # Inform the namespace of the edit.
     wiki_page.edit_callback(old_page, new_page, payload, execute=True)
