@@ -40,6 +40,9 @@ from .namespaces import (  # noqa
 
 log = logging.getLogger(__name__)
 
+# Don't allow any file above 4 MiB.
+MAX_UPLOAD_SIZE = (1024 ** 2) * 4
+
 
 class ErrorOnlyAccessLogger(AccessLogger):
     def log(self, request, response, time):
@@ -83,7 +86,7 @@ def main(bind, port, storage, validate_all):
 
     load_metadata()
 
-    webapp = web.Application()
+    webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE)
     webapp.router.add_static("/uploads", f"{instance.folder}/File/")
     webapp.router.add_static("/static", "static/")
     register_webroutes(webapp)
