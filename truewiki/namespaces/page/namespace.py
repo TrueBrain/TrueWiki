@@ -45,7 +45,7 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def get_used_on_pages(page: str) -> list:
-        return metadata.TEMPLATES[f"Page/{page}"]
+        return metadata.TEMPLATES[f"Page/{page}"] + metadata.LINKS[f":Page:{page}"]
 
     @staticmethod
     def page_is_valid(page: str, is_new_page: bool) -> Optional[str]:

@@ -17,7 +17,7 @@ from .wiki_page import WikiPage
 log = logging.getLogger(__name__)
 
 CACHE_FILENAME = ".cache_metadata.json"
-CACHE_VERSION = 2
+CACHE_VERSION = 3
 
 
 def page():
@@ -25,6 +25,7 @@ def page():
         "translations": [],
         "categories": [],
         "files": [],
+        "links": [],
         "templates": [],
         "digest": "",
     }
@@ -33,6 +34,7 @@ def page():
 TRANSLATIONS = defaultdict(list)
 CATEGORIES = defaultdict(list)
 FILES = defaultdict(list)
+LINKS = defaultdict(list)
 TEMPLATES = defaultdict(list)
 PAGES = defaultdict(page)
 PAGES_LC = {}
@@ -65,6 +67,18 @@ def file_callback(wtp, wiki_page, page):
             FILES[target].append(page)
 
 
+def links_callback(wtp, wiki_page, page):
+    for wikilink in wtp.wikilinks:
+        if ":" not in wikilink.target or wikilink.target.startswith(":"):
+            if ":" not in wikilink.target:
+                target = f":Page:{wikilink.target}"
+            else:
+                target = wikilink.target
+
+            PAGES[page]["links"].append(target)
+            LINKS[target].append(page)
+
+
 def template_callback(wtp, wiki_page, page):
     for template in wiki_page.templates:
         if ":" in template:
@@ -80,6 +94,7 @@ def template_callback(wtp, wiki_page, page):
 CALLBACKS = [
     category_callback,
     file_callback,
+    links_callback,
     template_callback,
     translation_callback,
 ]
@@ -90,6 +105,8 @@ def _forget_page(page):
         CATEGORIES[category].remove(page)
     for file in PAGES[page]["files"]:
         FILES[file].remove(page)
+    for link in PAGES[page]["links"]:
+        LINKS[link].remove(page)
     for template in PAGES[page]["templates"]:
         TEMPLATES[template].remove(page)
     for translation in PAGES[page]["translations"]:
@@ -97,6 +114,7 @@ def _forget_page(page):
 
     PAGES[page]["categories"].clear()
     PAGES[page]["files"].clear()
+    PAGES[page]["links"].clear()
     PAGES[page]["templates"].clear()
     PAGES[page]["translations"].clear()
 
@@ -189,7 +207,7 @@ def page_changed(pages):
 
 
 async def out_of_process(func, pages):
-    global TRANSLATIONS, CATEGORIES, FILES, TEMPLATES, PAGES, PAGES_LC
+    global TRANSLATIONS, CATEGORIES, FILES, LINKS, TEMPLATES, PAGES, PAGES_LC
 
     await RELOAD_BUSY.wait()
     RELOAD_BUSY.clear()
@@ -205,6 +223,7 @@ async def out_of_process(func, pages):
             (
                 CATEGORIES,
                 FILES,
+                LINKS,
                 TEMPLATES,
                 TRANSLATIONS,
                 PAGES,
@@ -228,6 +247,8 @@ class ReloadHelper:
             CATEGORIES[category] = sorted(set(CATEGORIES[category]), key=lambda x: list(reversed(x.split("/"))))
         for file in FILES:
             FILES[file] = sorted(set(FILES[file]), key=lambda x: list(reversed(x.split("/"))))
+        for link in LINKS:
+            LINKS[link] = sorted(set(LINKS[link]), key=lambda x: list(reversed(x.split("/"))))
         for template in TEMPLATES:
             TEMPLATES[template] = sorted(set(TEMPLATES[template]), key=lambda x: list(reversed(x.split("/"))))
 
@@ -238,6 +259,7 @@ class ReloadHelper:
             page_data["translations"] = list(set(page_data["translations"]))
             page_data["categories"] = list(set(page_data["categories"]))
             page_data["files"] = list(set(page_data["files"]))
+            page_data["links"] = list(set(page_data["links"]))
             page_data["templates"] = list(set(page_data["templates"]))
 
             PAGES_LC[page.lower()] = page
@@ -247,7 +269,7 @@ class ReloadHelper:
             _page_changed(page)
         self._post()
 
-        return CATEGORIES, FILES, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
+        return CATEGORIES, FILES, LINKS, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
 
     def load_metadata(self):
         start = time.time()
@@ -255,6 +277,7 @@ class ReloadHelper:
 
         CATEGORIES.clear()
         FILES.clear()
+        LINKS.clear()
         TEMPLATES.clear()
         TRANSLATIONS.clear()
         PAGES.clear()
@@ -265,6 +288,7 @@ class ReloadHelper:
                 if payload.get("version", 1) == CACHE_VERSION:
                     CATEGORIES.update(payload["categories"])
                     FILES.update(payload["files"])
+                    LINKS.update(payload["links"])
                     TEMPLATES.update(payload["templates"])
                     TRANSLATIONS.update(payload["translations"])
                     PAGES.update(payload["pages"])
@@ -296,6 +320,7 @@ class ReloadHelper:
                         "version": CACHE_VERSION,
                         "categories": CATEGORIES,
                         "files": FILES,
+                        "links": LINKS,
                         "templates": TEMPLATES,
                         "translations": TRANSLATIONS,
                         "pages": PAGES,
@@ -304,7 +329,7 @@ class ReloadHelper:
             )
 
         log.info(f"Loading metadata done; took {time.time() - start:.2f} seconds")
-        return CATEGORIES, FILES, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
+        return CATEGORIES, FILES, LINKS, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
 
 
 @click_helper.extend

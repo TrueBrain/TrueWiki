@@ -80,6 +80,12 @@ class Namespace(base.Namespace):
         # is also a valid category.
         return singleton.STORAGE.file_exists(f"{page}.mediawiki")
 
+    @staticmethod
+    def get_used_on_pages(page: str) -> list:
+        assert page.startswith("Category/")
+        page = page[len("Category/") :]
+        return metadata.TEMPLATES[f"Category/{page}"] + metadata.LINKS[f":Category:{page}"]
+
     @classmethod
     def page_is_valid(cls, page: str, is_new_page: bool) -> Optional[str]:
         assert page.startswith("Category/")
