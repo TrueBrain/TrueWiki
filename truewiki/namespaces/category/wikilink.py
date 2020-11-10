@@ -12,6 +12,12 @@ def replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     # This indicates that the page belongs to this category. We update
     # the WikiPage to indicate this, and otherwise remove the WikiLink.
     category = wikilink.target[len("category:") :]
+
+    error = instance.page_is_valid(f"Category/{category}")
+    if error:
+        instance.add_error(f'{error[:-1]} (wikilink "{wikilink.string}")')
+        return True
+
     instance.categories.append(category)
     wikilink.string = ""
     return True
