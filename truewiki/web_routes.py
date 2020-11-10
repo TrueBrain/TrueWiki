@@ -42,7 +42,7 @@ def _validate_page(page: str) -> None:
     fullpath = f"{path}/{filename}"
 
     # Don't allow directory traversal
-    if fullpath.startswith("."):
+    if fullpath.startswith((".", "/")):
         raise web.HTTPNotFound()
 
     # If normalization resulted in a different path, redirect to the new path.
