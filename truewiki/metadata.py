@@ -17,7 +17,7 @@ from .wiki_page import WikiPage
 log = logging.getLogger(__name__)
 
 CACHE_FILENAME = ".cache_metadata.json"
-CACHE_VERSION = 3
+CACHE_VERSION = 4
 
 
 def page():
@@ -46,7 +46,7 @@ RELOAD_BUSY.set()
 def translation_callback(wtp, wiki_page, page):
     for wikilink in wtp.wikilinks:
         if wikilink.target.startswith("Translation:"):
-            target = wikilink.target[len("Translation:") :]
+            target = wikilink.target[len("Translation:") :].strip()
             PAGES[page]["translations"].append(target)
             TRANSLATIONS[target].append(page)
 
@@ -54,7 +54,7 @@ def translation_callback(wtp, wiki_page, page):
 def category_callback(wtp, wiki_page, page):
     for wikilink in wtp.wikilinks:
         if wikilink.target.startswith("Category:"):
-            target = wikilink.target[len("Category:") :]
+            target = wikilink.target[len("Category:") :].strip()
             PAGES[page]["categories"].append(target)
             CATEGORIES[target].append(page)
 
@@ -62,7 +62,7 @@ def category_callback(wtp, wiki_page, page):
 def file_callback(wtp, wiki_page, page):
     for wikilink in wtp.wikilinks:
         if wikilink.target.startswith("File:"):
-            target = wikilink.target[len("File:") :]
+            target = wikilink.target[len("File:") :].strip()
             PAGES[page]["files"].append(target)
             FILES[target].append(page)
 
@@ -74,6 +74,7 @@ def links_callback(wtp, wiki_page, page):
                 target = f":Page:{wikilink.target}"
             else:
                 target = wikilink.target
+            target = target.strip()
 
             PAGES[page]["links"].append(target)
             LINKS[target].append(page)
@@ -86,7 +87,7 @@ def template_callback(wtp, wiki_page, page):
         else:
             namespace = "Template"
 
-        target = f"{namespace}/{template}"
+        target = f"{namespace}/{template}".strip()
         PAGES[page]["templates"].append(target)
         TEMPLATES[target].append(page)
 
@@ -135,7 +136,11 @@ def _analyze_page(page):
     with open(f"{singleton.STORAGE.folder}/{page}.mediawiki", "r") as fp:
         body = fp.read()
 
-    wiki_page = WikiPage(page)
+    if page.startswith("Page/"):
+        page_name = page[len("Page/") :]
+    else:
+        page_name = page
+    wiki_page = WikiPage(page_name)
     wtp = wiki_page.prepare(body)
 
     # Index this page again.
