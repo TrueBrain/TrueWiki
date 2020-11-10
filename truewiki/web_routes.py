@@ -27,12 +27,23 @@ routes = web.RouteTableDef()
 RELOAD_SECRET = None
 
 
+def csp_header(func):
+    async def wrapper(*args, **kwargs):
+        response = await func(*args, **kwargs)
+        response.headers["Content-Security-Policy"] = "default-src 'self'; style-src 'self' 'unsafe-inline'"
+        return response
+
+    return wrapper
+
+
 @routes.get("/")
+@csp_header
 async def root(request):
     return web.HTTPFound("/en/")
 
 
 @routes.get("/user/login")
+@csp_header
 async def user_login(request):
     location = request.query.get("location")
 
@@ -47,6 +58,7 @@ async def user_login(request):
 
 
 @routes.post("/reload")
+@csp_header
 async def reload(request):
     if RELOAD_SECRET is None:
         return web.HTTPNotFound()
@@ -66,11 +78,13 @@ async def reload(request):
 
 
 @routes.get("/healthz")
+@csp_header
 async def healthz_handler(request):
     return web.HTTPOk()
 
 
 @routes.get("/License")
+@csp_header
 async def license(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
     return license_page.view(user)
@@ -87,6 +101,7 @@ def _validate_page(page: str) -> None:
 
 
 @routes.get("/edit/{page:.*}")
+@csp_header
 async def edit_page(request):
     page = request.match_info["page"]
     _validate_page(page)
@@ -100,6 +115,7 @@ async def edit_page(request):
 
 
 @routes.post("/edit/{page:.*}")
+@csp_header
 async def edit_page_post(request):
     page = request.match_info["page"]
     _validate_page(page)
@@ -124,6 +140,7 @@ async def edit_page_post(request):
 
 
 @routes.get("/{page:.*}.mediawiki")
+@csp_header
 async def source_page(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
 
@@ -134,6 +151,7 @@ async def source_page(request):
 
 
 @routes.get("/{page:.*}")
+@csp_header
 async def html_page(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
 
@@ -144,6 +162,7 @@ async def html_page(request):
 
 
 @routes.route("*", "/{tail:.*}")
+@csp_header
 async def fallback(request):
     log.warning("Unexpected URL: %s", request.url)
     return web.HTTPNotFound()
