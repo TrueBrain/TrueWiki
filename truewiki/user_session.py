@@ -135,7 +135,9 @@ async def user_logout(request):
         redirect_uri = "/"
 
     location = urllib.parse.quote(redirect_uri)
-    return web.HTTPFound(location=location)
+    response = web.HTTPFound(location=location)
+    response.set_cookie(SESSION_COOKIE_NAME, "", max_age=0, httponly=True)
+    return response
 
 
 @click_helper.extend
