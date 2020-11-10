@@ -34,8 +34,14 @@ def add_content(page, namespace="Folder", namespace_for_folder=False, folder_lab
             item = item[: -len(".mediawiki")]
 
             if namespace == "Folder":
+                # Special case; in the repository it is called
+                # LICENSE.mediawiki, but we call it "License" everywhere
+                # else.
+                if item == "LICENSE":
+                    item = "License"
                 if item.startswith("Page/"):
                     item = item[len("Page/") :]
+
                 items["pages"].append(f"<li>[[{item}]]</li>")
                 continue
 
