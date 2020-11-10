@@ -52,6 +52,10 @@ class Namespace(base.Namespace):
     @classmethod
     def page_is_valid(cls, page: str, is_new_page: bool) -> Optional[str]:
         assert page.startswith("Folder/")
+
+        if not page.endswith("/Main Page"):
+            return "You cannot view files in the Folder namespace."
+
         spage = page.split("/")
 
         if is_new_page:
