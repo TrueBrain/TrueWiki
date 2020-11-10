@@ -1,8 +1,6 @@
-import unicodedata
 import urllib
 
 from aiohttp import web
-from typing import Optional
 
 from . import (
     error,
@@ -16,87 +14,23 @@ from ..metadata import page_changed
 from ..wiki_page import WikiPage
 
 
-DISALLOWED_NAMES = (
-    "..",  # Path-walking.
-    ":",  # Namespace indicator.
-    "|",  # Just .. don't.
-    "#",  # Makes hash-parts of URLs difficult.
-    "[",  # wikitext syntax.
-    "]",  # wikitext syntax.
-    "{",  # wikitext syntax.
-    "}",  # wikitext syntax.
-    "_",  # Use a space instead.
-    "<",  # Reserved character on NTFS.
-    ">",  # Reserved character on NTFS.
-    "\\",  # Reserved character on NTFS.
-    '"',  # Reserved character on NTFS.
-    "*",  # Reserved character on NTFS.
-    "?",  # Reserved character on NTFS.
-)
-
-DISALLOWS_PARTS_LEADING = (
-    " ",  # Most likely a mistake by the user.
-    ".",  # Don't allow "hidden" files.
-)
-DISALLOWS_PARTS_TRAILING = (" ",)  # Most likely a mistake by the user.
-
-
-def _check_illegal_names(user, new_page: str) -> Optional[str]:
-    for disallowed_name in DISALLOWED_NAMES:
-        if disallowed_name in new_page:
-            return f'Page name "{new_page}" contains "{disallowed_name}", which is not allowed.'
-
-    if new_page.endswith("/"):
-        return (
-            f'Page name "{new_page}" cannot end with a "/". If you want to create a main page for this folder, '
-            'create a page called "Main Page" in this folder. '
-            '"Main Page" cannot be translated, and is always written in English, no matter the language you are in.'
-        )
-
-    if new_page.startswith("/"):
-        return f'Page name "{new_page}" starts with a "/", which is not allowed.'
-
-    for part in new_page.split("/"):
-        if not part:
-            return f'Page name "{new_page}" contains a folder that is empty, which is not allowed.'
-
-        if part.startswith(DISALLOWS_PARTS_LEADING):
-            return (
-                f'Page name "{new_page}" contains a filename/folder that starts with a space and/or dot, '
-                "which is not allowed."
-            )
-
-        if part.endswith(DISALLOWS_PARTS_TRAILING):
-            return f'Page name "{new_page}" contains a filename/folder that ends with a space, which is not allowed.'
-
-    for letter in new_page:
-        if unicodedata.category(letter)[0] == "C":
-            return (
-                f'Page name "{new_page}" contains '
-                '<a href="https://en.wikipedia.org/wiki/Control_character" target="_new">Control Characters</a>, '
-                "which is not allowed."
-            )
-
-    return None
-
-
 def save(user, old_page: str, new_page: str, content: str, payload) -> web.Response:
     wiki_page = WikiPage(old_page)
-    if not wiki_page.page_is_valid(old_page):
-        return error.view(user, old_page, "Error 404 - File not found")
-    if not wiki_page.page_is_valid(new_page):
-        return error.view(
-            user,
-            new_page,
-            f'Page name "{new_page}" is not a valid name; does it start with a language code?',
-        )
+    page_error = wiki_page.page_is_valid(old_page) or wiki_page.page_is_valid(new_page)
 
-    error_message = _check_illegal_names(user, new_page)
-    if error_message is not None:
+    if not page_error:
+        if new_page.endswith("/"):
+            page_error = (
+                f'Page name "{new_page}" cannot end with a "/". If you meant the main page, please add "Main Page". '
+                'The name of the page "Main Page" cannot be translated, and is always written in English, '
+                "no matter the language you are in. The content of course can be translated."
+            )
+
+    if page_error:
         return error.view(
             user,
             old_page,
-            error_message,
+            page_error,
             status=401,
         )
 
@@ -175,8 +109,9 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
 
 def view(user, page: str) -> web.Response:
     wiki_page = WikiPage(page)
-    if not wiki_page.page_is_valid(page):
-        return error.view(user, page, "Error 404 - File not found")
+    page_error = wiki_page.page_is_valid(page)
+    if page_error:
+        return error.view(user, page, page_error)
 
     # If there is a difference in case, nicely point this out to users.
     correct_page = wiki_page.page_get_correct_case(page)

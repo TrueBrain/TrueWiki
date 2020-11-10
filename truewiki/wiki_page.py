@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 
 from typing import Optional
 from wikitexthtml import Page
@@ -11,6 +12,64 @@ NAMESPACE_DEFAULT_PAGE = None
 NAMESPACE_DEFAULT_TEMPLATE = None
 NAMESPACE_DEFAULT_FILE = None
 NAMESPACE_MAPPING = {}
+
+DISALLOWED_NAMES = (
+    "..",  # Path-walking.
+    ":",  # Namespace indicator.
+    "|",  # Just .. don't.
+    "#",  # Makes hash-parts of URLs difficult.
+    "[",  # wikitext syntax.
+    "]",  # wikitext syntax.
+    "{",  # wikitext syntax.
+    "}",  # wikitext syntax.
+    "_",  # Use a space instead.
+    "<",  # Reserved character on NTFS.
+    ">",  # Reserved character on NTFS.
+    "\\",  # Reserved character on NTFS.
+    '"',  # Reserved character on NTFS.
+    "*",  # Reserved character on NTFS.
+    "?",  # Reserved character on NTFS.
+)
+
+DISALLOWS_PARTS_LEADING = (
+    " ",  # Most likely a mistake by the user.
+    ".",  # Don't allow "hidden" files.
+)
+DISALLOWS_PARTS_TRAILING = (" ",)  # Most likely a mistake by the user.
+
+
+def _check_illegal_names(page: str) -> Optional[str]:
+    for disallowed_name in DISALLOWED_NAMES:
+        if disallowed_name in page:
+            return f'Page name "{page}" contains "{disallowed_name}", which is not allowed.'
+
+    if page.startswith("/"):
+        return f'Page name "{page}" starts with a "/", which is not allowed.'
+
+    # Check the parts of the page, ignoring a trailing /.
+    # A trailing / is allowed, as it will load the "Main Page" instead.
+    for part in page.rstrip("/").split("/"):
+        if not part:
+            return f'Page name "{page}" contains a folder that is empty, which is not allowed.'
+
+        if part.startswith(DISALLOWS_PARTS_LEADING):
+            return (
+                f'Page name "{page}" contains a filename/folder that starts with a space and/or dot, '
+                "which is not allowed."
+            )
+
+        if part.endswith(DISALLOWS_PARTS_TRAILING):
+            return f'Page name "{page}" contains a filename/folder that ends with a space, which is not allowed.'
+
+    for letter in page:
+        if unicodedata.category(letter)[0] == "C":
+            return (
+                f'Page name "{page}" contains '
+                '<a href="https://en.wikipedia.org/wiki/Control_character" target="_new">Control Characters</a>, '
+                "which is not allowed."
+            )
+
+    return None
 
 
 class WikiPage(Page):
@@ -35,9 +94,13 @@ class WikiPage(Page):
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_ondisk_name(page)
 
-    def page_is_valid(self, page: str) -> bool:
+    def page_is_valid(self, page: str) -> Optional[str]:
+        error = _check_illegal_names(page)
+        if error:
+            return error
+
         if "/" not in page:
-            return False
+            return f'Page name "{page}" is missing either a language or a namespace'
 
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_is_valid(page)
