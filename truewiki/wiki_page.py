@@ -18,7 +18,6 @@ NAMESPACE_DEFAULT_FILE = None
 NAMESPACE_MAPPING = {}
 
 DISALLOWED_NAMES = (
-    "..",  # Path-walking.
     ":",  # Namespace indicator.
     "|",  # Just .. don't.
     "#",  # Makes hash-parts of URLs difficult.

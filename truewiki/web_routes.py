@@ -1,6 +1,6 @@
 import click
 import logging
-import regex
+import os
 import urllib
 
 from aiohttp import web
@@ -34,6 +34,23 @@ def csp_header(func):
         return response
 
     return wrapper
+
+
+def _validate_page(page: str) -> None:
+    filename = os.path.basename(page)
+    path = os.path.normpath(os.path.dirname(page))
+    fullpath = f"{path}/{filename}"
+
+    # Don't allow directory traversal
+    if fullpath.startswith("."):
+        raise web.HTTPNotFound()
+
+    # If normalization resulted in a different path, redirect to the new path.
+    # For example:
+    #   /en/./ -> /en/
+    #   /en/test/../ -> /en/
+    if fullpath != page:
+        raise web.HTTPFound(f"/{fullpath}")
 
 
 @routes.get("/")
@@ -90,16 +107,6 @@ async def license(request):
     return license_page.view(user)
 
 
-def _validate_page(page: str) -> None:
-    # Don't allow path-walking
-    if ".." in page:
-        raise web.HTTPNotFound()
-
-    if "//" in page:
-        page = regex.sub(r"//+", "/", page)
-        raise web.HTTPFound(f"/{page}")
-
-
 @routes.get("/edit/{page:.*}")
 @csp_header
 async def edit_page(request):
@@ -130,11 +137,17 @@ async def edit_page_post(request):
         raise web.HTTPNotFound()
     content = payload["content"].replace("\r", "")
 
+    # Make sure that page names don't contain /../ or anything silly.
+    new_page = payload.get("page", page)
+    filename = os.path.basename(new_page)
+    path = os.path.normpath(os.path.dirname(new_page))
+    new_page = f"{path}/{filename}"
+
     if "save" in payload:
-        return edit.save(user, page, payload.get("page", page), content, payload)
+        return edit.save(user, page, new_page, content, payload)
 
     if "preview" in payload:
-        return preview.view(user, page, payload.get("page", page), content)
+        return preview.view(user, page, new_page, content)
 
     raise web.HTTPNotFound()
 
