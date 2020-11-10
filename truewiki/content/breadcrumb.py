@@ -25,7 +25,7 @@ def create(page):
 
     breadcrumb = "/"
     for i, p in enumerate(spage):
-        if p == "Main Page":
+        if p == "Main Page" or not p:
             continue
 
         if i == len(spage) - 1:
