@@ -5,12 +5,12 @@
         <link rel="icon" href="/static/favicon.ico" type="image/icon" />
         <link rel="stylesheet" href="/static/css/base.css" type="text/css" />
         <link rel="stylesheet" href="/static/css/truewiki.css" type="text/css" />
-        <title>OpenTTD | {{SUBPAGENAME}}</title>
+        <title>OpenTTD | Login</title>
     </head>
     <body>
         <header>
             <div id="pagename">
-                {{SUBPAGENAME}}
+                Login
             </div>
             <div id="openttd-logo">
                 <div id="openttd-logo-text"><a href="/en/"><img src="/static/img/layout/openttd-logo.png" alt="OpenTTD" /></a></div>
@@ -23,15 +23,9 @@
         </header>
         <nav>
             <ul id="navigation-bar" class="right">
-                {{#if: {{{display_name|}}}|
-                <li>
-                    <a href="/user/logout?location={{urlencode:{{FULLPAGENAME}}}}">Logout ({{{display_name}}})</a>
-                </li>
-                |
                 <li>
                     <a href="/user/login">Login</a>
                 </li>
-                }}
             </ul>
         </nav>
         <main>
