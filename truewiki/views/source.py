@@ -29,7 +29,17 @@ def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None)
 
         content = wiki_page.render().html
 
-    templates_used = [f"<li>[[:Template:{template}]]</li>" for template in wiki_page.templates]
+    templates_used = []
+    for template in wiki_page.templates:
+        if ":" in template:
+            prefix = ":"
+        else:
+            prefix = ":Template:"
+
+        if template.startswith("Page:"):
+            template = template[len("Page:") :]
+
+        templates_used.append(f"<li>[[{prefix}{template}]]</li>")
     errors = [f"<li>{error}</li>" for error in wiki_page.errors]
 
     used_on_pages = []
