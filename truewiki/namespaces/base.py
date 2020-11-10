@@ -1,6 +1,8 @@
 import html
 import urllib
 
+from typing import Optional
+
 from .. import (
     metadata,
     wiki_page,
@@ -19,8 +21,8 @@ class Namespace:
         raise NotImplementedError
 
     @staticmethod
-    def page_is_valid(page: str) -> bool:
-        return False
+    def page_is_valid(page: str) -> Optional[str]:
+        raise NotImplementedError
 
     @staticmethod
     def has_source(page: str) -> bool:

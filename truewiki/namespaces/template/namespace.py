@@ -2,6 +2,8 @@ import html
 import logging
 import urllib
 
+from typing import Optional
+
 from .. import base
 from ..category import footer as category_footer
 from ..folder import (
@@ -66,21 +68,21 @@ class Namespace(base.Namespace):
         return singleton.STORAGE.file_exists(f"{page}.mediawiki")
 
     @classmethod
-    def page_is_valid(cls, page: str) -> bool:
+    def page_is_valid(cls, page: str) -> Optional[str]:
         assert page.startswith("Template/")
         spage = page.split("/")
 
         if cls._is_root(page):
-            return True
+            return None
 
         # There should always be a language code in the path.
         if len(spage) < 3:
-            return False
+            return f'Page name "{page}" is missing a language code.'
         # The language should already exist.
         if not singleton.STORAGE.dir_exists(f"Template/{spage[1]}"):
-            return False
+            return f'Page name "{page}" is in language "{spage[1]}" that does not exist.'
 
-        return True
+        return None
 
     @classmethod
     def has_source(cls, page: str) -> bool:

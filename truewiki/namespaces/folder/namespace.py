@@ -1,5 +1,7 @@
 import logging
 
+from typing import Optional
+
 from . import content
 from .. import base
 from ... import (
@@ -48,20 +50,24 @@ class Namespace(base.Namespace):
         return singleton.STORAGE.dir_exists(page)
 
     @classmethod
-    def page_is_valid(cls, page: str) -> bool:
+    def page_is_valid(cls, page: str) -> Optional[str]:
         assert page.startswith("Folder/")
         spage = page.split("/")
 
         if cls._is_root(page):
-            return True
+            return None
         if cls._is_namespace_root(page):
-            return singleton.STORAGE.dir_exists(spage[1])
+            if not singleton.STORAGE.dir_exists(spage[1]):
+                return f'Page name "{page}" is in namespace "{spage[1]}" that does not exist.'
+            return None
 
         # There should always be a namespace and language code in the path.
         if len(spage) < 4:
-            return False
+            return f'Page name "{page}" is missing a namespace and/or language code.'
         # The namespace and language should already exist.
-        return singleton.STORAGE.dir_exists(f"{spage[1]}/{spage[2]}")
+        if not singleton.STORAGE.dir_exists(f"{spage[1]}/{spage[2]}"):
+            return f'Page name "{page}" is in language "{spage[2]}" that does not exist for namespace "{spage[1]}".'
+        return None
 
     @staticmethod
     def page_ondisk_name(page: str) -> str:

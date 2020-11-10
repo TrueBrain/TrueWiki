@@ -2,6 +2,8 @@ import html
 import logging
 import urllib
 
+from typing import Optional
+
 from .. import base
 from ..category import footer as category_footer
 from ..folder import footer as folder_footer
@@ -46,17 +48,17 @@ class Namespace(base.Namespace):
         return metadata.TEMPLATES[f"Page/{page}"]
 
     @staticmethod
-    def page_is_valid(page: str) -> bool:
+    def page_is_valid(page: str) -> Optional[str]:
         spage = page.split("/")
 
         # There should always be a language code in the path.
         if len(spage) < 2:
-            return False
+            return f'Page name "{page}" is missing a language code.'
         # The language should already exist.
         if not singleton.STORAGE.dir_exists(f"Page/{spage[0]}"):
-            return False
+            return f'Page name "{page}" is in language "{spage[0]}" that does not exist.'
 
-        return True
+        return None
 
     @classmethod
     def page_get_correct_case(cls, page: str) -> str:

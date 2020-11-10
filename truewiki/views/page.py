@@ -11,8 +11,9 @@ def view(user, page: str) -> web.Response:
         page += "Main Page"
 
     wiki_page = WikiPage(page)
-    if not wiki_page.page_is_valid(page):
-        return error.view(user, page, "Error 404 - File not found")
+    page_error = wiki_page.page_is_valid(page)
+    if page_error:
+        return error.view(user, page, page_error)
 
     # If there is a difference in case, nicely point this out to users.
     correct_page = wiki_page.page_get_correct_case(page)
