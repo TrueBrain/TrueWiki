@@ -151,6 +151,10 @@ class Namespace(base.Namespace):
     def file_exists(file: str) -> bool:
         return singleton.STORAGE.file_exists(f"File/{file}")
 
+    @classmethod
+    def file_is_valid(cls, file: str) -> Optional[str]:
+        return cls.page_is_valid(f"File/{file}", False)
+
     @staticmethod
     def file_get_link(url: str) -> str:
         return f"/File/{url}"

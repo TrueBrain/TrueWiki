@@ -19,6 +19,6 @@ text-unidecode==1.3
 typing-extensions==3.7.4.3
 urllib3==1.25.11
 wcwidth==0.2.5
-wikitexthtml==0.0.11
+wikitexthtml==0.0.12
 wikitextparser @ git+https://github.com/TrueBrain/wikitextparser@1b959b6b690346ec4a1dac69650b66e3bea8068a
 yarl==1.6.2

@@ -1,6 +1,8 @@
 import html
 import urllib
 
+from wikitexthtml.exceptions import InvalidWikiLink
+
 from ..wiki_page import WikiPage
 
 
@@ -36,7 +38,11 @@ def create(page):
         title = breadcrumb[1:]
         if title.endswith("/"):
             title += "Main Page"
-        title = WikiPage(breadcrumb[1:]).clean_title(title)
+
+        try:
+            title = WikiPage(breadcrumb[1:]).clean_title(title)
+        except InvalidWikiLink:
+            title = "INVALID"
 
         title = html.escape(title)
         href = urllib.parse.quote(breadcrumb)
