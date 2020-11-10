@@ -21,7 +21,7 @@ class Namespace:
         raise NotImplementedError
 
     @staticmethod
-    def page_is_valid(page: str) -> Optional[str]:
+    def page_is_valid(page: str, is_new_page: bool) -> Optional[str]:
         raise NotImplementedError
 
     @staticmethod
