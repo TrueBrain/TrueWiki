@@ -14,7 +14,7 @@ from ..wiki_page import (
 from ..wrapper import wrap_page
 
 
-def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None) -> str:
+def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None, page_error=None) -> str:
     ondisk_name = wiki_page.page_ondisk_name(wiki_page.page)
 
     if preview is not None:
@@ -75,6 +75,7 @@ def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None)
         "user_settings_url": user.get_settings_url() if user else "",
         "is_preview": "1" if preview is not None else "",
         "new_page": html.escape(new_page) if new_page else "",
+        "page_error": page_error if page_error else "",
     }
 
     templates["language"] = wiki_page.add_language(wiki_page.page)

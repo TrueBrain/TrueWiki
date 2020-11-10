@@ -32,7 +32,7 @@
                     <a href="/edit/{{urlencode:{{FULLPAGENAME}}}}">
                         {{#if: {{{does_exist|}}}|Edit Page|Create Page}}
                         {{#if: {{{errors|}}}|
-                            <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
+                            <span class="badge" title="There were {{{errors}}} problems while rendering this page">{{{errors}}}</span>
                         }}
                     </a>
                     |
@@ -40,7 +40,7 @@
                         <a href="/{{urlencode:{{FULLPAGENAME}}}}.mediawiki">
                         View Source
                         {{#if: {{{errors|}}}|
-                            <span class="badge" title="There were {{{errors}}} errors while rendering this page">{{{errors}}}</span>
+                            <span class="badge" title="There were {{{errors}}} problems while rendering this page">{{{errors}}}</span>
                         }}
                         </a>
                     }}
