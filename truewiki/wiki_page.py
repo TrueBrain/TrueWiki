@@ -35,11 +35,12 @@ DISALLOWED_NAMES = (
     "?",  # Reserved character on NTFS.
 )
 
+# "fmt: off" can be removed if we ever add a second entry.
+# fmt: off
 DISALLOWS_PARTS_LEADING = (
-    " ",  # Most likely a mistake by the user.
     ".",  # Don't allow "hidden" files.
 )
-DISALLOWS_PARTS_TRAILING = (" ",)  # Most likely a mistake by the user.
+# fmt: on
 
 
 def _check_illegal_names(page: str) -> Optional[str]:
@@ -57,13 +58,10 @@ def _check_illegal_names(page: str) -> Optional[str]:
             return f'Page name "{page}" contains a folder that is empty, which is not allowed.'
 
         if part.startswith(DISALLOWS_PARTS_LEADING):
-            return (
-                f'Page name "{page}" contains a filename/folder that starts with a space and/or dot, '
-                "which is not allowed."
-            )
+            return f'Page name "{page}" contains a filename/folder that starts with a dot, which is not allowed.'
 
-        if part.endswith(DISALLOWS_PARTS_TRAILING):
-            return f'Page name "{page}" contains a filename/folder that ends with a space, which is not allowed.'
+        if part.strip() != part:
+            return f'Page name "{page}" contains a filename/folder that starts/ends with a space, which is not allowed.'
 
     for letter in page:
         if unicodedata.category(letter)[0] == "C":
