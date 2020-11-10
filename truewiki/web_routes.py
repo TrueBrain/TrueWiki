@@ -1,5 +1,6 @@
 import click
 import logging
+import regex
 import urllib
 
 from aiohttp import web
@@ -73,12 +74,20 @@ async def license(request):
     return license_page.view(user)
 
 
-@routes.get("/edit/{page:.*}")
-async def edit_page(request):
-    page = request.match_info["page"]
+def _validate_page(page: str) -> None:
     # Don't allow path-walking
     if ".." in page:
         raise web.HTTPNotFound()
+
+    if "//" in page:
+        page = regex.sub(r"//+", "/", page)
+        raise web.HTTPFound(f"/{page}")
+
+
+@routes.get("/edit/{page:.*}")
+async def edit_page(request):
+    page = request.match_info["page"]
+    _validate_page(page)
 
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
     if not user:
@@ -91,9 +100,7 @@ async def edit_page(request):
 @routes.post("/edit/{page:.*}")
 async def edit_page_post(request):
     page = request.match_info["page"]
-    # Don't allow path-walking
-    if ".." in page:
-        raise web.HTTPNotFound()
+    _validate_page(page)
 
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
     if not user:
@@ -119,9 +126,7 @@ async def source_page(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
 
     page = request.match_info["page"]
-    # Don't allow path-walking
-    if ".." in page:
-        raise web.HTTPNotFound()
+    _validate_page(page)
 
     return source.view(user, page)
 
@@ -131,9 +136,7 @@ async def html_page(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
 
     page = request.match_info["page"]
-    # Don't allow path-walking
-    if ".." in page:
-        raise web.HTTPNotFound()
+    _validate_page(page)
 
     return view_page.view(user, page)
 
