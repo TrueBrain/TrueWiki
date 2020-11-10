@@ -99,7 +99,8 @@ class Namespace(base.Namespace):
     @staticmethod
     def get_used_on_pages(page: str) -> list:
         assert page.startswith("File/")
-        return metadata.FILES[page[len("File/") :]]
+        page = page[len("File/") :]
+        return metadata.FILES[page] + metadata.LINKS[f":File:{page}"]
 
     @classmethod
     def has_source(cls, page: str) -> bool:

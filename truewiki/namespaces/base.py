@@ -88,7 +88,7 @@ class Namespace:
 
     @staticmethod
     def get_used_on_pages(page: str) -> list:
-        return metadata.TEMPLATES[page]
+        return []
 
     @staticmethod
     def page_get_correct_case(page: str) -> str:

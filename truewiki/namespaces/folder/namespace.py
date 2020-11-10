@@ -78,7 +78,7 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def get_used_on_pages(page: str) -> list:
-        return None
+        return []
 
     @classmethod
     def get_create_page_name(cls, page: str) -> str:

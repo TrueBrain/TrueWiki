@@ -11,6 +11,7 @@ from ..folder import (
     footer as folder_footer,
 )
 from ... import (
+    metadata,
     singleton,
     wiki_page,
 )
@@ -66,6 +67,12 @@ class Namespace(base.Namespace):
             return singleton.STORAGE.dir_exists(f"Template/{page.split('/')[1]}")
 
         return singleton.STORAGE.file_exists(f"{page}.mediawiki")
+
+    @staticmethod
+    def get_used_on_pages(page: str) -> list:
+        assert page.startswith("Template/")
+        page = page[len("Template/") :]
+        return metadata.TEMPLATES[f"Template/{page}"] + metadata.LINKS[f":Template:{page}"]
 
     @classmethod
     def page_is_valid(cls, page: str, is_new_page: bool) -> Optional[str]:
