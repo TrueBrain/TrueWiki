@@ -38,6 +38,8 @@ async def user_login(request):
 
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
     if user:
+        if not location:
+            location = ""
         return web.HTTPFound(location=f"/{location}")
 
     body = login.view(user, location=location)
