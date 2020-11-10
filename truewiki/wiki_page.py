@@ -96,6 +96,10 @@ class WikiPage(Page):
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_ondisk_name(page)
 
     def page_is_valid(self, page: str, is_new_page: bool = False) -> Optional[str]:
+        # "License" is a special page that always exists.
+        if page == "License":
+            return None
+
         error = _check_illegal_names(page)
         if error:
             return error
