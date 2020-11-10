@@ -42,11 +42,16 @@ def create(page):
         try:
             title = WikiPage(breadcrumb[1:]).clean_title(title)
         except InvalidWikiLink:
-            title = "INVALID"
+            break
 
         title = html.escape(title)
         href = urllib.parse.quote(breadcrumb)
 
         breadcrumbs.append(f'<li class="crumb"><a href="{href}">{title}</a></li>')
-    breadcrumbs[-1] = breadcrumbs[-1].replace('<li class="crumb">', '<li class="crumb selected">')
+
+    if not breadcrumbs:
+        breadcrumbs.append('<li class="crumb"><a href="/">OpenTTD\'s Wiki</a></li>')
+    else:
+        breadcrumbs[-1] = breadcrumbs[-1].replace('<li class="crumb">', '<li class="crumb selected">')
+
     return "\n".join(breadcrumbs)
