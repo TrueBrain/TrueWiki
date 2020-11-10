@@ -101,5 +101,9 @@ class Namespace(base.Namespace):
     def template_exists(template: str) -> bool:
         return singleton.STORAGE.file_exists(f"Page/{template}.mediawiki")
 
+    @classmethod
+    def template_is_valid(cls, template: str) -> Optional[str]:
+        return cls.page_is_valid(f"{template}", False)
+
 
 wiki_page.register_namespace(Namespace, default_page=True)

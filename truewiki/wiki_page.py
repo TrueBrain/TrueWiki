@@ -3,6 +3,10 @@ import unicodedata
 
 from typing import Optional
 from wikitexthtml import Page
+from wikitexthtml.exceptions import (
+    InvalidWikiLink,
+    InvalidTemplate,
+)
 
 log = logging.getLogger(__name__)
 
@@ -100,7 +104,7 @@ class WikiPage(Page):
             return error
 
         if "/" not in page:
-            return f'Page name "{page}" is missing either a language or a namespace'
+            return f'Page name "{page}" is missing either a language or a namespace.'
 
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_is_valid(page, is_new_page)
@@ -133,6 +137,10 @@ class WikiPage(Page):
         # "License" is a special page that is called "License"
         if title == "License":
             return "License"
+
+        error = self.page_is_valid(title)
+        if error:
+            raise InvalidWikiLink(error)
 
         namespace = title.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).clean_title(self.page, title)
@@ -170,6 +178,10 @@ class WikiPage(Page):
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_TEMPLATE).template_load(template)
 
     def template_exists(self, template: str) -> bool:
+        error = self.template_is_valid(template)
+        if error:
+            raise InvalidTemplate(error)
+
         if ":" in template:
             namespace, _, template = template.partition(":")
         else:
@@ -177,8 +189,31 @@ class WikiPage(Page):
 
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_TEMPLATE).template_exists(template)
 
+    def template_is_valid(self, template: str) -> Optional[str]:
+        if ":" in template:
+            namespace, _, template = template.partition(":")
+        else:
+            namespace = None
+
+        error = _check_illegal_names(template)
+        if error:
+            return error
+
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_TEMPLATE).template_is_valid(template)
+
     def file_exists(self, file: str) -> bool:
+        error = self.file_is_valid(file)
+        if error:
+            raise InvalidWikiLink(error)
+
         return NAMESPACE_DEFAULT_FILE.file_exists(file)
+
+    def file_is_valid(self, file: str) -> Optional[str]:
+        error = _check_illegal_names(file)
+        if error:
+            return error
+
+        return NAMESPACE_DEFAULT_FILE.file_is_valid(file)
 
     def file_get_link(self, url: str) -> str:
         return NAMESPACE_DEFAULT_FILE.file_get_link(url)

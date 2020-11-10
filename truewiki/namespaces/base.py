@@ -108,6 +108,10 @@ class Namespace:
     def template_exists(template: str) -> bool:
         return False
 
+    @classmethod
+    def template_is_valid(cls, template: str) -> Optional[str]:
+        return f'Namespace "{cls.namespace}" cannot be used as template.'
+
     @staticmethod
     def add_edit_content() -> str:
         return ""
