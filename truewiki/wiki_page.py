@@ -94,7 +94,7 @@ class WikiPage(Page):
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_ondisk_name(page)
 
-    def page_is_valid(self, page: str) -> Optional[str]:
+    def page_is_valid(self, page: str, is_new_page: bool = False) -> Optional[str]:
         error = _check_illegal_names(page)
         if error:
             return error
@@ -103,7 +103,7 @@ class WikiPage(Page):
             return f'Page name "{page}" is missing either a language or a namespace'
 
         namespace = page.split("/")[0]
-        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_is_valid(page)
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_is_valid(page, is_new_page)
 
     def page_get_correct_case(self, page: str) -> str:
         namespace = page.split("/")[0]

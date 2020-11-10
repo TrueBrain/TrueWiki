@@ -72,12 +72,17 @@ class Namespace(base.Namespace):
         return singleton.STORAGE.file_exists(f"{page}.mediawiki")
 
     @classmethod
-    def page_is_valid(cls, page: str) -> Optional[str]:
+    def page_is_valid(cls, page: str, is_new_page: bool) -> Optional[str]:
         assert page.startswith("File/")
         spage = page.split("/")
 
         if cls._is_root(page):
             return None
+
+        if is_new_page and cls._is_language_root(page):
+            return f'Page name "{page}" is invalid, as it is automatically generated.'
+        if is_new_page and cls._is_root_of_folder(page):
+            return f'Page name "{page}" is invalid, as it is automatically generated.'
 
         # There should always be a language code in the path.
         if len(spage) < 3:
@@ -85,6 +90,9 @@ class Namespace(base.Namespace):
         # The language should already exist.
         if not singleton.STORAGE.dir_exists(f"File/{spage[1]}"):
             return f'Page name "{page}" is in language "{spage[1]}" that does not exist.'
+
+        if not page.endswith((".png", ".jpeg", ".gif")):
+            return f'Page name "{page}" in the File namespace should end with wither ".png", ".gif", or ".jpeg".'
 
         return None
 

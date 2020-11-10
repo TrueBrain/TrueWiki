@@ -50,9 +50,12 @@ class Namespace(base.Namespace):
         return singleton.STORAGE.dir_exists(page)
 
     @classmethod
-    def page_is_valid(cls, page: str) -> Optional[str]:
+    def page_is_valid(cls, page: str, is_new_page: bool) -> Optional[str]:
         assert page.startswith("Folder/")
         spage = page.split("/")
+
+        if is_new_page:
+            return "You cannot create new files in the Folder namespace."
 
         if cls._is_root(page):
             return None

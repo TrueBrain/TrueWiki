@@ -16,8 +16,9 @@ from ..wiki_page import WikiPage
 
 def save(user, old_page: str, new_page: str, content: str, payload) -> web.Response:
     wiki_page = WikiPage(old_page)
-    page_error = wiki_page.page_is_valid(old_page) or wiki_page.page_is_valid(new_page)
-
+    page_error = wiki_page.page_is_valid(old_page, is_new_page=True)
+    if not page_error:
+        page_error = wiki_page.page_is_valid(new_page, is_new_page=True)
     if not page_error:
         if new_page.endswith("/"):
             page_error = (

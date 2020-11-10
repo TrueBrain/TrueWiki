@@ -48,7 +48,7 @@ class Namespace(base.Namespace):
         return metadata.TEMPLATES[f"Page/{page}"]
 
     @staticmethod
-    def page_is_valid(page: str) -> Optional[str]:
+    def page_is_valid(page: str, is_new_page: bool) -> Optional[str]:
         spage = page.split("/")
 
         # There should always be a language code in the path.

@@ -81,12 +81,15 @@ class Namespace(base.Namespace):
         return singleton.STORAGE.file_exists(f"{page}.mediawiki")
 
     @classmethod
-    def page_is_valid(cls, page: str) -> Optional[str]:
+    def page_is_valid(cls, page: str, is_new_page: bool) -> Optional[str]:
         assert page.startswith("Category/")
         spage = page.split("/")
 
         if cls._is_root(page):
             return None
+
+        if is_new_page and cls._is_language_root(page):
+            return f'Page name "{page}" is invalid, as it is automatically generated.'
 
         # There should always be a language code in the path.
         if len(spage) < 3:
