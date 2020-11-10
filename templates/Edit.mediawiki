@@ -46,8 +46,12 @@
             </ul>
         </nav>
         <main>
+            {{#if:{{{page_error|}}}|
+            <h3><font color="red">Error saving page</font></h3>
+                <ul><li>{{{page_error|}}}</li></ul>
+            }}
             {{#if:{{{has_errors|}}}|
-            <h3>Errors</h3>
+            <h3>Problems</h3>
             <ul>
                 {{errors}}
             </ul>
