@@ -60,7 +60,7 @@ class ErrorOnlyAccessLogger(AccessLogger):
 @click.option("--port", help="Port of the web server", default=80, show_default=True)
 @click.option(
     "--storage",
-    type=click.Choice(["github", "local"], case_sensitive=False),
+    type=click.Choice(["github", "git", "local"], case_sensitive=False),
     required=True,
     callback=click_helper.import_module("truewiki.storage", "Storage"),
 )
