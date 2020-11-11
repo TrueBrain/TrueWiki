@@ -1,6 +1,8 @@
+import asyncio
 import click
 import git
 
+from concurrent import futures
 from openttd_helpers import click_helper
 
 from . import local
@@ -8,12 +10,49 @@ from . import local
 GIT_USERNAME = None
 GIT_EMAIL = None
 
+GIT_BUSY = asyncio.Event()
+GIT_BUSY.set()
+
+
+class OutOfProcessStorage:
+    def __init__(self, folder, ssh_command):
+        self._folder = folder
+        self._ssh_command = ssh_command
+        self._git = git.Repo(self._folder)
+
+    def commit(self, git_author, commit_message, files_added, files_changed, files_removed):
+        if not files_added and not files_removed:
+            # If there is no diff for any of these items, the user reverted back
+            # to the original state. In this case, do not make a commit, as it
+            # would be an empty commit.
+            if not self._git.index.diff(other=None, paths=files_changed):
+                return True
+
+        # Update the index with the added/removed files.
+        for filename in files_added + files_changed:
+            self._git.index.add(filename)
+        for filename in files_removed:
+            self._git.index.remove(filename)
+
+        git_author = git.Actor(*git_author)
+
+        self._git.index.commit(
+            commit_message,
+            author=git_author,
+            committer=git.Actor(GIT_USERNAME, GIT_EMAIL),
+        )
+
+        return True
+
 
 class Storage(local.Storage):
+    out_of_process_class = OutOfProcessStorage
+
     def __init__(self):
         super().__init__()
 
-        self._git_commiter = git.Actor(GIT_USERNAME, GIT_EMAIL)
+        self._ssh_command = None
+
         self._files_added = []
         self._files_changed = []
         self._files_removed = []
@@ -38,30 +77,47 @@ class Storage(local.Storage):
             committer=self._git_commiter,
         )
 
-    def commit(self, user, commit_message):
-        if not self._files_added and not self._files_removed:
-            # If there is no diff for any of these items, the user reverted back
-            # to the original state. In this case, do not make a commit, as it
-            # would be an empty commit.
-            if not self._git.index.diff(other=None, paths=self._files_changed):
-                return
+    async def _run_out_of_process(self, folder, ssh_command, callback, func, *args):
+        await GIT_BUSY.wait()
+        GIT_BUSY.clear()
 
-        # Update the index with the added/removed files.
-        for filename in self._files_added + self._files_changed:
-            self._git.index.add(filename)
-        for filename in self._files_removed:
-            self._git.index.remove(filename)
+        try:
+            out_of_process = self.out_of_process_class(folder, ssh_command)
+
+            # Run the reload in a new process, so we don't block the rest of the
+            # server while doing this job.
+            loop = asyncio.get_event_loop()
+            with futures.ProcessPoolExecutor(max_workers=1) as executor:
+                task = loop.run_in_executor(executor, getattr(out_of_process, func), *args)
+                result = await task
+        finally:
+            GIT_BUSY.set()
+
+        # Task indicated something went wrong; initiate a full reload.
+        if result is False:
+            self.reload()
+            return
+
+        if callback:
+            callback()
+
+    def commit(self, user, commit_message):
+        args = (
+            user.get_git_author(),
+            commit_message,
+            self._files_added[:],
+            self._files_changed[:],
+            self._files_removed[:],
+        )
         self._files_added.clear()
         self._files_changed.clear()
         self._files_removed.clear()
 
-        git_author = git.Actor(*user.get_git_author())
+        loop = asyncio.get_event_loop()
+        loop.create_task(self._run_out_of_process(self._folder, self._ssh_command, self.commit_done, "commit", *args))
 
-        self._git.index.commit(
-            commit_message,
-            author=git_author,
-            committer=self._git_commiter,
-        )
+    def commit_done(self):
+        pass
 
     def file_write(self, filename: str, content, mode="w") -> None:
         if self.file_exists(filename):
