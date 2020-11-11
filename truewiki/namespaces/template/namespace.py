@@ -119,7 +119,7 @@ class Namespace(base.Namespace):
         assert page.startswith("Template/")
 
         if cls._is_root(page):
-            return folder_content.add_content("Folder/Template/Main Page", namespace="Template")
+            return folder_content.add_language_content("Template")
         if cls._is_language_root(page):
             language = page.split("/")[1]
             return folder_content.add_content(f"Folder/Template/{language}/Main Page", namespace="Template")

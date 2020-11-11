@@ -22,22 +22,23 @@ CACHE_VERSION = 4
 
 def page():
     return {
-        "translations": [],
         "categories": [],
         "files": [],
         "links": [],
         "templates": [],
+        "translations": [],
         "digest": "",
     }
 
 
-TRANSLATIONS = defaultdict(list)
 CATEGORIES = defaultdict(list)
 FILES = defaultdict(list)
+LANGUAGES = set()
 LINKS = defaultdict(list)
-TEMPLATES = defaultdict(list)
 PAGES = defaultdict(page)
 PAGES_LC = {}
+TEMPLATES = defaultdict(list)
+TRANSLATIONS = defaultdict(list)
 
 RELOAD_BUSY = asyncio.Event()
 RELOAD_BUSY.set()
@@ -212,7 +213,7 @@ def page_changed(pages):
 
 
 async def out_of_process(func, pages):
-    global TRANSLATIONS, CATEGORIES, FILES, LINKS, TEMPLATES, PAGES, PAGES_LC
+    global CATEGORIES, FILES, LANGUAGES, LINKS, PAGES, PAGES_LC, TEMPLATES, TRANSLATIONS
 
     await RELOAD_BUSY.wait()
     RELOAD_BUSY.clear()
@@ -228,11 +229,12 @@ async def out_of_process(func, pages):
             (
                 CATEGORIES,
                 FILES,
+                LANGUAGES,
                 LINKS,
-                TEMPLATES,
-                TRANSLATIONS,
                 PAGES,
                 PAGES_LC,
+                TEMPLATES,
+                TRANSLATIONS,
             ) = await task
     finally:
         RELOAD_BUSY.set()
@@ -244,10 +246,6 @@ class ReloadHelper:
 
     def _post(self):
         # Sort everything so we don't have to on render time.
-        for translation in TRANSLATIONS:
-            TRANSLATIONS[translation] = sorted(
-                set(TRANSLATIONS[translation]), key=lambda name: (name.find("en/") < 0, name)
-            )
         for category in CATEGORIES:
             CATEGORIES[category] = sorted(set(CATEGORIES[category]), key=lambda x: list(reversed(x.split("/"))))
         for file in FILES:
@@ -256,16 +254,20 @@ class ReloadHelper:
             LINKS[link] = sorted(set(LINKS[link]), key=lambda x: list(reversed(x.split("/"))))
         for template in TEMPLATES:
             TEMPLATES[template] = sorted(set(TEMPLATES[template]), key=lambda x: list(reversed(x.split("/"))))
+        for translation in TRANSLATIONS:
+            TRANSLATIONS[translation] = sorted(
+                set(TRANSLATIONS[translation]), key=lambda name: (name.find("en/") < 0, name)
+            )
 
         # Ensure thare are no duplicated in PAGES too, and fill the PAGES_LC
         # with a mapping from lowercase to real page name.
         PAGES_LC.clear()
         for page, page_data in PAGES.items():
-            page_data["translations"] = list(set(page_data["translations"]))
             page_data["categories"] = list(set(page_data["categories"]))
             page_data["files"] = list(set(page_data["files"]))
             page_data["links"] = list(set(page_data["links"]))
             page_data["templates"] = list(set(page_data["templates"]))
+            page_data["translations"] = list(set(page_data["translations"]))
 
             PAGES_LC[page.lower()] = page
 
@@ -274,7 +276,7 @@ class ReloadHelper:
             _page_changed(page)
         self._post()
 
-        return CATEGORIES, FILES, LINKS, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
+        return CATEGORIES, FILES, LANGUAGES, LINKS, PAGES, PAGES_LC, TEMPLATES, TRANSLATIONS
 
     def load_metadata(self):
         start = time.time()
@@ -282,10 +284,11 @@ class ReloadHelper:
 
         CATEGORIES.clear()
         FILES.clear()
+        LANGUAGES.clear()
         LINKS.clear()
+        PAGES.clear()
         TEMPLATES.clear()
         TRANSLATIONS.clear()
-        PAGES.clear()
 
         if os.path.exists(CACHE_FILENAME):
             with open(CACHE_FILENAME, "r") as fp:
@@ -294,9 +297,9 @@ class ReloadHelper:
                     CATEGORIES.update(payload["categories"])
                     FILES.update(payload["files"])
                     LINKS.update(payload["links"])
+                    PAGES.update(payload["pages"])
                     TEMPLATES.update(payload["templates"])
                     TRANSLATIONS.update(payload["translations"])
-                    PAGES.update(payload["pages"])
 
         # Ensure no file is scanned more than once.
         notified = set()
@@ -304,6 +307,11 @@ class ReloadHelper:
         pages_seen = set()
         # Scan all folders with mediawiki files.
         for subfolder in ("Page", "Template", "Category", "File"):
+            # Index all languages (the superset of all folders).
+            for node in glob.glob(f"{singleton.STORAGE.folder}/{subfolder}/*"):
+                if os.path.isdir(node):
+                    language = node.split("/")[-1]
+                    LANGUAGES.add(language)
             pages_seen.update(_scan_folder(f"{subfolder}", notified))
 
         # If we come from cache, validate that no file got removed; we should
@@ -326,15 +334,15 @@ class ReloadHelper:
                         "categories": CATEGORIES,
                         "files": FILES,
                         "links": LINKS,
+                        "pages": PAGES,
                         "templates": TEMPLATES,
                         "translations": TRANSLATIONS,
-                        "pages": PAGES,
                     }
                 )
             )
 
         log.info(f"Loading metadata done; took {time.time() - start:.2f} seconds")
-        return CATEGORIES, FILES, LINKS, TEMPLATES, TRANSLATIONS, PAGES, PAGES_LC
+        return CATEGORIES, FILES, LANGUAGES, LINKS, PAGES, PAGES_LC, TEMPLATES, TRANSLATIONS
 
 
 @click_helper.extend
