@@ -5,6 +5,7 @@ from typing import Optional
 from . import content
 from .. import base
 from ... import (
+    metadata,
     singleton,
     wiki_page,
 )
@@ -72,8 +73,8 @@ class Namespace(base.Namespace):
         if len(spage) < 4:
             return f'Page name "{page}" is missing a namespace and/or language code.'
         # The namespace and language should already exist.
-        if not singleton.STORAGE.dir_exists(f"{spage[1]}/{spage[2]}"):
-            return f'Page name "{page}" is in language "{spage[2]}" that does not exist for namespace "{spage[1]}".'
+        if spage[2] not in metadata.LANGUAGES:
+            return f'Page name "{page}" is in language "{spage[2]}" that does not exist.'
         return None
 
     @staticmethod
