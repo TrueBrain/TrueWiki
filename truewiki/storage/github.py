@@ -17,14 +17,8 @@ _github_private_key = None
 _github_url = None
 _github_history_url = None
 
-PUSH_TASK = None
-# Wait 5 minutes between edits to push to GitHub. As processing a newpush
-# takes a bit of time, we want to prevent it happening on commit. The delay
-# should be at least as long as it takes to recalculate the metadata, which
-# at this moment is never longer than 250 seconds. Adding 50 more seconds to
-# be safe should be sufficient. This way, one push should never be busy being
-# processed before another push arrives.
-PUSH_DELAY = 300
+GIT_BUSY = asyncio.Event()
+GIT_BUSY.set()
 
 
 class Storage(GitStorage):
@@ -89,35 +83,49 @@ class Storage(GitStorage):
         while self._remove_empty_folders(self._folder):
             pass
 
+    async def _fetch_latest_async(self):
+        await GIT_BUSY.wait()
+        GIT_BUSY.clear()
+
+        try:
+            self._fetch_latest()
+        finally:
+            GIT_BUSY.set()
+
     def reload(self):
         super().reload()
 
-        self._fetch_latest()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self._fetch_latest_async())
 
-    async def _push_after_timeout(self):
-        global PUSH_TASK
-
-        await asyncio.sleep(PUSH_DELAY)
-        PUSH_TASK = None
-
+    async def _push_async(self):
         if not self._ssh_command:
             log.error("No GitHub private key supplied; cannot push to GitHub.")
             return
 
-        with self._git.git.custom_environment(GIT_SSH_COMMAND=self._ssh_command):
-            self._git.remotes.origin.push()
+        await GIT_BUSY.wait()
+        GIT_BUSY.clear()
+
+        do_reload = False
+        try:
+            with self._git.git.custom_environment(GIT_SSH_COMMAND=self._ssh_command):
+                self._git.remotes.origin.push()
+        except Exception:
+            log.exception("Git push failed")
+            do_reload = True
+            # We cannot do self.reload() here, as GIT_BUSY is taken by us.
+            # So first release GIT_BUSY, then do a self.reload().
+        finally:
+            GIT_BUSY.set()
+
+        if do_reload:
+            self.reload()
 
     def commit(self, user, commit_message):
-        global PUSH_TASK
-
         super().commit(user, commit_message)
 
-        if PUSH_TASK:
-            PUSH_TASK.cancel()
-            PUSH_TASK = None
-
         loop = asyncio.get_event_loop()
-        PUSH_TASK = loop.create_task(self._push_after_timeout())
+        loop.create_task(self._push_async())
 
     def get_history_url(self, page):
         page = urllib.parse.quote(page)
