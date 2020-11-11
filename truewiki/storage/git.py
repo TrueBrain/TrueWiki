@@ -73,8 +73,8 @@ class Storage(local.Storage):
         # HEAD is invalid, which results in other nasty problems.
         self._git.index.commit(
             "Add: initial empty commit",
-            author=self._git_commiter,
-            committer=self._git_commiter,
+            author=git.Actor(GIT_USERNAME, GIT_EMAIL),
+            committer=git.Actor(GIT_USERNAME, GIT_EMAIL),
         )
 
     async def _run_out_of_process(self, folder, ssh_command, callback, func, *args):
