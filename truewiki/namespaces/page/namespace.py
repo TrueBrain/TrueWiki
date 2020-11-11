@@ -55,7 +55,7 @@ class Namespace(base.Namespace):
         if len(spage) < 2:
             return f'Page name "{page}" is missing a language code.'
         # The language should already exist.
-        if not singleton.STORAGE.dir_exists(f"Page/{spage[0]}"):
+        if spage[0] not in metadata.LANGUAGES:
             return f'Page name "{page}" is in language "{spage[0]}" that does not exist.'
 
         return None
