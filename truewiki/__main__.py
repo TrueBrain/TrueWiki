@@ -78,15 +78,16 @@ async def wait_for_metadata():
 def main(bind, port, storage, validate_all):
     log.info("Reload storage ..")
     instance = storage()
+    singleton.STORAGE = instance
+
     instance.prepare()
     instance.reload()
 
-    singleton.STORAGE = instance
+    # At startup, ensure storage is loaded in.
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(wait_for_metadata())
 
     if validate_all:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(wait_for_metadata())
-
         validate.all()
         return
 
