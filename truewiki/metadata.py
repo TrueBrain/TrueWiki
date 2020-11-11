@@ -43,6 +43,8 @@ TRANSLATIONS = defaultdict(list)
 RELOAD_BUSY = asyncio.Event()
 RELOAD_BUSY.set()
 
+METADATA_READY = asyncio.Event()
+
 
 def translation_callback(wtp, wiki_page, page):
     for wikilink in wtp.wikilinks:
@@ -203,6 +205,8 @@ def _scan_folder(folder, notified=None):
 
 
 def load_metadata():
+    METADATA_READY.clear()
+
     loop = asyncio.get_event_loop()
     loop.create_task(out_of_process("load_metadata", None))
 
@@ -238,6 +242,9 @@ async def out_of_process(func, pages):
             ) = await task
     finally:
         RELOAD_BUSY.set()
+
+    if func == "load_metadata":
+        METADATA_READY.set()
 
 
 class ReloadHelper:

@@ -9,7 +9,10 @@ import urllib
 
 from openttd_helpers import click_helper
 
-from .git import Storage as GitStorage
+from .git import (
+    OutOfProcessStorage as GitOutOfProcessStorage,
+    Storage as GitStorage,
+)
 
 log = logging.getLogger(__name__)
 
@@ -17,35 +20,8 @@ _github_private_key = None
 _github_url = None
 _github_history_url = None
 
-GIT_BUSY = asyncio.Event()
-GIT_BUSY.set()
 
-
-class Storage(GitStorage):
-    def __init__(self):
-        super().__init__()
-
-        # We need to write the private key to disk: GitPython can only use
-        # SSH-keys that are written on disk.
-        if _github_private_key:
-            self._github_private_key_file = tempfile.NamedTemporaryFile()
-            self._github_private_key_file.write(_github_private_key)
-            self._github_private_key_file.flush()
-
-            self._ssh_command = f"ssh -i {self._github_private_key_file.name}"
-        else:
-            self._ssh_command = None
-
-    def prepare(self):
-        super().prepare()
-
-        # Make sure the origin is set correctly
-        if "origin" not in self._git.remotes:
-            self._git.create_remote("origin", _github_url)
-        origin = self._git.remotes.origin
-        if origin.url != _github_url:
-            origin.set_url(_github_url)
-
+class OutOfProcessStorage(GitOutOfProcessStorage):
     def _remove_empty_folders(self, parent_folder):
         removed = False
         for root, folders, files in os.walk(parent_folder, topdown=False):
@@ -58,7 +34,7 @@ class Storage(GitStorage):
 
         return removed
 
-    def _fetch_latest(self):
+    def fetch_latest(self):
         log.info("Updating storage to latest version from GitHub")
 
         origin = self._git.remotes.origin
@@ -83,49 +59,58 @@ class Storage(GitStorage):
         while self._remove_empty_folders(self._folder):
             pass
 
-    async def _fetch_latest_async(self):
-        await GIT_BUSY.wait()
-        GIT_BUSY.clear()
+        return True
 
-        try:
-            self._fetch_latest()
-        finally:
-            GIT_BUSY.set()
-
-    def reload(self):
-        super().reload()
-
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self._fetch_latest_async())
-
-    async def _push_async(self):
+    def push(self):
         if not self._ssh_command:
             log.error("No GitHub private key supplied; cannot push to GitHub.")
-            return
+            return True
 
-        await GIT_BUSY.wait()
-        GIT_BUSY.clear()
-
-        do_reload = False
         try:
             with self._git.git.custom_environment(GIT_SSH_COMMAND=self._ssh_command):
                 self._git.remotes.origin.push()
         except Exception:
-            log.exception("Git push failed")
-            do_reload = True
-            # We cannot do self.reload() here, as GIT_BUSY is taken by us.
-            # So first release GIT_BUSY, then do a self.reload().
-        finally:
-            GIT_BUSY.set()
+            log.exception("Git push failed; reloading from GitHub")
+            return False
 
-        if do_reload:
-            self.reload()
+        return True
 
-    def commit(self, user, commit_message):
-        super().commit(user, commit_message)
 
+class Storage(GitStorage):
+    out_of_process_class = OutOfProcessStorage
+
+    def __init__(self):
+        super().__init__()
+
+        # We need to write the private key to disk: GitPython can only use
+        # SSH-keys that are written on disk.
+        if _github_private_key:
+            self._github_private_key_file = tempfile.NamedTemporaryFile()
+            self._github_private_key_file.write(_github_private_key)
+            self._github_private_key_file.flush()
+
+            self._ssh_command = f"ssh -i {self._github_private_key_file.name}"
+
+    def prepare(self):
+        super().prepare()
+
+        # Make sure the origin is set correctly
+        if "origin" not in self._git.remotes:
+            self._git.create_remote("origin", _github_url)
+        origin = self._git.remotes.origin
+        if origin.url != _github_url:
+            origin.set_url(_github_url)
+
+    def reload(self):
         loop = asyncio.get_event_loop()
-        loop.create_task(self._push_async())
+        loop.create_task(self._run_out_of_process(self._folder, self._ssh_command, self._reload_done, "fetch_latest"))
+
+    def _reload_done(self):
+        super().reload()
+
+    def commit_done(self):
+        loop = asyncio.get_event_loop()
+        loop.create_task(self._run_out_of_process(self._folder, self._ssh_command, None, "push"))
 
     def get_history_url(self, page):
         page = urllib.parse.quote(page)

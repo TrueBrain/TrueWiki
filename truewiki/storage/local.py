@@ -5,6 +5,8 @@ import os
 from openttd_helpers import click_helper
 from typing import List
 
+from .. import metadata
+
 STORAGE_FOLDER = None
 
 
@@ -16,7 +18,7 @@ class Storage:
         pass
 
     def reload(self):
-        pass
+        metadata.load_metadata()
 
     def commit(self, user, commit_message):
         pass

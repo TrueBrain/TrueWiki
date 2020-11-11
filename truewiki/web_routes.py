@@ -7,7 +7,6 @@ from aiohttp import web
 from openttd_helpers import click_helper
 
 from . import singleton
-from .metadata import load_metadata
 from .views import (
     edit,
     license as license_page,
@@ -89,7 +88,6 @@ async def reload(request):
         return web.HTTPNotFound()
 
     singleton.STORAGE.reload()
-    load_metadata()
 
     return web.HTTPNoContent()
 

@@ -1,3 +1,4 @@
+import asyncio
 import click
 import logging
 
@@ -8,13 +9,11 @@ from openttd_helpers.logging_helper import click_logging
 from openttd_helpers.sentry_helper import click_sentry
 
 from . import (
+    metadata,
     singleton,
     validate,
 )
-from .metadata import (
-    click_metadata,
-    load_metadata,
-)
+from .metadata import click_metadata
 from .storage.git import click_storage_git
 from .storage.github import click_storage_github
 from .storage.local import click_storage_local
@@ -51,6 +50,10 @@ class ErrorOnlyAccessLogger(AccessLogger):
             super().log(request, response, time)
 
 
+async def wait_for_metadata():
+    await metadata.METADATA_READY.wait()
+
+
 @click_helper.command()
 @click_logging  # Should always be on top, as it initializes the logging
 @click_sentry
@@ -81,10 +84,11 @@ def main(bind, port, storage, validate_all):
     singleton.STORAGE = instance
 
     if validate_all:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(wait_for_metadata())
+
         validate.all()
         return
-
-    load_metadata()
 
     webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE)
     webapp.router.add_static("/uploads", f"{instance.folder}/File/")
