@@ -2,9 +2,39 @@ import wikitextparser
 
 from wikitexthtml.render import wikilink
 
-from ... import singleton
+from ... import (
+    metadata,
+    singleton,
+)
 from ...wiki_page import WikiPage
 from ...wrapper import wrap_page
+
+
+def add_language_content(folder, namespace=None):
+    if namespace is None:
+        namespace = folder
+
+    page = f"Folder/{folder}/Main Page"
+
+    items = []
+    for language in metadata.LANGUAGES:
+        if namespace == "Folder":
+            items.append(f"<li>[[:{namespace}:{folder}/{language}]]</li>")
+        else:
+            items.append(f"<li>[[:{namespace}:{language}/Main Page]]</li>")
+
+    wtp = wikitextparser.parse("\n".join(sorted(items)))
+    wikilink.replace(WikiPage(page), wtp)
+
+    templates = {
+        "folders": wtp.string,
+    }
+    variables = {
+        "folder_label": "Languages",
+        "has_folders": "1",
+    }
+
+    return wrap_page(page, "Folder", variables, templates)
 
 
 def add_content(page, namespace="Folder", namespace_for_folder=False, folder_label="Folders", page_label="Pages"):
@@ -17,6 +47,10 @@ def add_content(page, namespace="Folder", namespace_for_folder=False, folder_lab
         return ""
 
     folder = page[len("Folder/") : -len("/Main Page")]
+
+    # Inside namespaces is the list of languages, which has its own render.
+    if folder and len(folder.split("/")) == 1:
+        return add_language_content(folder, namespace="Folder")
 
     for item in sorted(singleton.STORAGE.dir_listing(folder)):
         if singleton.STORAGE.dir_exists(item):

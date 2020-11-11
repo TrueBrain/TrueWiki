@@ -128,7 +128,7 @@ class Namespace(base.Namespace):
         assert page.startswith("File/")
 
         if cls._is_root(page):
-            return folder_content.add_content("Folder/File/Main Page", namespace="File", folder_label="Languages")
+            return folder_content.add_language_content("File")
         if cls._is_root_of_folder(page):
             return folder_content.add_content(
                 f"Folder/{page}", namespace="File", namespace_for_folder=True, page_label="Files"
