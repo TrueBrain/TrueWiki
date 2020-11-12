@@ -285,6 +285,24 @@ class ReloadHelper:
 
         return CATEGORIES, FILES, LANGUAGES, LINKS, PAGES, PAGES_LC, TEMPLATES, TRANSLATIONS
 
+    def _load_metadata_from_cache(self):
+        with open(CACHE_FILENAME, "r") as fp:
+            try:
+                payload = json.loads(fp.read())
+            except json.JSONDecodeError:
+                log.info("Cache was corrupted; reloading metadata ...")
+                return
+
+        if payload.get("version", 1) != CACHE_VERSION:
+            return
+
+        CATEGORIES.update(payload["categories"])
+        FILES.update(payload["files"])
+        LINKS.update(payload["links"])
+        PAGES.update(payload["pages"])
+        TEMPLATES.update(payload["templates"])
+        TRANSLATIONS.update(payload["translations"])
+
     def load_metadata(self):
         start = time.time()
         log.info("Loading metadata (this can take a while the first run) ...")
@@ -298,15 +316,7 @@ class ReloadHelper:
         TRANSLATIONS.clear()
 
         if os.path.exists(CACHE_FILENAME):
-            with open(CACHE_FILENAME, "r") as fp:
-                payload = json.loads(fp.read())
-                if payload.get("version", 1) == CACHE_VERSION:
-                    CATEGORIES.update(payload["categories"])
-                    FILES.update(payload["files"])
-                    LINKS.update(payload["links"])
-                    PAGES.update(payload["pages"])
-                    TEMPLATES.update(payload["templates"])
-                    TRANSLATIONS.update(payload["translations"])
+            self._load_metadata_from_cache()
 
         # Ensure no file is scanned more than once.
         notified = set()
