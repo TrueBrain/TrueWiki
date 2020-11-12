@@ -9,7 +9,6 @@ from openttd_helpers.logging_helper import click_logging
 from openttd_helpers.sentry_helper import click_sentry
 
 from . import (
-    metadata,
     singleton,
     validate,
 )
@@ -50,8 +49,8 @@ class ErrorOnlyAccessLogger(AccessLogger):
             super().log(request, response, time)
 
 
-async def wait_for_metadata():
-    await metadata.METADATA_READY.wait()
+async def wait_for_storage():
+    await singleton.STORAGE.wait_for_ready()
 
 
 @click_helper.command()
@@ -85,7 +84,7 @@ def main(bind, port, storage, validate_all):
 
     # At startup, ensure storage is loaded in.
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(wait_for_metadata())
+    loop.run_until_complete(wait_for_storage())
 
     if validate_all:
         validate.all()
