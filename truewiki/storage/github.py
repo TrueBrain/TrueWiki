@@ -92,14 +92,16 @@ class Storage(GitStorage):
             self._ssh_command = f"ssh -i {self._github_private_key_file.name}"
 
     def prepare(self):
-        super().prepare()
+        _git = super().prepare()
 
         # Make sure the origin is set correctly
-        if "origin" not in self._git.remotes:
-            self._git.create_remote("origin", _github_url)
-        origin = self._git.remotes.origin
+        if "origin" not in _git.remotes:
+            _git.create_remote("origin", _github_url)
+        origin = _git.remotes.origin
         if origin.url != _github_url:
             origin.set_url(_github_url)
+
+        return _git
 
     def reload(self):
         loop = asyncio.get_event_loop()

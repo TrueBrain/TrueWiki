@@ -1,6 +1,7 @@
 import asyncio
 import click
 import git
+import multiprocessing
 
 from concurrent import futures
 from openttd_helpers import click_helper
@@ -61,21 +62,23 @@ class Storage(local.Storage):
         super().prepare()
 
         try:
-            self._git = git.Repo(self.folder)
+            return git.Repo(self.folder)
         except git.exc.NoSuchPathError:
-            self._init_repository()
+            return self._init_repository()
         except git.exc.InvalidGitRepositoryError:
-            self._init_repository()
+            return self._init_repository()
 
     def _init_repository(self):
-        self._git = git.Repo.init(self.folder)
+        _git = git.Repo.init(self.folder)
         # Always make sure there is a commit in the working tree, otherwise
         # HEAD is invalid, which results in other nasty problems.
-        self._git.index.commit(
+        _git.index.commit(
             "Add: initial empty commit",
             author=git.Actor(GIT_USERNAME, GIT_EMAIL),
             committer=git.Actor(GIT_USERNAME, GIT_EMAIL),
         )
+
+        return _git
 
     async def _run_out_of_process(self, folder, ssh_command, callback, func, *args):
         await GIT_BUSY.wait()
@@ -87,7 +90,11 @@ class Storage(local.Storage):
             # Run the reload in a new process, so we don't block the rest of the
             # server while doing this job.
             loop = asyncio.get_event_loop()
-            with futures.ProcessPoolExecutor(max_workers=1) as executor:
+            # Use "spawn" over "fork", as we don't need any variable from our
+            # current process. This heavily cuts back on memory usage, but it
+            # takes a bit longer to start up.
+            mp_context = multiprocessing.get_context("spawn")
+            with futures.ProcessPoolExecutor(max_workers=1, mp_context=mp_context) as executor:
                 task = loop.run_in_executor(executor, getattr(out_of_process, func), *args)
                 result = await task
         finally:
