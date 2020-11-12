@@ -1,3 +1,4 @@
+import asyncio
 import click
 import glob
 import os
@@ -11,13 +12,19 @@ STORAGE_FOLDER = None
 
 
 class Storage:
+    ready = asyncio.Event()
+
     def __init__(self) -> None:
         self._folder = STORAGE_FOLDER
+
+    async def wait_for_ready(self):
+        await self.ready.wait()
 
     def prepare(self):
         pass
 
     def reload(self):
+        self.ready.set()
         metadata.load_metadata()
 
     def commit(self, user, commit_message):
