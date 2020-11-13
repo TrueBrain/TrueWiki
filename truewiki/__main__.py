@@ -69,6 +69,13 @@ async def remove_cookie_middleware(request, handler):
     return response
 
 
+async def cache_on_prepare(request, response):
+    # Only cache images, CSS, javascript, ..
+    if request.path.startswith(("/static", "/uploads")):
+        # Everyone is free to cache these files for 5 minutes.
+        response.headers["Cache-Control"] = "public, max-age=300"
+
+
 async def wait_for_storage():
     await singleton.STORAGE.wait_for_ready()
 
@@ -111,6 +118,7 @@ def main(bind, port, storage, validate_all):
         return
 
     webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])
+    webapp.on_response_prepare.append(cache_on_prepare)
     webapp.router.add_static("/uploads", f"{instance.folder}/File/")
     webapp.router.add_static("/static", "static/")
     register_webroutes(webapp)
