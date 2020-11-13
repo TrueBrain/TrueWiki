@@ -47,4 +47,4 @@ COPY truewiki /code/truewiki
 RUN mkdir /data
 
 ENTRYPOINT ["python", "-m", "truewiki"]
-CMD ["--bind", "0.0.0.0", "--storage", "local", "--storage-folder", "/data", "--cache-metadata-file", "/cache/metadata.json", "--user", "developer"]
+CMD ["--bind", "0.0.0.0", "--storage", "local", "--storage-folder", "/data", "--cache-metadata-file", "/cache/metadata.json", "--cache-page-folder", "/cache/pages", "--user", "developer"]

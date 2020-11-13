@@ -1,12 +1,17 @@
+import click
+import os
 import time
 
 from aiohttp import web
+from openttd_helpers import click_helper
 
 from . import error
 from .. import metadata
 from ..content import breadcrumb
 from ..wiki_page import WikiPage
 from ..wrapper import wrap_page
+
+CACHE_PAGE_FOLDER = None
 
 
 def _view(wiki_page, user, page: str) -> web.Response:
@@ -24,10 +29,7 @@ def _view(wiki_page, user, page: str) -> web.Response:
     templates["footer"] = wiki_page.add_footer(page)
     templates["content"] += wiki_page.add_content(page)
 
-    body = wrap_page(page, "Page", variables, templates)
-
-    status_code = 200 if wiki_page.page_exists(page) else 404
-    return web.Response(body=body, content_type="text/html", status=status_code)
+    return wrap_page(page, "Page", variables, templates)
 
 
 def view(user, page: str, if_modified_since) -> web.Response:
@@ -48,20 +50,69 @@ def view(user, page: str, if_modified_since) -> web.Response:
             f'"{page}" does not exist; did you mean [[{correct_page}]]?',
         )
 
-    # Check if we already rendered this page before. If the browser has it in
-    # his cache, he can simply reuse that if we haven't rendered since.
-    if (
-        if_modified_since is not None
-        and f"Page/{page}" in metadata.LAST_TIME_RENDERED
-        and metadata.LAST_TIME_RENDERED[f"Page/{page}"] <= if_modified_since.timestamp()
-    ):
-        response = web.HTTPNotModified()
+    status_code = 200 if wiki_page.page_exists(page) else 404
+    namespaced_page = page
+    if not namespaced_page.startswith(("Category/", "File/", "Template/")):
+        namespaced_page = f"Page/{namespaced_page}"
+
+    if CACHE_PAGE_FOLDER:
+        cache_filename = f"{CACHE_PAGE_FOLDER}/{namespaced_page}.html"
     else:
-        response = _view(wiki_page, user, page)
-        metadata.LAST_TIME_RENDERED[f"Page/{page}"] = time.time()
+        cache_filename = None
+
+    response = None
+
+    # Check as we might have this page already on cache.
+    if status_code == 200 and namespaced_page in metadata.LAST_TIME_RENDERED:
+        if (
+            if_modified_since is not None
+            and metadata.LAST_TIME_RENDERED[namespaced_page] <= if_modified_since.timestamp()
+        ):
+            # We already rendered this page before. If the browser has it in his
+            # cache, he can simply reuse that if we haven't rendered since.
+            response = web.HTTPNotModified()
+        elif not user and cache_filename:
+            # We already rendered this page to disk. Serve from there.
+            with open(cache_filename) as fp:
+                body = fp.read()
+            response = web.Response(body=body, content_type="text/html", status=status_code)
+
+    # Cache miss; render the page.
+    if response is None:
+        body = _view(wiki_page, user, page)
+
+        if status_code == 200:
+            metadata.LAST_TIME_RENDERED[namespaced_page] = time.time()
+
+            if cache_filename:
+                # Cache the file on disk
+                os.makedirs(os.path.dirname(cache_filename), exist_ok=True)
+                with open(cache_filename, "w") as fp:
+                    fp.write(body)
+
+        response = web.Response(body=body, content_type="text/html", status=status_code)
 
     # Inform the browser under which rules it can cache this page.
-    response.last_modified = metadata.LAST_TIME_RENDERED[f"Page/{page}"]
-    response.headers["Vary"] = "Accept-Encoding, Cookie"
-    response.headers["Cache-Control"] = "private, must-revalidate, max-age=0"
+    if status_code == 200:
+        response.last_modified = metadata.LAST_TIME_RENDERED[namespaced_page]
+        response.headers["Vary"] = "Accept-Encoding, Cookie"
+        response.headers["Cache-Control"] = "private, must-revalidate, max-age=0"
     return response
+
+
+@click_helper.extend
+@click.option(
+    "--cache-page-folder",
+    help="Folder used to cache rendered pages.",
+    default=None,
+    show_default=True,
+)
+def click_page(cache_page_folder):
+    global CACHE_PAGE_FOLDER
+
+    if cache_page_folder and cache_page_folder.endswith("/"):
+        cache_page_folder = cache_page_folder[:-1]
+    if not cache_page_folder:
+        cache_page_folder = None
+
+    CACHE_PAGE_FOLDER = cache_page_folder
