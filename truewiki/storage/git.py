@@ -1,12 +1,16 @@
 import asyncio
 import click
 import git
+import logging
 import multiprocessing
+import sys
 
 from concurrent import futures
 from openttd_helpers import click_helper
 
 from . import local
+
+log = logging.getLogger(__name__)
 
 GIT_USERNAME = None
 GIT_EMAIL = None
@@ -46,6 +50,17 @@ class OutOfProcessStorage:
         return True
 
 
+def check_for_exception(task):
+    exception = task.exception()
+    if exception and not isinstance(exception, asyncio.exceptions.CancelledError):
+        log.exception("Exception in git command", exc_info=exception)
+
+        # We terminate the application, as this is a real problem from which we
+        # cannot recover cleanly. This is needed, as we run in a co-routine, and
+        # there is no other way to notify the main thread we are terminating.
+        sys.exit(1)
+
+
 class Storage(local.Storage):
     out_of_process_class = OutOfProcessStorage
 
@@ -80,7 +95,7 @@ class Storage(local.Storage):
 
         return _git
 
-    async def _run_out_of_process(self, folder, ssh_command, callback, func, *args):
+    async def _run_out_of_process_async(self, folder, ssh_command, callback, func, *args):
         await GIT_BUSY.wait()
         GIT_BUSY.clear()
 
@@ -108,6 +123,11 @@ class Storage(local.Storage):
         if callback:
             callback()
 
+    def _run_out_of_process(self, callback, func, *args):
+        loop = asyncio.get_event_loop()
+        task = loop.create_task(self._run_out_of_process_async(self._folder, self._ssh_command, callback, func, *args))
+        task.add_done_callback(check_for_exception)
+
     def commit(self, user, commit_message):
         args = (
             user.get_git_author(),
@@ -120,8 +140,7 @@ class Storage(local.Storage):
         self._files_changed.clear()
         self._files_removed.clear()
 
-        loop = asyncio.get_event_loop()
-        loop.create_task(self._run_out_of_process(self._folder, self._ssh_command, self.commit_done, "commit", *args))
+        self._run_out_of_process(self.commit_done, "commit", *args)
 
     def commit_done(self):
         pass

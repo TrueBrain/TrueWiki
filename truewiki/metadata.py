@@ -214,9 +214,21 @@ async def _scan_folder(folder, notified=None):
     return pages_seen
 
 
+def check_for_exception(task):
+    exception = task.exception()
+    if exception:
+        log.exception("Exception in metadata_queue()", exc_info=exception)
+
+        # We terminate the application, as this is a real problem from which we
+        # cannot recover cleanly. This is needed, as we run in a co-routine, and
+        # there is no other way to notify the main thread we are terminating.
+        sys.exit(1)
+
+
 def load_metadata():
     loop = asyncio.get_event_loop()
-    loop.create_task(metadata_queue("load_metadata", None))
+    task = loop.create_task(metadata_queue("load_metadata", None))
+    task.add_done_callback(check_for_exception)
 
 
 def page_changed(pages):
