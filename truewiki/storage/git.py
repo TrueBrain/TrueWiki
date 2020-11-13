@@ -20,7 +20,8 @@ GIT_BUSY.set()
 
 
 class OutOfProcessStorage:
-    def __init__(self, folder, ssh_command):
+    def __init__(self, git_commiter, folder, ssh_command):
+        self._git_commiter = git_commiter
         self._folder = folder
         self._ssh_command = ssh_command
         self._git = git.Repo(self._folder)
@@ -44,7 +45,7 @@ class OutOfProcessStorage:
         self._git.index.commit(
             commit_message,
             author=git_author,
-            committer=git.Actor(GIT_USERNAME, GIT_EMAIL),
+            committer=git.Actor(*self._git_commiter),
         )
 
         return True
@@ -100,7 +101,7 @@ class Storage(local.Storage):
         GIT_BUSY.clear()
 
         try:
-            out_of_process = self.out_of_process_class(folder, ssh_command)
+            out_of_process = self.out_of_process_class((GIT_USERNAME, GIT_EMAIL), folder, ssh_command)
 
             # Run the reload in a new process, so we don't block the rest of the
             # server while doing this job.
