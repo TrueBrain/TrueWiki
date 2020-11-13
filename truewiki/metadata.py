@@ -39,6 +39,7 @@ PAGES = defaultdict(page)
 PAGES_LC = {}
 TEMPLATES = defaultdict(list)
 TRANSLATIONS = defaultdict(list)
+LAST_TIME_RENDERED = {}
 
 RELOAD_BUSY = asyncio.Event()
 RELOAD_BUSY.set()
@@ -51,6 +52,12 @@ def translation_callback(wtp, wiki_page, page):
             target = sys.intern(target)
             PAGES[page]["translations"].append(target)
             TRANSLATIONS[target].append(page)
+
+            # Reset the last time rendered for all translations too, as
+            # otherwise a new translation won't show up on those pages.
+            for translation in TRANSLATIONS[target]:
+                if translation in LAST_TIME_RENDERED:
+                    del LAST_TIME_RENDERED[translation]
 
 
 def category_callback(wtp, wiki_page, page):
@@ -119,6 +126,11 @@ def _forget_page(page):
     for translation in PAGES[page]["translations"]:
         TRANSLATIONS[translation].remove(page)
 
+        # Reset the last time rendered for all translations too, as
+        # otherwise a removed translation will still show up on those pages.
+        if f"Page/{translation}" in LAST_TIME_RENDERED:
+            del LAST_TIME_RENDERED[f"Page/{translation}"]
+
     PAGES[page]["categories"].clear()
     PAGES[page]["files"].clear()
     PAGES[page]["links"].clear()
@@ -167,6 +179,12 @@ async def _page_changed(page, notified=None):
 
     if page in notified:
         return
+
+    # As we are invalidating this page, also reset when we last rendered it.
+    # This means that on a next request for this page, browsers will be
+    # given a new version too.
+    if page in LAST_TIME_RENDERED:
+        del LAST_TIME_RENDERED[page]
 
     # Capture the current templates ued. After analysis, this might have
     # changed, but those are still pages that need to be analyzed again.
@@ -341,6 +359,7 @@ class MetadataQueue:
         PAGES.clear()
         TEMPLATES.clear()
         TRANSLATIONS.clear()
+        LAST_TIME_RENDERED.clear()
 
         if os.path.exists(CACHE_FILENAME):
             self._load_metadata_from_cache()

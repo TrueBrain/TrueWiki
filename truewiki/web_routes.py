@@ -169,7 +169,7 @@ async def html_page(request):
     page = request.match_info["page"]
     _validate_page(page)
 
-    return view_page.view(user, page)
+    return view_page.view(user, page, request.if_modified_since)
 
 
 @routes.route("*", "/{tail:.*}")
