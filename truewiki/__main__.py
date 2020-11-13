@@ -19,7 +19,10 @@ from .storage.local import click_storage_local
 from .user.github import click_user_github
 from .user_session import (
     click_user_session,
+    get_user_by_bearer,
     register_webroutes,
+    remove_session_cookie,
+    SESSION_COOKIE_NAME,
 )
 from .web_routes import (
     click_web_routes,
@@ -47,6 +50,23 @@ class ErrorOnlyAccessLogger(AccessLogger):
         # Only log if the status was not successful
         if not (200 <= response.status < 400):
             super().log(request, response, time)
+
+
+@web.middleware
+async def remove_cookie_middleware(request, handler):
+    response = await handler(request)
+
+    # Does the user have a cookie?
+    if SESSION_COOKIE_NAME not in request.cookies:
+        return response
+
+    # But doesn't it result in a user?
+    if get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME)):
+        return response
+
+    # Remove the cookie.
+    remove_session_cookie(response)
+    return response
 
 
 async def wait_for_storage():
@@ -90,7 +110,7 @@ def main(bind, port, storage, validate_all):
         validate.all()
         return
 
-    webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE)
+    webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])
     webapp.router.add_static("/uploads", f"{instance.folder}/File/")
     webapp.router.add_static("/static", "static/")
     register_webroutes(webapp)

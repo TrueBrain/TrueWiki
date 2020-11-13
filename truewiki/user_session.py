@@ -123,6 +123,10 @@ async def user_login(request):
     return user.get_authorize_page()
 
 
+def remove_session_cookie(response):
+    response.set_cookie(SESSION_COOKIE_NAME, "", max_age=0, httponly=True)
+
+
 @routes.get("/user/logout")
 async def user_logout(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
@@ -136,7 +140,7 @@ async def user_logout(request):
 
     location = urllib.parse.quote(redirect_uri)
     response = web.HTTPFound(location=location)
-    response.set_cookie(SESSION_COOKIE_NAME, "", max_age=0, httponly=True)
+    remove_session_cookie(response)
     return response
 
 
