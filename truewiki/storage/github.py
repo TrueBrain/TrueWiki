@@ -1,4 +1,3 @@
-import asyncio
 import base64
 import click
 import git
@@ -104,15 +103,13 @@ class Storage(GitStorage):
         return _git
 
     def reload(self):
-        loop = asyncio.get_event_loop()
-        loop.create_task(self._run_out_of_process(self._folder, self._ssh_command, self._reload_done, "fetch_latest"))
+        self._run_out_of_process(self._reload_done, "fetch_latest")
 
     def _reload_done(self):
         super().reload()
 
     def commit_done(self):
-        loop = asyncio.get_event_loop()
-        loop.create_task(self._run_out_of_process(self._folder, self._ssh_command, None, "push"))
+        self._run_out_of_process(None, "push")
 
     def get_history_url(self, page):
         page = urllib.parse.quote(page)
