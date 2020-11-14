@@ -13,7 +13,7 @@ def link_and_replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
 
     if target.startswith(":"):
         target = target[1:]
-    target = target[len("template:") :]
+    target = target[len("template:") :].strip()
 
     # Generate a link to the language root, which will list all templates
     # of that language.

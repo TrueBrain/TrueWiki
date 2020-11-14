@@ -12,8 +12,7 @@ log = logging.getLogger(__name__)
 
 
 def link_file(instance: WikiPage, wikilink: wikitextparser.WikiLink):
-    target = wikilink.target
-    target = target[len(":file:") :]
+    target = wikilink.target[len(":file:") :].strip()
 
     # Generate a link to the language root, which will list all templates
     # of that language.
@@ -27,7 +26,7 @@ def link_file(instance: WikiPage, wikilink: wikitextparser.WikiLink):
 
 def link_media(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     target = wikilink.target
-    target = target[len("media:") :]
+    target = target[len("media:") :].strip()
 
     url = f"File/{target}"
 

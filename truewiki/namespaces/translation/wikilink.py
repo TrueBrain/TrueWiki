@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
-    page = wikilink.target[len("translation:") :]
+    page = wikilink.target[len("translation:") :].strip()
 
     error = instance.page_is_valid(f"{page}")
     if error:
