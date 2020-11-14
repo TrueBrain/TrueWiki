@@ -73,7 +73,7 @@ def view(user, page: str, if_modified_since) -> web.Response:
             # We already rendered this page before. If the browser has it in his
             # cache, he can simply reuse that if we haven't rendered since.
             response = web.HTTPNotModified()
-        elif not user and cache_filename:
+        elif not user and cache_filename and os.path.exists(cache_filename):
             # We already rendered this page to disk. Serve from there.
             with open(cache_filename) as fp:
                 body = fp.read()
