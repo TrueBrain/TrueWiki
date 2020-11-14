@@ -73,7 +73,12 @@ def view(user, page: str, if_modified_since) -> web.Response:
             # We already rendered this page before. If the browser has it in his
             # cache, he can simply reuse that if we haven't rendered since.
             response = web.HTTPNotModified()
-        elif not user and cache_filename and os.path.exists(cache_filename):
+        elif (
+            not user
+            and cache_filename
+            and os.path.exists(cache_filename)
+            and os.path.getmtime(cache_filename) >= metadata.LAST_TIME_RENDERED[namespaced_page]
+        ):
             # We already rendered this page to disk. Serve from there.
             with open(cache_filename) as fp:
                 body = fp.read()
@@ -85,13 +90,22 @@ def view(user, page: str, if_modified_since) -> web.Response:
 
         # Never cache anything in the Folder/.
         if can_cache:
-            metadata.LAST_TIME_RENDERED[namespaced_page] = time.time()
-
             if not user and cache_filename:
                 # Cache the file on disk
                 os.makedirs(os.path.dirname(cache_filename), exist_ok=True)
                 with open(cache_filename, "w") as fp:
                     fp.write(body)
+
+                page_time = os.path.getmtime(cache_filename)
+            else:
+                # Accuracy of time.time() is higher than getmtime(), so
+                # depending if we cached, use a different clock.
+                page_time = time.time()
+
+            # Only update the time if we don't have one yet. This makes sure
+            # that LAST_TIME_RENDERED has the oldest timestamp possible.
+            if namespaced_page not in metadata.LAST_TIME_RENDERED:
+                metadata.LAST_TIME_RENDERED[namespaced_page] = page_time
 
         response = web.Response(body=body, content_type="text/html", status=status_code)
 

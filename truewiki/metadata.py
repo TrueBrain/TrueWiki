@@ -45,6 +45,11 @@ RELOAD_BUSY = asyncio.Event()
 RELOAD_BUSY.set()
 
 
+def _delete_cached_page(page):
+    if page in LAST_TIME_RENDERED:
+        del LAST_TIME_RENDERED[page]
+
+
 def translation_callback(wtp, wiki_page, page):
     for wikilink in wtp.wikilinks:
         if wikilink.target.startswith("Translation:"):
@@ -56,8 +61,7 @@ def translation_callback(wtp, wiki_page, page):
             # Reset the last time rendered for all translations too, as
             # otherwise a new translation won't show up on those pages.
             for translation in TRANSLATIONS[target]:
-                if translation in LAST_TIME_RENDERED:
-                    del LAST_TIME_RENDERED[translation]
+                _delete_cached_page(translation)
 
 
 def category_callback(wtp, wiki_page, page):
@@ -69,8 +73,7 @@ def category_callback(wtp, wiki_page, page):
             CATEGORIES[target].append(page)
 
             # Reset the last time rendered for the category.
-            if f"Category/{target}" in LAST_TIME_RENDERED:
-                del LAST_TIME_RENDERED[f"Category/{target}"]
+            _delete_cached_page(f"Category/{target}")
 
 
 def file_callback(wtp, wiki_page, page):
@@ -82,8 +85,7 @@ def file_callback(wtp, wiki_page, page):
             FILES[target].append(page)
 
             # Reset the last time rendered for the file.
-            if f"File/{target}" in LAST_TIME_RENDERED:
-                del LAST_TIME_RENDERED[f"File/{target}"]
+            _delete_cached_page(f"File/{target}")
 
 
 def links_callback(wtp, wiki_page, page):
@@ -125,14 +127,10 @@ CALLBACKS = [
 def _forget_page(page):
     for category in PAGES[page]["categories"]:
         CATEGORIES[category].remove(page)
-
-        if f"Category/{category}" in LAST_TIME_RENDERED:
-            del LAST_TIME_RENDERED[f"Category/{category}"]
+        _delete_cached_page(f"Category/{category}")
     for file in PAGES[page]["files"]:
         FILES[file].remove(page)
-
-        if f"File/{file}" in LAST_TIME_RENDERED:
-            del LAST_TIME_RENDERED[f"File/{file}"]
+        _delete_cached_page(f"File/{file}")
     for link in PAGES[page]["links"]:
         LINKS[link].remove(page)
     for template in PAGES[page]["templates"]:
@@ -144,9 +142,7 @@ def _forget_page(page):
         # otherwise a removed translation will still show up on those pages.
         if not translation.startswith(("Category/", "File/", "Template/")):
             translation = f"Page/{translation}"
-
-        if translation in LAST_TIME_RENDERED:
-            del LAST_TIME_RENDERED[translation]
+        _delete_cached_page(translation)
 
     PAGES[page]["categories"].clear()
     PAGES[page]["files"].clear()
@@ -200,8 +196,7 @@ async def _page_changed(page, notified=None):
     # As we are invalidating this page, also reset when we last rendered it.
     # This means that on a next request for this page, browsers will be
     # given a new version too.
-    if page in LAST_TIME_RENDERED:
-        del LAST_TIME_RENDERED[page]
+    _delete_cached_page(page)
 
     # Capture the current templates ued. After analysis, this might have
     # changed, but those are still pages that need to be analyzed again.
