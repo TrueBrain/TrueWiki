@@ -84,7 +84,7 @@ def view(user, page: str, if_modified_since) -> web.Response:
         if status_code == 200:
             metadata.LAST_TIME_RENDERED[namespaced_page] = time.time()
 
-            if cache_filename:
+            if not user and cache_filename:
                 # Cache the file on disk
                 os.makedirs(os.path.dirname(cache_filename), exist_ok=True)
                 with open(cache_filename, "w") as fp:
