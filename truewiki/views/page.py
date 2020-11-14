@@ -52,8 +52,10 @@ def view(user, page: str, if_modified_since) -> web.Response:
 
     status_code = 200 if wiki_page.page_exists(page) else 404
     namespaced_page = page
-    if not namespaced_page.startswith(("Category/", "File/", "Template/")):
+    if not namespaced_page.startswith(("Category/", "File/", "Folder/", "Template/")):
         namespaced_page = f"Page/{namespaced_page}"
+
+    can_cache = status_code == 200 and not namespaced_page.startswith("Folder/")
 
     if CACHE_PAGE_FOLDER:
         cache_filename = f"{CACHE_PAGE_FOLDER}/{namespaced_page}.html"
@@ -63,7 +65,7 @@ def view(user, page: str, if_modified_since) -> web.Response:
     response = None
 
     # Check as we might have this page already on cache.
-    if status_code == 200 and namespaced_page in metadata.LAST_TIME_RENDERED:
+    if can_cache and namespaced_page in metadata.LAST_TIME_RENDERED:
         if (
             if_modified_since is not None
             and metadata.LAST_TIME_RENDERED[namespaced_page] <= if_modified_since.timestamp()
@@ -81,7 +83,8 @@ def view(user, page: str, if_modified_since) -> web.Response:
     if response is None:
         body = _view(wiki_page, user, page)
 
-        if status_code == 200:
+        # Never cache anything in the Folder/.
+        if can_cache:
             metadata.LAST_TIME_RENDERED[namespaced_page] = time.time()
 
             if not user and cache_filename:
@@ -93,7 +96,7 @@ def view(user, page: str, if_modified_since) -> web.Response:
         response = web.Response(body=body, content_type="text/html", status=status_code)
 
     # Inform the browser under which rules it can cache this page.
-    if status_code == 200:
+    if can_cache:
         response.last_modified = metadata.LAST_TIME_RENDERED[namespaced_page]
         response.headers["Vary"] = "Accept-Encoding, Cookie"
         response.headers["Cache-Control"] = "private, must-revalidate, max-age=0"

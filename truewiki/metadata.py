@@ -68,6 +68,10 @@ def category_callback(wtp, wiki_page, page):
             PAGES[page]["categories"].append(target)
             CATEGORIES[target].append(page)
 
+            # Reset the last time rendered for the category.
+            if f"Category/{target}" in LAST_TIME_RENDERED:
+                del LAST_TIME_RENDERED[f"Category/{target}"]
+
 
 def file_callback(wtp, wiki_page, page):
     for wikilink in wtp.wikilinks:
@@ -76,6 +80,10 @@ def file_callback(wtp, wiki_page, page):
             target = sys.intern(target)
             PAGES[page]["files"].append(target)
             FILES[target].append(page)
+
+            # Reset the last time rendered for the file.
+            if f"File/{target}" in LAST_TIME_RENDERED:
+                del LAST_TIME_RENDERED[f"File/{target}"]
 
 
 def links_callback(wtp, wiki_page, page):
@@ -117,8 +125,14 @@ CALLBACKS = [
 def _forget_page(page):
     for category in PAGES[page]["categories"]:
         CATEGORIES[category].remove(page)
+
+        if f"Category/{category}" in LAST_TIME_RENDERED:
+            del LAST_TIME_RENDERED[f"Category/{category}"]
     for file in PAGES[page]["files"]:
         FILES[file].remove(page)
+
+        if f"File/{file}" in LAST_TIME_RENDERED:
+            del LAST_TIME_RENDERED[f"File/{file}"]
     for link in PAGES[page]["links"]:
         LINKS[link].remove(page)
     for template in PAGES[page]["templates"]:
@@ -128,8 +142,11 @@ def _forget_page(page):
 
         # Reset the last time rendered for all translations too, as
         # otherwise a removed translation will still show up on those pages.
-        if f"Page/{translation}" in LAST_TIME_RENDERED:
-            del LAST_TIME_RENDERED[f"Page/{translation}"]
+        if not translation.startswith(("Category/", "File/", "Template/")):
+            translation = f"Page/{translation}"
+
+        if translation in LAST_TIME_RENDERED:
+            del LAST_TIME_RENDERED[translation]
 
     PAGES[page]["categories"].clear()
     PAGES[page]["files"].clear()
