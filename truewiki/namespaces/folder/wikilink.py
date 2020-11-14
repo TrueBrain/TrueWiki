@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def link(instance: WikiPage, wikilink: wikitextparser.WikiLink):
-    target = wikilink.target[len(":folder:") :]
+    target = wikilink.target[len(":folder:") :].strip()
 
     # As we are browsing folders, [[Folder:en]] and [[Folder:en/]] are
     # identical in meaning.

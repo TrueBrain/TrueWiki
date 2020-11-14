@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 def replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
     # This indicates that the page belongs to this category. We update
     # the WikiPage to indicate this, and otherwise remove the WikiLink.
-    category = wikilink.target[len("category:") :]
+    category = wikilink.target[len("category:") :].strip()
 
     error = instance.page_is_valid(f"Category/{category}")
     if error:
@@ -24,7 +24,7 @@ def replace(instance: WikiPage, wikilink: wikitextparser.WikiLink):
 
 
 def link(instance: WikiPage, wikilink: wikitextparser.WikiLink):
-    target = wikilink.target[len(":category:") :]
+    target = wikilink.target[len(":category:") :].strip()
 
     # Generate a link to the language root, which will list all categories
     # of that language.
