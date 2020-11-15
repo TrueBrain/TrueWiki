@@ -24,14 +24,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN mkdir -p ~/.ssh \
     && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
-WORKDIR /code
+COPY requirements.txt .
 
-COPY requirements.txt \
-        LICENSE \
-        README.md \
-        /code/
 # Needed for Sentry to know what version we are running
-RUN echo "${BUILD_VERSION}" > /code/.version
+RUN echo "${BUILD_VERSION}" > ./.version
 
 RUN pip --no-cache-dir install -r requirements.txt
 
@@ -41,10 +37,13 @@ RUN pip freeze 2>/dev/null > requirements.installed \
         || ( echo "!! ERROR !! requirements.txt defined different packages or versions for installation" \
                 && exit 1 ) 1>&2
 
-COPY static /code/static
-COPY templates /code/templates
-COPY truewiki /code/truewiki
-RUN mkdir /data
+# NOTE don't forget to create the subfolders manually : /data/File, /data/Category, /data/Page, /data/Template
+VOLUME /data 
+VOLUME /cache
+VOLUME /code
+WORKDIR /code
 
 ENTRYPOINT ["python", "-m", "truewiki"]
 CMD ["--bind", "0.0.0.0", "--storage", "local", "--storage-folder", "/data", "--cache-metadata-file", "/cache/metadata.json", "--cache-page-folder", "/cache/pages", "--user", "developer"]
+
+EXPOSE 80
