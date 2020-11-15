@@ -3,4 +3,5 @@ aioauth_client
 click
 GitPython
 openttd-helpers
+PyYAML
 wikitexthtml

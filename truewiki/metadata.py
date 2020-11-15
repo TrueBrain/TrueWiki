@@ -11,7 +11,10 @@ import time
 from collections import defaultdict
 from openttd_helpers import click_helper
 
-from . import singleton
+from . import (
+    config,
+    singleton,
+)
 from .wiki_page import WikiPage
 
 log = logging.getLogger(__name__)
@@ -375,6 +378,9 @@ class MetadataQueue:
 
         if os.path.exists(CACHE_FILENAME):
             self._load_metadata_from_cache()
+
+        # Ensure the primary language is always available.
+        LANGUAGES.add(config.PRIMARY_LANGUAGE)
 
         # Ensure no file is scanned more than once.
         notified = set()

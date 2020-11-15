@@ -12,6 +12,7 @@ multidict==5.0.0
 openttd-helpers==1.0.1
 ply==3.11
 python-slugify==4.0.1
+PyYAML==5.3.1
 regex==2020.10.28
 sentry-sdk==0.19.2
 smmap==3.0.4

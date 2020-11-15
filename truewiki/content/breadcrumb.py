@@ -3,12 +3,13 @@ import urllib
 
 from wikitexthtml.exceptions import InvalidWikiLink
 
+from .. import config
 from ..wiki_page import WikiPage
 
 
 def create(page):
     if not page:
-        return '<li class="crumb"><a href="/">OpenTTD\'s Wiki</a></li>'
+        return f'<li class="crumb"><a href="/">{config.PROJECT_NAME}\'s Wiki</a></li>'
 
     spage = page.split("/")
 
@@ -21,9 +22,9 @@ def create(page):
 
         if len(spage) > language_index and spage[language_index] != "Main Page":
             language = spage[language_index]
-            breadcrumbs.append(f'<li class="crumb"><a href="/{language}/">OpenTTD\'s Wiki</a></li>')
+            breadcrumbs.append(f'<li class="crumb"><a href="/{language}/">{config.PROJECT_NAME}\'s Wiki</a></li>')
         else:
-            breadcrumbs.append('<li class="crumb"><a href="/">OpenTTD\'s Wiki</a></li>')
+            breadcrumbs.append(f'<li class="crumb"><a href="/">{config.PROJECT_NAME}\'s Wiki</a></li>')
 
     breadcrumb = "/"
     for i, p in enumerate(spage):
@@ -50,7 +51,7 @@ def create(page):
         breadcrumbs.append(f'<li class="crumb"><a href="{href}">{title}</a></li>')
 
     if not breadcrumbs:
-        breadcrumbs.append('<li class="crumb"><a href="/">OpenTTD\'s Wiki</a></li>')
+        breadcrumbs.append(f'<li class="crumb"><a href="/">{config.PROJECT_NAME}\'s Wiki</a></li>')
     else:
         breadcrumbs[-1] = breadcrumbs[-1].replace('<li class="crumb">', '<li class="crumb selected">')
 

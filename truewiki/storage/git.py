@@ -173,7 +173,7 @@ class Storage(local.Storage):
 @click.option(
     "--storage-git-email",
     help="Email to use when creating commits.",
-    default="wiki@openttd.org",
+    default="wiki@localhost",
     show_default=True,
 )
 def click_storage_git(storage_git_username, storage_git_email):

@@ -8,6 +8,7 @@ from .. import base
 from ..category import footer as category_footer
 from ..folder import footer as folder_footer
 from ... import (
+    config,
     metadata,
     singleton,
     wiki_page,
@@ -73,7 +74,7 @@ class Namespace(base.Namespace):
 
     @classmethod
     def clean_title(cls, page: str, title: str) -> str:
-        title = super().clean_title(page, title, root_name="OpenTTD's Wiki")
+        title = super().clean_title(page, title, root_name=f"{config.PROJECT_NAME}'s Wiki")
         return title
 
     @staticmethod

@@ -6,7 +6,10 @@ from wikitexthtml.render import (
     parser_function,
 )
 
-from . import singleton
+from . import (
+    config,
+    singleton,
+)
 from .wiki_page import WikiPage
 
 
@@ -27,6 +30,14 @@ def wrap_page(page, wrapper, variables, templates):
         variables["does_exist"] = "1" if wiki_page.has_history(page) else ""
         variables["create_page_name"] = wiki_page.get_create_page_name(page)
         variables["repository_url"] = singleton.STORAGE.get_repository_url()
+
+    variables["css"] = config.HTML_SNIPPETS["css"]
+    variables["favicon"] = config.FAVICON
+    variables["html_footer"] = config.HTML_SNIPPETS["footer"]
+    variables["html_header"] = config.HTML_SNIPPETS["header"]
+    variables["javascript"] = config.HTML_SNIPPETS["javascript"]
+    variables["license"] = config.LICENSE
+    variables["project_name"] = config.PROJECT_NAME
 
     arguments = [wikitextparser.Argument(f"|{name}={value}") for name, value in variables.items()]
     parameter.replace(wiki_page, wtp, arguments)

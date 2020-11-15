@@ -14,7 +14,7 @@ def create(instance: WikiPage, page: str):
     if not instance.en_page:
         return ""
 
-    with open("templates/Language.mediawiki", "r") as fp:
+    with open("templates/snippet/Language.mediawiki", "r") as fp:
         body = fp.read()
 
     language_content = ""

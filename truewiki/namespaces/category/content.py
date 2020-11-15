@@ -52,4 +52,4 @@ def add_content(page: str) -> str:
             templates[name] = wtp.string
             variables[f"has_{name}"] = "1"
 
-    return wrap_page(page, "Category", variables, templates)
+    return wrap_page(page, "snippet/Category", variables, templates)

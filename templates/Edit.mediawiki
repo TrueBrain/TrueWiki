@@ -2,19 +2,18 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <link rel="icon" href="/static/favicon.ico" type="image/icon" />
-        <link rel="stylesheet" href="/static/css/base.css" type="text/css" />
-        <link rel="stylesheet" href="/static/css/truewiki.css" type="text/css" />
-        <title>OpenTTD | {{SUBPAGENAME}}</title>
+        {{#if: {{{favicon|}}}|
+        <link rel="icon" href="{{{favicon}}}" type="image/icon" />
+        }}
+        {{{css}}}
+        <title>{{{project_name}}} | {{SUBPAGENAME}}</title>
     </head>
     <body>
         <header>
             <div id="pagename">
                 {{SUBPAGENAME}}
             </div>
-            <div id="openttd-logo">
-                <div id="openttd-logo-text"><a href="/en/"><img src="/static/img/layout/openttd-logo.png" alt="OpenTTD" /></a></div>
-            </div>
+            {{{html_header}}}
             {{#if: {{{user_settings_url}}}|
             <div id="review-access">
                 <a href="{{{user_settings_url}}}">Review access</a>
@@ -106,15 +105,16 @@
                 {{used_on_pages}}
             </ul>
             |<p>Not used on any page</p>}}
+
+            {{{javascript}}}
         </main>
         <footer>
             <div id="content-bottom-links">
-                <a href="https://www.openttd.org/policy.html">Privacy Policy</a> |
-                <a href="https://www.openttd.org/contact.html">Contact</a> |
+                {{{html_footer}}}
                 <a href="https://github.com/TrueBrain/TrueWiki">Powered by TrueWiki</a>
             </div>
             <div id="content-bottom-copyright">
-                Content is available under <a href="/License">GNU Free Documentation License</a>
+                Content is available under <a href="/License">{{{license}}}</a>
             </div>
         </footer>
     </body>

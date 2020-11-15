@@ -61,4 +61,4 @@ def add_content(page):
         "file_history_url": singleton.STORAGE.get_history_url(filename),
     }
 
-    return wrap_page(page, "File", variables, templates)
+    return wrap_page(page, "snippet/File", variables, templates)
