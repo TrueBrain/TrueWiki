@@ -37,9 +37,11 @@ RUN pip freeze 2>/dev/null > requirements.installed \
         || ( echo "!! ERROR !! requirements.txt defined different packages or versions for installation" \
                 && exit 1 ) 1>&2
 
-# NOTE don't forget to create the subfolders manually : /data/File, /data/Category, /data/Page, /data/Template
+# NOTE this volume stores your pages be sure to link it and make it persistent. Don't forget to create the subfolders manually : /data/File, /data/Category, /data/Page, /data/Template
 VOLUME /data 
+# NOTE this volume may not be linked except if you want to use a tmpfs volume as a cache
 VOLUME /cache
+# NOTE link this volume to your source code folder
 VOLUME /code
 WORKDIR /code
 
