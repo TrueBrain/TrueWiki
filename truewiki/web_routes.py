@@ -6,7 +6,10 @@ import urllib
 from aiohttp import web
 from openttd_helpers import click_helper
 
-from . import singleton
+from . import (
+    config,
+    singleton,
+)
 from .views import (
     edit,
     license as license_page,
@@ -55,7 +58,15 @@ def _validate_page(page: str) -> None:
 @routes.get("/")
 @csp_header
 async def root(request):
-    return web.HTTPFound("/en/")
+    return web.HTTPFound(f"/{config.PRIMARY_LANGUAGE}/")
+
+
+@routes.get("/favicon.ico")
+async def index(request):
+    if not config.FAVICON:
+        raise web.HTTPNotFound()
+
+    return web.FileResponse(f"{singleton.STORAGE.folder}{config.FAVICON}")
 
 
 @routes.get("/user/login")

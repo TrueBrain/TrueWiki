@@ -34,7 +34,7 @@ def add_language_content(folder, namespace=None):
         "has_folders": "1",
     }
 
-    return wrap_page(page, "Folder", variables, templates)
+    return wrap_page(page, "snippet/Folder", variables, templates)
 
 
 def add_content(page, namespace="Folder", namespace_for_folder=False, folder_label="Folders", page_label="Pages"):
@@ -94,4 +94,4 @@ def add_content(page, namespace="Folder", namespace_for_folder=False, folder_lab
             templates[name] = wtp.string
             variables[f"has_{name}"] = "1"
 
-    return wrap_page(page, "Folder", variables, templates)
+    return wrap_page(page, "snippet/Folder", variables, templates)

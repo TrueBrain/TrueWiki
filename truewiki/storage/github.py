@@ -123,7 +123,7 @@ class Storage(GitStorage):
 @click.option(
     "--storage-github-url",
     help="Repository URL on GitHub.",
-    default="https://github.com/OpenTTD/wiki",
+    default="https://github.com/TrueBrain/wiki-example",
     show_default=True,
     metavar="URL",
 )

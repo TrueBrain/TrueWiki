@@ -1,6 +1,7 @@
 import asyncio
 import click
 import logging
+import os
 
 from aiohttp import web
 from aiohttp.web_log import AccessLogger
@@ -9,6 +10,7 @@ from openttd_helpers.logging_helper import click_logging
 from openttd_helpers.sentry_helper import click_sentry
 
 from . import (
+    config,
     singleton,
     validate,
 )
@@ -115,14 +117,22 @@ def main(bind, port, storage, validate_all):
     loop = asyncio.get_event_loop()
     loop.run_until_complete(wait_for_storage())
 
+    config.load()
+
     if validate_all:
         validate.all()
         return
 
     webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])
     webapp.on_response_prepare.append(cache_on_prepare)
+
+    # Ensure these folders exists, otherwise add_static() will complain.
+    os.makedirs(f"{instance.folder}/File", exist_ok=True)
+    os.makedirs(f"{instance.folder}/static", exist_ok=True)
+
     webapp.router.add_static("/uploads", f"{instance.folder}/File/")
-    webapp.router.add_static("/static", "static/")
+    webapp.router.add_static("/static", f"{instance.folder}/static/")
+
     register_webroutes(webapp)
     webapp.add_routes(routes)
 
