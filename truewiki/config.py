@@ -2,7 +2,7 @@ import yaml
 
 from . import singleton
 
-CSS = []
+CSS = ["/static/truewiki/truewiki.css"]
 FAVICON = None
 HTML_SNIPPETS = {
     "css": "",
