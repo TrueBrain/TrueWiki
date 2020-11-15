@@ -131,6 +131,7 @@ def main(bind, port, storage, validate_all):
     os.makedirs(f"{instance.folder}/static", exist_ok=True)
 
     webapp.router.add_static("/uploads", f"{instance.folder}/File/")
+    webapp.router.add_static("/static/truewiki", "static/truewiki/")
     webapp.router.add_static("/static", f"{instance.folder}/static/")
 
     register_webroutes(webapp)

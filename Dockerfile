@@ -41,6 +41,7 @@ RUN pip freeze 2>/dev/null > requirements.installed \
         || ( echo "!! ERROR !! requirements.txt defined different packages or versions for installation" \
                 && exit 1 ) 1>&2
 
+COPY static /code/static
 COPY templates /code/templates
 COPY truewiki /code/truewiki
 RUN mkdir /data
