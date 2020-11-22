@@ -27,6 +27,7 @@ from .user_session import (
     SESSION_COOKIE_NAME,
 )
 from .views.page import click_page
+from .views.sitemap import click_sitemap
 from .web_routes import (
     click_web_routes,
     routes,
@@ -104,6 +105,7 @@ async def wait_for_storage():
 @click_user_session
 @click_user_github
 @click_page
+@click_sitemap
 @click.option("--validate-all", help="Validate all mediawiki files and report all errors", is_flag=True)
 def main(bind, port, storage, validate_all):
     log.info("Reload storage ..")
