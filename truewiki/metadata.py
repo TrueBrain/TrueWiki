@@ -178,6 +178,9 @@ def _analyze_page(page):
     wiki_page = WikiPage(page_name)
     wtp = wiki_page.prepare(body)
 
+    # Ensure the page now exists in our list of pages.
+    PAGES[page]
+
     # Index this page again.
     for callback in CALLBACKS:
         callback(wtp, wiki_page, page)
