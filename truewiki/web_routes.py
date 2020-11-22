@@ -131,7 +131,10 @@ async def sitemap_page(request):
 @routes.get("/robots.txt")
 @csp_header
 async def robots(request):
-    return web.Response(body="User-agent: *\nSitemap: /sitemap.xml", content_type="text/plain")
+    if sitemap.FRONTEND_URL:
+        return web.Response(body="User-agent: *\nSitemap: /sitemap.xml", content_type="text/plain")
+    else:
+        return web.Response(body="User-agent: *", content_type="text/plain")
 
 
 @routes.get("/edit/{page:.*}")
