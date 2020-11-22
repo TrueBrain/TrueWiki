@@ -34,6 +34,8 @@ def view() -> web.Response:
         for page, page_data in metadata.PAGES.items():
             if page.startswith("Page/"):
                 page = page[len("Page/") :]
+            if page.endswith("/Main Page"):
+                page = page[: -len("/Main Page")] + "/"
             page = urllib.parse.quote(page)
 
             body += "<url>\n"
@@ -49,6 +51,8 @@ def view() -> web.Response:
                             translation = translation[len("Page/") :]
                         else:
                             language = translation.split("/")[1]
+                        if translation.endswith("/Main Page"):
+                            translation = translation[: -len("/Main Page")] + "/"
 
                         translation = urllib.parse.quote(translation)
                         body += (
