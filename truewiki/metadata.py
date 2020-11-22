@@ -15,6 +15,7 @@ from . import (
     config,
     singleton,
 )
+from .views import sitemap
 from .wiki_page import WikiPage
 
 log = logging.getLogger(__name__)
@@ -339,6 +340,8 @@ class MetadataQueue:
             page_data["translations"] = list(set(page_data["translations"]))
 
             PAGES_LC[page.lower()] = page
+
+        sitemap.invalidate_cache()
 
     async def page_changed(self):
         for page in self.pages:

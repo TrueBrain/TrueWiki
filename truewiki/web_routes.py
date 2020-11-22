@@ -12,11 +12,12 @@ from . import (
 )
 from .views import (
     edit,
-    license as license_page,
+    license,
     login,
     source,
     page as view_page,
     preview,
+    sitemap,
 )
 from .user_session import (
     SESSION_COOKIE_NAME,
@@ -111,9 +112,21 @@ async def healthz_handler(request):
 
 @routes.get("/License")
 @csp_header
-async def license(request):
+async def license_page(request):
     user = get_user_by_bearer(request.cookies.get(SESSION_COOKIE_NAME))
-    return license_page.view(user)
+    return license.view(user)
+
+
+@routes.get("/sitemap.xml")
+@csp_header
+async def sitemap_page(request):
+    return sitemap.view()
+
+
+@routes.get("/robots.txt")
+@csp_header
+async def robots(request):
+    return web.Response(body="User-agent: *\nSitemap: /sitemap.xml", content_type="text/plain")
 
 
 @routes.get("/edit/{page:.*}")
