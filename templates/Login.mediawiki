@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <meta charset="utf-8">
+        <meta charset="utf-8" />
+        <meta name="robots" content="noindex" />
         {{#if: {{{favicon|}}}|
         <link rel="icon" href="{{{favicon}}}" type="image/icon" />
         }}
