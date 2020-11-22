@@ -73,6 +73,9 @@ def view() -> web.Response:
 
 
 def invalidate_cache() -> None:
+    if not page_view.CACHE_PAGE_FOLDER:
+        return
+
     cache_filename = f"{page_view.CACHE_PAGE_FOLDER}/sitemap.xml"
 
     if os.path.exists(cache_filename):
