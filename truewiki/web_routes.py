@@ -40,6 +40,11 @@ def csp_header(func):
 
 
 def _validate_page(page: str) -> None:
+    # If there is no "/" in the page name, it is a page in the root-folder,
+    # and that means we don't have to check for directory traversal.
+    if "/" not in page:
+        return
+
     filename = os.path.basename(page)
     path = os.path.normpath(os.path.dirname(page))
     fullpath = f"{path}/{filename}"
