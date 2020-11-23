@@ -490,7 +490,7 @@ header {
 #review-access {
     position: absolute;
     right: 30px;
-    top: 10px;
+    top: 70px;
 }
 #review-access a {
     color: #aaa;
@@ -503,4 +503,47 @@ header {
     display: block;
     font-size: 70%;
     margin: -4px 0 4px 0;
+}
+
+#search {
+    position: absolute;
+    right: 30px;
+    top: 10px;
+}
+#search input[type=text] {
+    width: 150px;
+}
+
+#search-submit {
+    display: inline-block;
+    position: absolute;
+    right: 0px;
+}
+#search-submit input {
+    background-color: white;
+    border: 0;
+    border-left: 1px solid #aaa;
+    height: 20px;
+    margin: 1px 1px 0 0;
+    width: 20px;
+}
+#search-submit:hover input {
+    background-color: #aaa;
+}
+#search-submit div {
+    display: inline-block;
+    pointer-events: none;
+    position: absolute;
+    right: 1px;
+    top: -1px;
+    transform: rotate(45deg);
+}
+#search-submit div::after {
+    color: #D52D2D;
+    content: "⚲";
+    font-size: 18px;
+    font-weight: bold;
+    left: -4px;
+    position: relative;
+    top: 4px;
 }

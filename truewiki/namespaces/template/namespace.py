@@ -95,6 +95,15 @@ class Namespace(base.Namespace):
         return None
 
     @classmethod
+    def page_get_language(cls, page: str) -> Optional[str]:
+        assert page.startswith("Template/")
+
+        if cls._is_root(page):
+            return None
+
+        return page.split("/")[1]
+
+    @classmethod
     def has_source(cls, page: str) -> bool:
         return not cls._is_root(page) and not cls._is_language_root(page)
 

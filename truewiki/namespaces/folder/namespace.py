@@ -81,6 +81,17 @@ class Namespace(base.Namespace):
     def page_ondisk_name(page: str) -> str:
         return None
 
+    @classmethod
+    def page_get_language(cls, page: str) -> Optional[str]:
+        assert page.startswith("Folder/")
+
+        if cls._is_root(page):
+            return None
+        if cls._is_namespace_root(page):
+            return None
+
+        return page.split("/")[2]
+
     @staticmethod
     def get_used_on_pages(page: str) -> list:
         return []
