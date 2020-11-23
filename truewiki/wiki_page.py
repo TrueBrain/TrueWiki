@@ -114,6 +114,10 @@ class WikiPage(Page):
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_get_correct_case(page)
 
+    def page_get_language(self, page: str) -> Optional[str]:
+        namespace = page.split("/")[0]
+        return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_get_language(page)
+
     def has_source(self, page: str) -> bool:
         # "License" is a special page, of which we never show the source.
         if page == "License":

@@ -68,6 +68,12 @@ class Namespace(base.Namespace):
             correct_page = correct_page[len("Page/") :]
         return correct_page
 
+    @classmethod
+    def page_get_language(cls, page: str) -> Optional[str]:
+        if "/" not in page:
+            return None
+        return page.split("/")[0]
+
     @staticmethod
     def has_source(page: str) -> bool:
         return True

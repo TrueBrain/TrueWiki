@@ -90,4 +90,7 @@ def invalidate_cache() -> None:
 def click_sitemap(frontend_url):
     global FRONTEND_URL
 
+    if frontend_url.endswith("/"):
+        frontend_url = frontend_url[:-1]
+
     FRONTEND_URL = frontend_url

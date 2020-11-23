@@ -137,6 +137,29 @@ async def robots(request):
         return web.Response(body="User-agent: *", content_type="text/plain")
 
 
+@routes.get("/search")
+@csp_header
+async def search(request):
+    site = sitemap.FRONTEND_URL
+    if not site:
+        return web.HTTPNotFound()
+
+    if site.startswith("http://"):
+        site = site[len("http://") :]
+    elif site.startswith("https://"):
+        site = site[len("https://") :]
+
+    query = request.query.get("query", "")
+    if query:
+        query += " "
+
+    language = request.query.get("language", "")
+    if language:
+        language = f"%2F{language}%2F"
+
+    return web.HTTPFound(f"https://duckduckgo.com/?q={query}site%3A{site}{language}")
+
+
 @routes.get("/edit/{page:.*}")
 @csp_header
 async def edit_page(request):

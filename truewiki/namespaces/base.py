@@ -95,6 +95,10 @@ class Namespace:
         return metadata.PAGES_LC.get(page.lower(), page)
 
     @staticmethod
+    def page_get_language(page: str) -> str:
+        return None
+
+    @staticmethod
     def get_create_page_name(page: str) -> str:
         return ""
 

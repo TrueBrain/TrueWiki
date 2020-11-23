@@ -97,6 +97,15 @@ class Namespace(base.Namespace):
 
         return None
 
+    @classmethod
+    def page_get_language(cls, page: str) -> Optional[str]:
+        assert page.startswith("File/")
+
+        if cls._is_root(page):
+            return None
+
+        return page.split("/")[1]
+
     @staticmethod
     def get_used_on_pages(page: str) -> list:
         assert page.startswith("File/")
