@@ -38,7 +38,31 @@
             </ul>
         </nav>
         <main>
-            {{content}}
+            <h2>Error</h2>
+            <p>We are sorry, it seems you hit a page that doesn't exists.</p>
+            <dl><dd>
+            <i>{{content}}</i>
+            </dd></dl>
+
+            <h4>Are you creating a new page?</h4>
+            <p>Please make sure that the pagename is valid and inside a language folder (e.g.: <code>en/PageName</code>, not <code>PageName</code>).</p>
+
+            {{#if: {{{has_search|}}}|
+            <h4>Another website or search result linked here?</h4>
+            <p>Try searching this wiki for the information you are looking for.</p>
+            <div id="search" style="position: relative; right: 0; top: 0; width: 152px;">
+                <form action="/search" target="_new">
+                    {{#if: {{{language|}}}|
+                    <input type="hidden" name="language" value="{{{language}}}" />
+                    }}
+                    <input type="text" autocomplete="off" name="query" value="" placeholder="Search wiki" autofocus />
+                    <div id="search-submit">
+                        <input type="submit" value="" />
+                        <div></div>
+                    </div>
+                </form>
+            </div>
+            }}
 
             {{{javascript}}}
         </main>
