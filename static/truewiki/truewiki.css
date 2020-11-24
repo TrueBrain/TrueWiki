@@ -511,7 +511,14 @@ header {
     top: 10px;
 }
 #search input[type=text] {
-    width: 150px;
+    background: #fff;
+    border: 1px solid #8d8d8d;
+    color: #222;
+    height: 22px;
+    margin: 0;
+    outline: none;
+    padding: 4px 26px 4px 6px;
+    width: 152px;
 }
 
 #search-submit {
@@ -531,19 +538,17 @@ header {
     background-color: #aaa;
 }
 #search-submit div {
-    display: inline-block;
     pointer-events: none;
     position: absolute;
     right: 1px;
-    top: -1px;
+    text-align: center;
+    top: 0px;
     transform: rotate(45deg);
+    width: 20px;
 }
 #search-submit div::after {
     color: #D52D2D;
     content: "⚲";
     font-size: 18px;
     font-weight: bold;
-    left: -4px;
-    position: relative;
-    top: 4px;
 }
