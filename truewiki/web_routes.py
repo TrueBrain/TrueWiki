@@ -132,7 +132,10 @@ async def sitemap_page(request):
 @csp_header
 async def robots(request):
     if sitemap.FRONTEND_URL:
-        return web.Response(body="User-agent: *\nSitemap: /sitemap.xml", content_type="text/plain")
+        return web.Response(
+            body=f"User-agent: *\nSitemap: {sitemap.FRONTEND_URL}/sitemap.xml",
+            content_type="text/plain",
+        )
     else:
         return web.Response(body="User-agent: *", content_type="text/plain")
 
