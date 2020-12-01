@@ -34,8 +34,6 @@ def view() -> web.Response:
         for page, page_data in metadata.PAGES.items():
             if page.startswith("Page/"):
                 page = page[len("Page/") :]
-            if page.endswith("/Main Page"):
-                page = page[: -len("/Main Page")] + "/"
             page = urllib.parse.quote(page)
 
             body += "<url>\n"
