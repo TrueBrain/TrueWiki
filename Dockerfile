@@ -20,9 +20,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
-# We will be connecting to github.com, so populate their key already.
+# We might be connecting to github.com / gitlab.com, so populate their key already.
 RUN mkdir -p ~/.ssh \
-    && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+    && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts \
+    && ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
 
 WORKDIR /code
 

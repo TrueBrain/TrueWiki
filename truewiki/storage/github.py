@@ -21,6 +21,8 @@ _github_history_url = None
 
 
 class OutOfProcessStorage(GitOutOfProcessStorage):
+    name = "GitHub"
+
     def _remove_empty_folders(self, parent_folder):
         removed = False
         for root, folders, files in os.walk(parent_folder, topdown=False):
@@ -34,7 +36,7 @@ class OutOfProcessStorage(GitOutOfProcessStorage):
         return removed
 
     def fetch_latest(self):
-        log.info("Updating storage to latest version from GitHub")
+        log.info(f"Updating storage to latest version from {self.name}")
 
         origin = self._git.remotes.origin
 
@@ -62,14 +64,14 @@ class OutOfProcessStorage(GitOutOfProcessStorage):
 
     def push(self):
         if not self._ssh_command:
-            log.error("No GitHub private key supplied; cannot push to GitHub.")
+            log.error(f"No {self.name} private key supplied; cannot push to {self.name}.")
             return True
 
         try:
             with self._git.git.custom_environment(GIT_SSH_COMMAND=self._ssh_command):
                 self._git.remotes.origin.push()
         except Exception:
-            log.exception("Git push failed; reloading from GitHub")
+            log.exception(f"Git push failed; reloading from {self.name}")
             return False
 
         return True
