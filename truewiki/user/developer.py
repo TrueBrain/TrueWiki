@@ -1,4 +1,5 @@
 from aiohttp import web
+from typing import Tuple
 
 from .base import User as BaseUser
 from ..user_session import get_user_by_code
@@ -29,7 +30,7 @@ class User(BaseUser):
         self.id = username
         self.display_name = username
 
-    def get_git_author(self) -> str:
+    def get_git_author(self) -> Tuple[str, str]:
         return (self.display_name, "developer@localhost")
 
     @staticmethod

@@ -2,6 +2,7 @@ import datetime
 import secrets
 
 from aiohttp import web
+from typing import Tuple
 
 from ..user_session import (
     SESSION_COOKIE_NAME,
@@ -63,7 +64,7 @@ class User:
         response.set_cookie(SESSION_COOKIE_NAME, self.bearer_token, max_age=get_session_expire(), httponly=True)
         return response
 
-    def get_git_author(self) -> str:
+    def get_git_author(self) -> Tuple[str, str]:
         raise NotImplementedError()
 
     def get_authorize_page(self):

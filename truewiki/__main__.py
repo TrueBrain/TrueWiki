@@ -19,6 +19,7 @@ from .storage.git import click_storage_git
 from .storage.github import click_storage_github
 from .storage.local import click_storage_local
 from .user.github import click_user_github
+from .user.gitlab import click_user_gitlab
 from .user_session import (
     click_user_session,
     get_user_by_bearer,
@@ -27,7 +28,6 @@ from .user_session import (
     SESSION_COOKIE_NAME,
 )
 from .views.page import click_page
-from .views.sitemap import click_sitemap
 from .web_routes import (
     click_web_routes,
     routes,
@@ -97,6 +97,10 @@ async def wait_for_storage():
     required=True,
     callback=click_helper.import_module("truewiki.storage", "Storage"),
 )
+@click.option(
+    "--frontend-url",
+    help="URL of the frontend, used for creating absolute links in the sitemap.xml",
+)
 @click_web_routes
 @click_metadata
 @click_storage_local
@@ -104,10 +108,14 @@ async def wait_for_storage():
 @click_storage_github
 @click_user_session
 @click_user_github
+@click_user_gitlab
 @click_page
-@click_sitemap
 @click.option("--validate-all", help="Validate all mediawiki files and report all errors", is_flag=True)
-def main(bind, port, storage, validate_all):
+def main(bind, port, storage, frontend_url, validate_all):
+    if frontend_url and frontend_url.endswith("/"):
+        frontend_url = frontend_url[:-1]
+    singleton.FRONTEND_URL = frontend_url
+
     log.info("Reload storage ..")
     instance = storage()
     singleton.STORAGE = instance
