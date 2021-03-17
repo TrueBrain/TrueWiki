@@ -88,10 +88,15 @@ class User(BaseUser):
 
         # Validate the code and fetch the user info
         await self._oauth2.get_access_token(**kwargs)
+        if not self._oauth2.access_token:
+            return False
+
         user, _ = await self._oauth2.user_info()
 
         self.display_name = user.username
         self.id = str(user.id)
+
+        return True
 
     @staticmethod
     async def login_oauth2_callback(request):
@@ -108,5 +113,6 @@ class User(BaseUser):
             return web.HTTPFound(location=f"{user.redirect_uri}")
 
         code = in_query_oauth2_code(request.query.get("code"))
-        await user.get_user_information(code)
+        if not await user.get_user_information(code):
+            return web.HTTPFound(location=f"{user.redirect_uri}")
         return user.validate()
