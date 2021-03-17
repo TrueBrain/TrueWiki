@@ -36,7 +36,7 @@ def wrap_page(page, wrapper, variables, templates):
     variables["has_search"] = "1" if sitemap.FRONTEND_URL else ""
 
     variables["css"] = config.HTML_SNIPPETS["css"]
-    variables["favicon"] = config.FAVICON
+    variables["favicon"] = config.FAVICON or ""
     variables["html_footer"] = config.HTML_SNIPPETS["footer"]
     variables["html_header"] = config.HTML_SNIPPETS["header"]
     variables["javascript"] = config.HTML_SNIPPETS["javascript"]
