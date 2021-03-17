@@ -9,6 +9,13 @@
 TrueWiki is an opinionated wikitext server similar to [MediaWiki](https://github.com/wikimedia/mediawiki) and/or [gollum](https://github.com/gollum/gollum).
 As default storage it uses GitHub (instead of a database).
 
+- [Opinionated](#opinionated)
+- [Configuration](#configuration)
+- [Configuration / GitHub](#using-github)
+- [Configuration / GitLab](#using-gitlab)
+- [Development](#development)
+- [Why Yet-Another-Wiki-Server](#why-yet-another-wiki-server)
+
 ## Opinionated
 
 TrueWiki iterates over what MediaWiki offers to bring a more modern approach to a wiki.
@@ -90,6 +97,137 @@ The translation system used by TrueWiki.
 `[[Translation:en/MyPage]]` marks the page as a translation (or the English version) or a Page.
 All translations of this page automatically pick up on the new translation and add them to their header.
 
+## Configuration
+
+TrueWiki has two methods of configuration: runtime options and wiki configuration file.
+
+The runtime options defines how TrueWiki (the server) should run.
+The wiki configuration file defines how the wiki should look and feel.
+
+### Runtime options
+
+Running `python -m truewiki --help` will give a detailed overview of all the settings.
+
+```
+Usage: __main__.py [OPTIONS]
+
+Options:
+  --sentry-dsn TEXT               Sentry DSN.
+  --sentry-environment TEXT       Environment we are running in.
+  --bind TEXT                     The IP to bind the server to  [default: ::1,
+                                  127.0.0.1]
+
+  --port INTEGER                  Port of the web server  [default: 80]
+  --storage [github|gitlab|git|local]
+                                  [required]
+  --frontend-url TEXT             URL of the frontend, used for creating
+                                  absolute links in the sitemap.xml
+
+  --reload-secret TEXT            Secret to allow an index reload. Always use
+                                  this via an environment variable!
+
+  --cache-metadata-file TEXT      File used to cache metadata.  [default:
+                                  .cache_metadata.json]
+
+  --storage-folder DIRECTORY      Folder to use for storage.  [default:
+                                  ./data]
+
+  --storage-git-username TEXT     Username to use when creating commits.
+                                  [default: Librarian]
+
+  --storage-git-email TEXT        Email to use when creating commits.
+                                  [default: wiki@localhost]
+
+  --storage-github-url URL        Repository URL on GitHub.  [default:
+                                  https://github.com/TrueBrain/wiki-example]
+
+  --storage-github-history-url URL
+                                  Repository URL on GitHub to visit history
+                                  (defaults to --storage-github-url).
+
+  --storage-github-private-key TEXT
+                                  Base64-encoded private key to access
+                                  GitHub.Always use this via an environment
+                                  variable!
+
+  --storage-gitlab-url URL        Repository URL on Gitlab.  [default:
+                                  https://gitlab.com/TrueBrain/wiki-
+                                  example.git/]
+
+  --storage-gitlab-history-url URL
+                                  Repository URL on Gitlab to visit history
+                                  (defaults to --storage-gitlab-url).
+
+  --storage-gitlab-private-key TEXT
+                                  Base64-encoded private key to access
+                                  Gitlab.Always use this via an environment
+                                  variable!
+
+  --user [developer|github|gitlab]
+                                  User backend to use (can have multiple).
+                                  [required]
+
+  --user-session-expire SECONDS   Time for a session to expire (measured from
+                                  the moment of login).  [default: 50400]
+
+  --user-login-expire SECONDS     Time for a login attempt to expire.
+                                  [default: 600]
+
+  --user-session-expire-schedule SECONDS
+                                  The interval between check if a user session
+                                  is expired.  [default: 900]
+
+  --user-github-client-id TEXT    GitHub client ID. (user=github only)
+  --user-github-client-secret TEXT
+                                  GitHub client secret. Always use this via an
+                                  environment variable! (user=github only)
+
+  --user-gitlab-client-id TEXT    Gitlab client ID. (user=gitlab only)
+  --user-gitlab-client-secret TEXT
+                                  Gitlab client secret. Always use this via an
+                                  environment variable! (user=gitlab only)
+
+  --cache-page-folder TEXT        Folder used to cache rendered pages.
+  --validate-all                  Validate all mediawiki files and report all
+                                  errors
+
+  -h, --help                      Show this message and exit.
+```
+
+#### Using GitHub
+
+Setting `--storage` and `--user` to `github` will run TrueWiki on a [GitHub](https://github.com) git repository as backend.
+
+By default, it will checkout the [wiki-example](https://github.com/TrueBrain/wiki-example) project, and edits will not persist (a restart will remove any edits).
+
+With `--storage-github-url` you can change this to your own repository; but in order for TrueWiki to push changes, you will have to setup an SSH key with write permissions.
+
+The easiest way to do this is via a [Deployment Key](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) on GitHub.
+`TRUEWIKI_STORAGE_GITHUB_PRIVATE_KEY` should be set to the base64-encoded private key matching the deployment key.
+`--storage-github-url` should be set to the SSH url of your GitHub repository (for example: `git@github.com:TrueBrain/wiki-example.git`).
+With this, TrueWiki will automatically push changes to the GitHub repository, making your wiki persistent.
+
+#### Using GitLab
+
+Setting `--storage` and `--user` to `gitlab` will run TrueWiki on a [GitLab](https://gitlab.com) git repository as backend.
+
+By default, it will checkout the [wiki-example](https://gitlab.com/TrueBrain/wiki-example) project, and edits will not persist (a restart will remove any edits).
+
+With `--storage-gitlab-url` you can change this to your own repository; but in order for TrueWiki to push changes, you will have to setup an SSH key with write permissions.
+
+The easiest way to do this is via a [SSH Key](https://docs.gitlab.com/ee/ssh/) on GitLab.
+`TRUEWIKI_STORAGE_GITLAB_PRIVATE_KEY` should be set to the base64-encoded private key matching the deployment key.
+`--storage-gitlab-url` should be set to the SSH url of your GitLab repository (for example: `git@gitlab.com:TrueBrain/wiki-example.git`).
+With this, TrueWiki will automatically push changes to the GitLab repository, making your wiki persistent.
+
+### Wiki configuration file
+
+This tells TrueWiki how to render the wiki pages.
+It allows for configuration of CSS, Javascript, header, footer and more.
+For detailed information about the options and what they do, please see the example project:
+
+https://github.com/TrueBrain/wiki-example/blob/master/.truewiki.yml
+
 ## Development
 
 This server is written in Python 3.8 with aiohttp.
@@ -112,7 +250,7 @@ python3 -m venv .env
 #### Preparing a data folder
 
 TrueWiki needs to read its data from somewhere, and this normally is a git repository in the `data` folder.
-It should contain the following folders:
+It should contain the following folders (TrueWiki will create required folders if needed):
 
 - `Category` - For the files in the Category namespace; should contain `.mediawiki` files.
 - `File` - For the files in the File namespace; can contain any file.
