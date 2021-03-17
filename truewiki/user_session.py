@@ -148,7 +148,7 @@ async def user_logout(request):
 @click.option(
     "--user",
     help="User backend to use (can have multiple).",
-    type=click.Choice(["developer", "github"], case_sensitive=False),
+    type=click.Choice(["developer", "github", "gitlab"], case_sensitive=False),
     required=True,
     multiple=True,
     callback=click_helper.import_module("truewiki.user", "User"),

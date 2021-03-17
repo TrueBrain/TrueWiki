@@ -1,18 +1,17 @@
-import click
 import os
 import urllib.parse
 
 from aiohttp import web
-from openttd_helpers import click_helper
 
 from . import page as page_view
-from .. import metadata
-
-FRONTEND_URL = None
+from .. import (
+    singleton,
+    metadata,
+)
 
 
 def view() -> web.Response:
-    if FRONTEND_URL is None:
+    if singleton.FRONTEND_URL is None:
         raise web.HTTPNotFound
 
     if page_view.CACHE_PAGE_FOLDER:
@@ -37,7 +36,7 @@ def view() -> web.Response:
             page = urllib.parse.quote(page)
 
             body += "<url>\n"
-            body += f"<loc>{FRONTEND_URL}/{page}</loc>\n"
+            body += f"<loc>{singleton.FRONTEND_URL}/{page}</loc>\n"
 
             if len(page_data["translations"]) == 1:
                 en_page = page_data["translations"][0]
@@ -55,7 +54,7 @@ def view() -> web.Response:
                         translation = urllib.parse.quote(translation)
                         body += (
                             f'<xhtml:link rel="alternate" hreflang="{language}" '
-                            f'href="{FRONTEND_URL}/{translation}" />\n'
+                            f'href="{singleton.FRONTEND_URL}/{translation}" />\n'
                         )
 
             body += "</url>\n"
@@ -78,17 +77,3 @@ def invalidate_cache() -> None:
 
     if os.path.exists(cache_filename):
         os.unlink(cache_filename)
-
-
-@click_helper.extend
-@click.option(
-    "--frontend-url",
-    help="URL of the frontend, used for creating absolute links in the sitemap.xml",
-)
-def click_sitemap(frontend_url):
-    global FRONTEND_URL
-
-    if frontend_url and frontend_url.endswith("/"):
-        frontend_url = frontend_url[:-1]
-
-    FRONTEND_URL = frontend_url

@@ -10,7 +10,6 @@ from . import (
     config,
     singleton,
 )
-from .views import sitemap
 from .wiki_page import WikiPage
 
 
@@ -33,7 +32,7 @@ def wrap_page(page, wrapper, variables, templates):
         variables["repository_url"] = singleton.STORAGE.get_repository_url()
 
     variables["language"] = wiki_page.page_get_language(page) or ""
-    variables["has_search"] = "1" if sitemap.FRONTEND_URL else ""
+    variables["has_search"] = "1" if singleton.FRONTEND_URL else ""
 
     variables["css"] = config.HTML_SNIPPETS["css"]
     variables["favicon"] = config.FAVICON or ""

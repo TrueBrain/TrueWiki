@@ -131,9 +131,9 @@ async def sitemap_page(request):
 @routes.get("/robots.txt")
 @csp_header
 async def robots(request):
-    if sitemap.FRONTEND_URL:
+    if singleton.FRONTEND_URL:
         return web.Response(
-            body=f"User-agent: *\nSitemap: {sitemap.FRONTEND_URL}/sitemap.xml",
+            body=f"User-agent: *\nSitemap: {singleton.FRONTEND_URL}/sitemap.xml",
             content_type="text/plain",
         )
     else:
@@ -143,7 +143,7 @@ async def robots(request):
 @routes.get("/search")
 @csp_header
 async def search(request):
-    site = sitemap.FRONTEND_URL
+    site = singleton.FRONTEND_URL
     if not site:
         return web.HTTPNotFound()
 

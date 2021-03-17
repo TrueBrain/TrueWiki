@@ -1,1 +1,2 @@
 STORAGE = None
+FRONTEND_URL = None
