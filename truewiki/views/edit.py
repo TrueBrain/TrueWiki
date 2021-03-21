@@ -45,7 +45,7 @@ def save(user, old_page: str, new_page: str, content: str, payload, summary: str
         commit_message = f"modified: {old_page}"
 
     if summary:
-        commit_message += f"\n User Summary: {summary}"
+        commit_message += f"\n\nUser Summary: {summary}"
 
     old_filename = wiki_page.page_ondisk_name(old_page)
 
