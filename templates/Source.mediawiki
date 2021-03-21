@@ -67,7 +67,11 @@
             </ul>
             }}
             <h3>Source</h3>
-            <textarea style="width: 100%;" rows=30>{{page}}</textarea>
+            <div id="edit-locked-notice">
+                <p>You do not have permission to edit this page, because you are not logged in.</p>
+                <p>You can view and copy the source of this page.</p>
+            </div>
+            <textarea style="width: 100%;" rows=30 readonly="">{{page}}</textarea>
             <h3>
                 Templates
             </h3>
