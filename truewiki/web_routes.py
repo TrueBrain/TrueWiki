@@ -192,6 +192,7 @@ async def edit_page_post(request):
     if "content" not in payload:
         raise web.HTTPNotFound()
     content = payload["content"].replace("\r", "")
+    summary = payload["summary"].replace("\r", "")
 
     # Make sure that page names don't contain /../ or anything silly.
     new_page = payload.get("page", page)
@@ -200,7 +201,7 @@ async def edit_page_post(request):
     new_page = f"{path}/{filename}"
 
     if "save" in payload:
-        return edit.save(user, page, new_page, content, payload)
+        return edit.save(user, page, new_page, content, payload, summary)
 
     if "preview" in payload:
         return preview.view(user, page, new_page, content)
