@@ -98,7 +98,7 @@
             }}
 
             <textarea name="content" style="width: 100%;" rows=30>{{page}}</textarea>
-
+            <input type="text" name="summary" maxlength="500" placeholder="Edit Summary (Optional)..." style="width: 100%;" />
             {{namespace_edit}}
 
             <input type="submit" name="save" value="Save page" /> <input type="submit" name="preview" value="Preview page" />

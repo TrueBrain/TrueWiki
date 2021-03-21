@@ -14,7 +14,7 @@ from ..metadata import page_changed
 from ..wiki_page import WikiPage
 
 
-def save(user, old_page: str, new_page: str, content: str, payload) -> web.Response:
+def save(user, old_page: str, new_page: str, content: str, payload, summary: str = None) -> web.Response:
     wiki_page = WikiPage(old_page)
     page_error = wiki_page.page_is_valid(old_page, is_new_page=True)
     if page_error:
@@ -43,6 +43,9 @@ def save(user, old_page: str, new_page: str, content: str, payload) -> web.Respo
     else:
         create_new = False
         commit_message = f"modified: {old_page}"
+
+    if summary:
+        commit_message += f"\n\nUser Summary: {summary}"
 
     old_filename = wiki_page.page_ondisk_name(old_page)
 
