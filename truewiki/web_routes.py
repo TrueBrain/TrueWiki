@@ -199,7 +199,7 @@ async def edit_page_post(request):
     # been messing with the HTML. We should probably just reject the request
     # at this point.
     if len(summary) > 500:
-        return web.HTTPBadRequest(reason="Summary exceeds maximum length of 500 characters.")
+        raise web.HTTPBadRequest(reason="Summary exceeds maximum length of 500 characters.")
 
     # Make sure that page names don't contain /../ or anything silly.
     new_page = payload.get("page", page)
