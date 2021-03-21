@@ -194,6 +194,13 @@ async def edit_page_post(request):
     content = payload["content"].replace("\r", "")
     summary = payload["summary"].replace("\r", "")
 
+    # Make sure summary is not more than 500 chars. This is normally limited
+    # by the HTML form itself, so if this is somehow longer, people have
+    # been messing with the HTML. We should probably just reject the request
+    # at this point.
+    if len(summary) > 500:
+        return web.HTTPBadRequest(reason="Summary exceeds maximum length of 500 characters.")
+
     # Make sure that page names don't contain /../ or anything silly.
     new_page = payload.get("page", page)
     filename = os.path.basename(new_page)

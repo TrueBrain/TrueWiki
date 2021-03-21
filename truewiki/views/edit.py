@@ -33,20 +33,19 @@ def save(user, old_page: str, new_page: str, content: str, payload, summary: str
         body = source.create_body(wiki_page, user, "Edit", new_page=new_page, page_error=page_error)
         return web.Response(body=body, content_type="text/html")
 
-    # Truncate long edit messages
-    # The html textfield already limits this, but if someone wanted to they could modify the html
-    summary = (summary[:500] + "..(truncated)") if len(summary) > 500 else summary
-
     # If the old page doesn't exist, this creates a page. But it is possible
     # that this is done from an old page with a different name. Make sure the
     # new page always wins in this case.
     if not wiki_page.page_exists(old_page):
         create_new = True
         old_page = new_page
-        commit_message = f"new page: {old_page} \n User Summary: {summary}" if summary else f"new page: {old_page}"
+        commit_message = f"new page: {old_page}"
     else:
         create_new = False
-        commit_message = f"modified: {old_page} \n User Summary: {summary}" if summary else f"modified: {old_page}"
+        commit_message = f"modified: {old_page}"
+
+    if summary:
+        commit_message += f"\n User Summary: {summary}"
 
     old_filename = wiki_page.page_ondisk_name(old_page)
 
