@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="utf-8" />
         <meta name="robots" content="noindex" />
         {{#if: {{{favicon|}}}|
@@ -20,21 +21,21 @@
                 <a href="{{{user_settings_url}}}">Review access</a>
             </div>
             }}
-            {{#if: {{{has_search|}}}|
-            <div id="search">
-                <form action="/search" target="_new">
-                    {{#if: {{{language|}}}|
-                    <input type="hidden" name="language" value="{{{language}}}" />
-                    }}
-                    <input type="text" autocomplete="off" name="query" value="" placeholder="Search wiki" />
-                    <div id="search-submit">
-                        <input type="submit" value="" />
-                        <div></div>
-                    </div>
-                </form>
-            </div>
-            }}
         </header>
+        {{#if: {{{has_search|}}}|
+        <div id="search">
+            <form action="/search" target="_new">
+                {{#if: {{{language|}}}|
+                <input type="hidden" name="language" value="{{{language}}}" />
+                }}
+                <input type="text" autocomplete="off" name="query" value="" placeholder="Search wiki" />
+                <div id="search-submit">
+                    <input type="submit" value="" />
+                    <div></div>
+                </div>
+            </form>
+        </div>
+        }}
         <nav>
             <ul id="navigation-bar">
                 {{breadcrumbs}}
