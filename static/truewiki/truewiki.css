@@ -15,7 +15,7 @@ img {
 }
 
 body > * {
-	width: 1020px;
+	max-width: 1020px;
 }
 
 body > header {
@@ -35,8 +35,15 @@ body > nav {
 	height: 32px;
 	margin: 0px auto;
 	min-height: 32px;
-	overflow: hidden;
+	overflow: scroll; /* If the breadcrumbs are longer than the width of the screen, allow horizontal scrolling */
+	scrollbar-width: none;
+	white-space: nowrap;
 }
+
+body > nav::-webkit-scrollbar {
+    display: none;
+}
+
 #navigation-bar {
 	display: flex;
 	margin: 0px;
@@ -107,9 +114,15 @@ main {
 
 #pagename {
     color: white;
-    font-size: 300%;
+    font-size: 200%;
     max-width: 700px;
     padding: 5px 0 0 10px;
+}
+
+@media only screen and (min-width: 992px) {
+    #pagename {
+        font-size: 300%;
+    }
 }
 
 #navigation-bar {
@@ -123,9 +136,17 @@ main {
     padding: 0 6px;
 }
 #navigation-bar.right {
+    visibility: hidden;
     float: right;
     padding-right: 10px;
 }
+
+@media only screen and (min-width: 992px) {
+    #navigation-bar.right {
+        visibility: visible;
+    }
+}
+
 #navigation-bar li.crumb:not(:first-child)::after {
     color: white;
     content: "❱";
@@ -218,6 +239,7 @@ a.new {
 }
 main img {
     max-width: 900px;
+    width: 100%; /* Prevent overflow on small (e.g. mobile) screens */
 }
 
 .magnify {
@@ -322,6 +344,7 @@ pre {
     color: Black;
     line-height: 1.2;
     padding: 10px;
+    white-space: pre-wrap;
 }
 
 .external::after {
@@ -506,10 +529,22 @@ header {
 }
 
 #search {
-    position: absolute;
-    right: 30px;
+    position: -webkit-sticky;
+    position: sticky;
     top: 10px;
+    width: 100%;
 }
+
+@media only screen and (min-width: 992px) {
+    #search {
+        left: 420px;
+        margin: auto;
+        position: relative;
+        top: -80px;
+        width: 152px;
+    }
+}
+
 #search input[type=text] {
     background: #fff;
     border: 1px solid #8d8d8d;
@@ -518,7 +553,7 @@ header {
     margin: 0;
     outline: none;
     padding: 4px 26px 4px 6px;
-    width: 152px;
+    width: 100%;
 }
 
 #search-submit {
