@@ -211,7 +211,7 @@ async def edit_page_post(request):
         return edit.save(user, page, new_page, content, payload, summary)
 
     if "preview" in payload:
-        return preview.view(user, page, new_page, content)
+        return preview.view(user, page, new_page, content, summary)
 
     raise web.HTTPNotFound()
 
