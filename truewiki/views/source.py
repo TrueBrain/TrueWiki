@@ -14,7 +14,7 @@ from ..wiki_page import (
 from ..wrapper import wrap_page
 
 
-def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None, page_error=None) -> str:
+def create_body(wiki_page: WikiPage, user, wrapper, preview=None, summary=None, new_page=None, page_error=None) -> str:
     ondisk_name = wiki_page.page_ondisk_name(wiki_page.page)
 
     if preview is not None:
@@ -66,6 +66,7 @@ def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None,
         "errors": "\n".join(errors),
         "breadcrumbs": breadcrumb.create(wiki_page.page),
         "namespace_edit": wiki_page.add_edit_content() if new_page else "",
+        "summary_text": summary if summary else "",
     }
     variables = {
         "has_templates_used": "1" if templates_used else "",
@@ -74,6 +75,7 @@ def create_body(wiki_page: WikiPage, user, wrapper, preview=None, new_page=None,
         "display_name": html.escape(user.display_name) if user else "",
         "user_settings_url": user.get_settings_url() if user else "",
         "is_preview": "1" if preview is not None else "",
+        "has_summary_text": "1" if summary is not None else "",
         "new_page": html.escape(new_page) if new_page else "",
         "page_error": page_error if page_error else "",
     }
