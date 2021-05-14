@@ -74,7 +74,7 @@ def create_body(wiki_page: WikiPage, user, wrapper, preview=None, summary=None, 
         "has_errors": "1" if errors else "",
         "display_name": html.escape(user.display_name) if user else "",
         "user_settings_url": user.get_settings_url() if user else "",
-        "has_summary_text": "1" if summary is not None else "",
+        "is_preview": "1" if preview is not None else "",
         "new_page": html.escape(new_page) if new_page else "",
         "page_error": page_error if page_error else "",
     }
