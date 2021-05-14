@@ -22,6 +22,7 @@ def view(user, old_page: str, new_page: str, body: str, summary: str = None) -> 
     else:
         page_error = wiki_page.page_is_valid(new_page, is_new_page=True)
 
-    body = source.create_body(wiki_page, user, "Edit", preview=body, summary=summary, new_page=new_page,
-                              page_error=page_error)
+    body = source.create_body(
+        wiki_page, user, "Edit", preview=body, summary=summary, new_page=new_page, page_error=page_error
+    )
     return web.Response(body=body, content_type="text/html")
