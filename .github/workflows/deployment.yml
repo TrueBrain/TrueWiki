@@ -3,6 +3,8 @@ name: Deployment
 on:
   deployment:
 
+concurrency: ${{ github.event.deployment.environment }}
+
 jobs:
   deploy_to_aws:
     name: Deploy to AWS

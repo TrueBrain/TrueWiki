@@ -11,6 +11,8 @@ on:
     - publish_latest_tag
     - publish_master
 
+concurrency: publish
+
 jobs:
   publish_image:
     name: Publish image
