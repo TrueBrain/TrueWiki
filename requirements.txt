@@ -14,7 +14,7 @@ idna==3.1
 multidict==5.1.0
 openttd-helpers==1.0.1
 ply==3.11
-python-slugify==4.0.1
+python-slugify==5.0.2
 PyYAML==5.4.1
 regex==2020.11.13
 rfc3986==1.5.0
