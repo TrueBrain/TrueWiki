@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 _github_private_key = None
 _github_url = None
 _github_history_url = None
+_github_branch = None
 
 
 class OutOfProcessStorage(GitOutOfProcessStorage):
@@ -35,13 +36,13 @@ class OutOfProcessStorage(GitOutOfProcessStorage):
 
         return removed
 
-    def fetch_latest(self):
+    def fetch_latest(self, branch):
         log.info(f"Updating storage to latest version from {self.name}")
 
         origin = self._git.remotes.origin
 
-        # Checkout the latest master, removing and commits/file changes local
-        # might have.
+        # Checkout the latest default branch, removing and commits/file
+        # changes local might have.
         with self._git.git.custom_environment(GIT_SSH_COMMAND=self._ssh_command):
             try:
                 origin.fetch()
@@ -50,7 +51,7 @@ class OutOfProcessStorage(GitOutOfProcessStorage):
                 # throws a BadName. The best solution? Just run it again.
                 origin.fetch()
 
-        origin.refs.master.checkout(force=True, B="master")
+        origin.refs[branch].checkout(force=True, B=branch)
         for file_name in self._git.untracked_files:
             os.unlink(f"{self._folder}/{file_name}")
 
@@ -105,7 +106,7 @@ class Storage(GitStorage):
         return _git
 
     def reload(self):
-        self._run_out_of_process(self._reload_done, "fetch_latest")
+        self._run_out_of_process(self._reload_done, "fetch_latest", _github_branch)
 
     def _reload_done(self):
         super().reload()
@@ -115,7 +116,7 @@ class Storage(GitStorage):
 
     def get_history_url(self, page):
         page = urllib.parse.quote(page)
-        return f"{_github_history_url}/commits/master/{page}"
+        return f"{_github_history_url}/commits/{_github_branch}/{page}"
 
     def get_repository_url(self):
         return _github_history_url
@@ -140,13 +141,26 @@ class Storage(GitStorage):
     "--storage-github-private-key",
     help="Base64-encoded private key to access GitHub." "Always use this via an environment variable!",
 )
-def click_storage_github(storage_github_url, storage_github_history_url, storage_github_private_key):
-    global _github_url, _github_history_url, _github_private_key
+@click.option(
+    "--storage-github-branch",
+    help="Branch of the GitHub repository to use.",
+    default="main",
+    show_default=True,
+    metavar="branch",
+)
+def click_storage_github(
+    storage_github_url,
+    storage_github_history_url,
+    storage_github_private_key,
+    storage_github_branch,
+):
+    global _github_url, _github_history_url, _github_private_key, _github_branch
 
     if storage_github_history_url is None:
         storage_github_history_url = storage_github_url
 
     _github_url = storage_github_url
     _github_history_url = storage_github_history_url
+    _github_branch = storage_github_branch
     if storage_github_private_key:
         _github_private_key = base64.b64decode(storage_github_private_key)

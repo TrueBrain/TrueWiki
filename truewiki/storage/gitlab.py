@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 _gitlab_private_key = None
 _gitlab_url = None
 _gitlab_history_url = None
+_gitlab_branch = None
 
 
 class OutOfProcessStorage(GitHubOutOfProcessStorage):
@@ -48,7 +49,7 @@ class Storage(GitStorage):
         return _git
 
     def reload(self):
-        self._run_out_of_process(self._reload_done, "fetch_latest")
+        self._run_out_of_process(self._reload_done, "fetch_latest", _gitlab_branch)
 
     def _reload_done(self):
         super().reload()
@@ -58,7 +59,7 @@ class Storage(GitStorage):
 
     def get_history_url(self, page):
         page = urllib.parse.quote(page)
-        return f"{_gitlab_history_url}/-/commits/master/{page}"
+        return f"{_gitlab_history_url}/-/commits/{_gitlab_branch}/{page}"
 
     def get_repository_url(self):
         return _gitlab_history_url
@@ -83,8 +84,20 @@ class Storage(GitStorage):
     "--storage-gitlab-private-key",
     help="Base64-encoded private key to access Gitlab." "Always use this via an environment variable!",
 )
-def click_storage_gitlab(storage_gitlab_url, storage_gitlab_history_url, storage_gitlab_private_key):
-    global _gitlab_url, _gitlab_history_url, _gitlab_private_key
+@click.option(
+    "--storage-gitlab-branch",
+    help="Branch of the Gitlab repository to use.",
+    default="main",
+    show_default=True,
+    metavar="branch",
+)
+def click_storage_gitlab(
+    storage_gitlab_url,
+    storage_gitlab_history_url,
+    storage_gitlab_private_key,
+    storage_gitlab_branch,
+):
+    global _gitlab_url, _gitlab_history_url, _gitlab_private_key, _gitlab_branch
 
     if storage_gitlab_history_url is None:
         storage_gitlab_history_url = storage_gitlab_url
@@ -94,5 +107,6 @@ def click_storage_gitlab(storage_gitlab_url, storage_gitlab_history_url, storage
 
     _gitlab_url = storage_gitlab_url
     _gitlab_history_url = storage_gitlab_history_url
+    _gitlab_branch = storage_gitlab_branch
     if storage_gitlab_private_key:
         _gitlab_private_key = base64.b64decode(storage_gitlab_private_key)
