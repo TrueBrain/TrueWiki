@@ -1,10 +1,10 @@
 # TrueWiki
 
-[![GitHub License](https://img.shields.io/github/license/TrueBrain/TrueWiki)](https://github.com/TrueBrain/TrueWiki/blob/master/LICENSE)
+[![GitHub License](https://img.shields.io/github/license/TrueBrain/TrueWiki)](https://github.com/TrueBrain/TrueWiki/blob/main/LICENSE)
 [![GitHub Tag](https://img.shields.io/github/v/tag/TrueBrain/TrueWiki?include_prereleases&label=stable)](https://github.com/TrueBrain/TrueWiki/releases)
-[![GitHub commits since latest release](https://img.shields.io/github/commits-since/TrueBrain/TrueWiki/latest/master)](https://github.com/TrueBrain/TrueWiki/commits/master)
+[![GitHub commits since latest release](https://img.shields.io/github/commits-since/TrueBrain/TrueWiki/latest/main)](https://github.com/TrueBrain/TrueWiki/commits/main)
 
-[![GitHub Workflow Status (Testing)](https://img.shields.io/github/workflow/status/TrueBrain/TrueWiki/Testing/master?label=master)](https://github.com/TrueBrain/TrueWiki/actions?query=workflow%3ATesting)
+[![GitHub Workflow Status (Testing)](https://img.shields.io/github/workflow/status/TrueBrain/TrueWiki/Testing/main?label=main)](https://github.com/TrueBrain/TrueWiki/actions?query=workflow%3ATesting)
 
 TrueWiki is an opinionated wikitext server similar to [MediaWiki](https://github.com/wikimedia/mediawiki) and/or [gollum](https://github.com/gollum/gollum).
 As default storage it uses GitHub (instead of a database).
@@ -226,7 +226,7 @@ This tells TrueWiki how to render the wiki pages.
 It allows for configuration of CSS, Javascript, header, footer and more.
 For detailed information about the options and what they do, please see the example project:
 
-https://github.com/TrueBrain/wiki-example/blob/master/.truewiki.yml
+https://github.com/TrueBrain/wiki-example/blob/main/.truewiki.yml
 
 ## Development
 
