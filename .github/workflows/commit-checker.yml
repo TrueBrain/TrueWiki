@@ -15,7 +15,7 @@ jobs:
         fetch-depth: 4
 
     - name: Get pull-request commits
-      uses: openttd/actions/checkout-pull-request@v2
+      uses: OpenTTD/actions/checkout-pull-request@v2
 
     - name: Checkout commit-checker
       uses: OpenTTD/OpenTTD-git-hooks@main
