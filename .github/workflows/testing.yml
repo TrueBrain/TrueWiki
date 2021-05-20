@@ -66,3 +66,19 @@ jobs:
     - name: Black
       run: |
         black -l 120 --check truewiki
+
+  check_annotations:
+    name: Check Annotations
+    needs:
+    - docker
+    - flake8
+    - black
+    # not codeql, as that reports its own status
+
+    if: always() && github.event_name == 'pull_request'
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check annotations
+      uses: OpenTTD/actions/annotation-check@v2
