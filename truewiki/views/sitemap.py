@@ -63,6 +63,7 @@ def view() -> web.Response:
 
         if cache_filename:
             # Store in cache for next time it is requested.
+            os.makedirs(os.path.dirname(cache_filename), exist_ok=True)
             with open(cache_filename, "w") as fp:
                 fp.write(body)
 
