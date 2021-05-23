@@ -115,6 +115,9 @@ class WikiPage(Page):
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_get_correct_case(page)
 
     def page_get_language(self, page: str) -> Optional[str]:
+        if "/" not in page:
+            return None
+
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_get_language(page)
 
