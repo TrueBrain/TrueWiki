@@ -9,7 +9,7 @@ on:
   repository_dispatch:
     types:
     - publish_latest_tag
-    - publish_master
+    - publish_main
 
 concurrency: publish
 
