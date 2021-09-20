@@ -8,7 +8,7 @@ chardet==4.0.0
 charset-normalizer==2.0.4
 click==8.0.1
 gitdb==4.0.7
-GitPython==3.1.20
+GitPython==3.1.24
 h11==0.12.0
 httpcore==0.13.6
 httpx==0.19.0
