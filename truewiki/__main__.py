@@ -48,6 +48,11 @@ log = logging.getLogger(__name__)
 
 # Don't allow any file above 4 MiB.
 MAX_UPLOAD_SIZE = (1024 ** 2) * 4
+# Cache static files for 24 hours.
+CACHE_TIME_STATIC = 3600 * 24
+# Cache uploads for 5 minutes by default. These files can be overwritten by
+# users, so high cache times can be frustrating to the user.
+CACHE_TIME_UPLOADS = 300
 
 
 class ErrorOnlyAccessLogger(AccessLogger):
@@ -74,11 +79,14 @@ async def remove_cookie_middleware(request, handler):
     return response
 
 
-async def cache_on_prepare(request, response):
-    # Only cache images, CSS, javascript, ..
-    if request.path.startswith(("/static", "/uploads")):
-        # Everyone is free to cache these files for 5 minutes.
-        response.headers["Cache-Control"] = "public, max-age=300"
+async def cache_on_prepare(request, response, cache_time_uploads):
+    if request.path.startswith("/static"):
+        # Cache everything in the /static folder for a day.
+        response.headers["Cache-Control"] = f"public, max-age={CACHE_TIME_STATIC}"
+
+    if request.path.startswith("/uploads"):
+        # Cache uploaded files.
+        response.headers["Cache-Control"] = f"public, max-age={cache_time_uploads}"
 
 
 async def wait_for_storage():
@@ -102,6 +110,9 @@ async def wait_for_storage():
     "--frontend-url",
     help="URL of the frontend, used for creating absolute links in the sitemap.xml",
 )
+@click.option(
+    "--cache-time", help="Cache time of uploaded images (in seconds)", default=CACHE_TIME_UPLOADS, show_default=True
+)
 @click_web_routes
 @click_metadata
 @click_storage_local
@@ -113,7 +124,7 @@ async def wait_for_storage():
 @click_user_gitlab
 @click_page
 @click.option("--validate-all", help="Validate all mediawiki files and report all errors", is_flag=True)
-def main(bind, port, storage, frontend_url, validate_all):
+def main(bind, port, storage, frontend_url, cache_time, validate_all):
     if frontend_url and frontend_url.endswith("/"):
         frontend_url = frontend_url[:-1]
     singleton.FRONTEND_URL = frontend_url
@@ -136,7 +147,7 @@ def main(bind, port, storage, frontend_url, validate_all):
         return
 
     webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])
-    webapp.on_response_prepare.append(cache_on_prepare)
+    webapp.on_response_prepare.append(lambda request, response: cache_on_prepare(request, response, cache_time))
 
     # Ensure these folders exists, otherwise add_static() will complain.
     os.makedirs(f"{instance.folder}/File", exist_ok=True)
