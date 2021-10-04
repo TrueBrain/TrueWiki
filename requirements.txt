@@ -18,7 +18,7 @@ openttd-helpers==1.0.1
 ply==3.11
 python-slugify==5.0.2
 PyYAML==5.4.1
-regex==2021.9.24
+regex==2021.9.30
 rfc3986==1.5.0
 sentry-sdk==1.4.3
 smmap==4.0.0
