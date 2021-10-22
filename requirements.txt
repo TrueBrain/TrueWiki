@@ -6,13 +6,13 @@ attrs==21.2.0
 certifi==2021.10.8
 chardet==4.0.0
 charset-normalizer==2.0.7
-click==8.0.1
+click==8.0.3
 gitdb==4.0.7
 GitPython==3.1.24
 h11==0.12.0
 httpcore==0.13.7
 httpx==0.19.0
-idna==3.2
+idna==3.3
 multidict==5.2.0
 openttd-helpers==1.0.1
 ply==3.11
