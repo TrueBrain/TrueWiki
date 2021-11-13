@@ -21,6 +21,7 @@ from .storage.gitlab import click_storage_gitlab
 from .storage.local import click_storage_local
 from .user.github import click_user_github
 from .user.gitlab import click_user_gitlab
+from .user.microsoft import click_user_microsoft
 from .user_session import (
     click_user_session,
     get_user_by_bearer,
@@ -122,6 +123,7 @@ async def wait_for_storage():
 @click_user_session
 @click_user_github
 @click_user_gitlab
+@click_user_microsoft
 @click_page
 @click.option("--validate-all", help="Validate all mediawiki files and report all errors", is_flag=True)
 def main(bind, port, storage, frontend_url, cache_time, validate_all):
