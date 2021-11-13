@@ -2,6 +2,6 @@ __pycache__/
 *.pyc
 /.cache_metadata.json
 .coverage
-/.env
+/.venv/
 /data/
 /cache/

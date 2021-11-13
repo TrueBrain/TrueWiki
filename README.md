@@ -243,8 +243,8 @@ This server is written in Python 3.8 with aiohttp.
 To start it, you are advised to first create a virtualenv:
 
 ```bash
-python3 -m venv .env
-.env/bin/pip install -r requirements.txt
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 ```
 
 #### Preparing a data folder
@@ -262,7 +262,7 @@ It should contain the following folders (TrueWiki will create required folders i
 You can start the HTTP server by running:
 
 ```bash
-.env/bin/python -m truewiki
+.venv/bin/python -m truewiki
 ```
 
 This will start the server on port 8000 for you to work with locally.
