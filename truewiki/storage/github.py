@@ -82,8 +82,6 @@ class Storage(GitStorage):
     out_of_process_class = OutOfProcessStorage
 
     def __init__(self):
-        super().__init__()
-
         # We need to write the private key to disk: GitPython can only use
         # SSH-keys that are written on disk.
         if _github_private_key:
@@ -91,7 +89,9 @@ class Storage(GitStorage):
             self._github_private_key_file.write(_github_private_key)
             self._github_private_key_file.flush()
 
-            self._ssh_command = f"ssh -i {self._github_private_key_file.name}"
+            super().__init__(f"ssh -i {self._github_private_key_file.name}")
+        else:
+            super().__init__()
 
     def prepare(self):
         _git = super().prepare()

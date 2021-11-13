@@ -193,12 +193,12 @@ Upload new file: <input type="file" name="file" />
         # Someone is renaming the File to another namespace. This is most
         # likely not what the user wants, but let him do it anyway.
         if not new_page.startswith("File/"):
-            return
+            return None
 
         # Someone is making a File without adding a file. This is not ideal,
         # but for the same reason as the case above, we let him do it anyway.
         if not payload.get("file"):
-            return
+            return None
 
         payload["file"].file.seek(0)
         data = payload["file"].file.read()

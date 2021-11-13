@@ -65,10 +65,10 @@ def check_for_exception(task):
 class Storage(local.Storage):
     out_of_process_class = OutOfProcessStorage
 
-    def __init__(self):
+    def __init__(self, ssh_command=None):
         super().__init__()
 
-        self._ssh_command = None
+        self._ssh_command = ssh_command
 
         self._files_added = []
         self._files_changed = []
