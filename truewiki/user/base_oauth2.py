@@ -93,7 +93,8 @@ class User(BaseUser):
 
         user, _ = await self._oauth2.user_info()
 
-        self.display_name = user.username
+        self.display_name = user.username or user.email
+        self.email = user.email
         self.id = str(user.id)
 
         return True
