@@ -22,6 +22,13 @@
             </div>
             }}
         </header>
+        <nav>
+            <ul id="navigation-bar" class="right">
+                <li>
+                    <a href="/user/login">Login</a>
+                </li>
+            </ul>
+        </nav>
         {{#if: {{{has_search|}}}|
         <div id="search">
             <form action="/search" target="_new">
@@ -36,13 +43,6 @@
             </form>
         </div>
         }}
-        <nav>
-            <ul id="navigation-bar" class="right">
-                <li>
-                    <a href="/user/login">Login</a>
-                </li>
-            </ul>
-        </nav>
         <main>
             <p>{{{project_name}}}'s wiki relies on external authentication providers.</p>
             <form method="post">
