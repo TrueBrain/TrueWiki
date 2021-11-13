@@ -39,7 +39,7 @@ def link_media(instance: WikiPage, wikilink: wikitextparser.WikiLink):
         except InvalidWikiLink as e:
             # Errors always end with a dot, hence the [:-1].
             instance.add_error(f'{e.args[0][:-1]} (wikilink "{wikilink.string}").')
-            return
+            return False
 
     if wikilink.text:
         text = wikilink.text.strip()
