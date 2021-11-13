@@ -235,14 +235,7 @@ async def html_page(request):
     page = request.match_info["page"]
     _validate_page(page)
 
-    try:
-        if_modified_since = request.if_modified_since
-    except ValueError:
-        # If for example the If-Modified-Since header has an invalid year,
-        # requesting the variable will fail in aiohttp. Capture this and
-        # silently act like there was no If-Modified-Since header instead.
-        if_modified_since = None
-
+    if_modified_since = request.if_modified_since
     return view_page.view(user, page, if_modified_since)
 
 
