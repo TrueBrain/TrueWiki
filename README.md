@@ -109,88 +109,80 @@ The wiki configuration file defines how the wiki should look and feel.
 Running `python -m truewiki --help` will give a detailed overview of all the settings.
 
 ```
-Usage: __main__.py [OPTIONS]
+Usage: python -m truewiki [OPTIONS]
 
 Options:
   --sentry-dsn TEXT               Sentry DSN.
   --sentry-environment TEXT       Environment we are running in.
   --bind TEXT                     The IP to bind the server to  [default: ::1,
                                   127.0.0.1]
-
   --port INTEGER                  Port of the web server  [default: 80]
   --storage [github|gitlab|git|local]
                                   [required]
   --frontend-url TEXT             URL of the frontend, used for creating
                                   absolute links in the sitemap.xml
-
+  --cache-time INTEGER            Cache time of uploaded images (in seconds)
+                                  [default: 300]
   --reload-secret TEXT            Secret to allow an index reload. Always use
                                   this via an environment variable!
-
   --cache-metadata-file TEXT      File used to cache metadata.  [default:
                                   .cache_metadata.json]
-
   --storage-folder DIRECTORY      Folder to use for storage.  [default:
                                   ./data]
-
   --storage-git-username TEXT     Username to use when creating commits.
                                   [default: Librarian]
-
   --storage-git-email TEXT        Email to use when creating commits.
                                   [default: wiki@localhost]
-
   --storage-github-url URL        Repository URL on GitHub.  [default:
                                   https://github.com/TrueBrain/wiki-example]
-
   --storage-github-history-url URL
                                   Repository URL on GitHub to visit history
                                   (defaults to --storage-github-url).
-
   --storage-github-private-key TEXT
                                   Base64-encoded private key to access
                                   GitHub.Always use this via an environment
                                   variable!
-
+  --storage-github-branch branch  Branch of the GitHub repository to use.
+                                  [default: main]
   --storage-gitlab-url URL        Repository URL on Gitlab.  [default:
                                   https://gitlab.com/TrueBrain/wiki-
                                   example.git/]
-
   --storage-gitlab-history-url URL
                                   Repository URL on Gitlab to visit history
                                   (defaults to --storage-gitlab-url).
-
   --storage-gitlab-private-key TEXT
                                   Base64-encoded private key to access
                                   Gitlab.Always use this via an environment
                                   variable!
-
-  --user [developer|github|gitlab]
+  --storage-gitlab-branch branch  Branch of the Gitlab repository to use.
+                                  [default: main]
+  --user [developer|github|gitlab|microsoft]
                                   User backend to use (can have multiple).
                                   [required]
-
   --user-session-expire SECONDS   Time for a session to expire (measured from
                                   the moment of login).  [default: 50400]
-
   --user-login-expire SECONDS     Time for a login attempt to expire.
                                   [default: 600]
-
   --user-session-expire-schedule SECONDS
                                   The interval between check if a user session
                                   is expired.  [default: 900]
-
   --user-github-client-id TEXT    GitHub client ID. (user=github only)
   --user-github-client-secret TEXT
                                   GitHub client secret. Always use this via an
                                   environment variable! (user=github only)
-
   --user-gitlab-client-id TEXT    Gitlab client ID. (user=gitlab only)
   --user-gitlab-client-secret TEXT
                                   Gitlab client secret. Always use this via an
                                   environment variable! (user=gitlab only)
-
+  --user-microsoft-client-id TEXT
+                                  Microsoft client ID. (user=microsoft only)
+  --user-microsoft-client-secret TEXT
+                                  Microsoft client secret. Always use this via
+                                  an environment variable! (user=microsoft
+                                  only)
   --cache-page-folder TEXT        Folder used to cache rendered pages.
   --validate-all                  Validate all mediawiki files and report all
                                   errors
-
   -h, --help                      Show this message and exit.
 ```
 
@@ -219,6 +211,18 @@ The easiest way to do this is via a [SSH Key](https://docs.gitlab.com/ee/ssh/) o
 `TRUEWIKI_STORAGE_GITLAB_PRIVATE_KEY` should be set to the base64-encoded private key matching the deployment key.
 `--storage-gitlab-url` should be set to the SSH url of your GitLab repository (for example: `git@gitlab.com:TrueBrain/wiki-example.git`).
 With this, TrueWiki will automatically push changes to the GitLab repository, making your wiki persistent.
+
+#### Using Microsoft (user-backend only)
+
+Setting `--user` to `microsoft` will use Microsoft as user-backend.
+You will still need to select either `github` or `gitlab` for `--storage`.
+
+In your Azure Portal you can create an Application Registration.
+After creation you need to create a Client Secret.
+This secret combined with the application (client) ID is all that is needed to use the Microsoft user-backend.
+
+Depending on the Application Registration it can allow either only accounts in your subscription, or any Microsoft account.
+The Application Registration wizard helps you make this decision.
 
 ### Wiki configuration file
 
