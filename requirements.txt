@@ -11,7 +11,7 @@ frozenlist==1.2.0
 gitdb==4.0.9
 GitPython==3.1.24
 h11==0.12.0
-httpcore==0.13.7
+httpcore==0.14.2
 httpx==0.20.0
 idna==3.3
 multidict==5.2.0
