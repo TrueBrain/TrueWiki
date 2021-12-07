@@ -32,7 +32,6 @@ body > nav {
 	background: #555555;
 	border-radius: 0px 0px 10px 10px;
 	box-shadow: 0px 0px 5px #000000;
-	height: 32px;
 	margin: 0px auto;
 	min-height: 32px;
 	overflow: scroll; /* If the breadcrumbs are longer than the width of the screen, allow horizontal scrolling */
@@ -128,6 +127,7 @@ main {
 
 #navigation-bar {
     float: left;
+    height: 32px;
     padding-left: 10px;
 }
 #navigation-bar li {
@@ -137,15 +137,8 @@ main {
     padding: 0 6px;
 }
 #navigation-bar.right {
-    visibility: hidden;
     float: right;
     padding-right: 10px;
-}
-
-@media only screen and (min-width: 1020px) {
-    #navigation-bar.right {
-        visibility: visible;
-    }
 }
 
 #navigation-bar li.crumb:not(:first-child)::after {
