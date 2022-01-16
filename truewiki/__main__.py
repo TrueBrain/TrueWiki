@@ -162,7 +162,7 @@ def main(bind, port, storage, frontend_url, cache_time, validate_all):
     register_webroutes(webapp)
     webapp.add_routes(routes)
 
-    web.run_app(webapp, host=bind, port=port, access_log_class=ErrorOnlyAccessLogger)
+    web.run_app(webapp, host=bind, port=port, access_log_class=ErrorOnlyAccessLogger, loop=loop)
 
 
 if __name__ == "__main__":
