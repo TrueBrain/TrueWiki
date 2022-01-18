@@ -78,11 +78,12 @@ class Storage(local.Storage):
         super().prepare()
 
         try:
-            return git.Repo(self.folder)
+            self._git = git.Repo(self.folder)
         except git.exc.NoSuchPathError:
-            return self._init_repository()
+            self._git = self._init_repository()
         except git.exc.InvalidGitRepositoryError:
-            return self._init_repository()
+            self._git = self._init_repository()
+        return self._git
 
     def _init_repository(self):
         _git = git.Repo.init(self.folder)
@@ -164,6 +165,9 @@ class Storage(local.Storage):
         self._files_added.append(new_filename)
 
         super().file_rename(old_filename, new_filename)
+
+    def get_file_nonce(self, filename: str) -> str:
+        return self._git.head.commit.hexsha if self._git else super().get_file_nonce(filename)
 
 
 @click_helper.extend

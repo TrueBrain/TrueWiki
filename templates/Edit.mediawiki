@@ -71,6 +71,10 @@
                 {{errors}}
             </ul>
             }}
+            {{#if:{{{has_edit_conflict|}}}|
+            <div id="edit-conflict-title">Edit Conflict Detected</div>
+            <div id="edit-conflict-message">Someone else has changed this page since you started editing it. If you choose to save your edits, you will overwrite their changes! This may be solved by saving your text (i.e. in notepad) and refreshing this page.</div>
+            }}
             {{#if:{{{is_preview|}}}|
             <div id="preview">This is a preview. Changes have not yet been saved.</div>
             <div id="language-bar">
@@ -103,7 +107,7 @@
             {{namespace_edit}}
 
             <input type="submit" name="save" value="Save page" /> <input type="submit" name="preview" value="Preview page" />
-
+            <input type="hidden" name="edit-nonce" value="{{edit_nonce}}" />
             </form>
             <h3>
                 Templates

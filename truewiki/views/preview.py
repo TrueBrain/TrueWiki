@@ -7,7 +7,7 @@ from . import (
 from ..wiki_page import WikiPage
 
 
-def view(user, old_page: str, new_page: str, body: str, summary: str = None) -> web.Response:
+def view(user, old_page: str, new_page: str, body: str, summary: str = None, has_edit_conflict=False) -> web.Response:
     wiki_page = WikiPage(old_page)
     page_error = wiki_page.page_is_valid(old_page, is_new_page=True)
     if page_error:
@@ -23,6 +23,13 @@ def view(user, old_page: str, new_page: str, body: str, summary: str = None) -> 
         page_error = wiki_page.page_is_valid(new_page, is_new_page=True)
 
     body = source.create_body(
-        wiki_page, user, "Edit", preview=body, summary=summary, new_page=new_page, page_error=page_error
+        wiki_page,
+        user,
+        "Edit",
+        preview=body,
+        summary=summary,
+        new_page=new_page,
+        page_error=page_error,
+        has_edit_conflict=has_edit_conflict,
     )
     return web.Response(body=body, content_type="text/html")
