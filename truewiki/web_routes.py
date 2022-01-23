@@ -23,6 +23,7 @@ from .user_session import (
     SESSION_COOKIE_NAME,
     get_user_by_bearer,
 )
+from .wiki_page import WikiPage
 
 log = logging.getLogger(__name__)
 routes = web.RouteTableDef()
@@ -193,6 +194,7 @@ async def edit_page_post(request):
         raise web.HTTPNotFound()
     content = payload["content"].replace("\r", "")
     summary = payload["summary"].replace("\r", "")
+    user_edit_nonce = payload["edit-nonce"].replace("\r", "")
 
     # Make sure summary is not more than 500 chars. This is normally limited
     # by the HTML form itself, so if this is somehow longer, people have
@@ -206,8 +208,12 @@ async def edit_page_post(request):
     filename = os.path.basename(new_page)
     path = os.path.normpath(os.path.dirname(new_page))
     new_page = f"{path}/{filename}"
+    source_edit_nonce = singleton.STORAGE.get_file_nonce(WikiPage.page_ondisk_name(new_page))
 
     if "save" in payload:
+        if user_edit_nonce != source_edit_nonce:
+            return preview.view(user, page, new_page, content, summary, has_edit_conflict=True)
+
         return edit.save(user, page, new_page, content, payload, summary)
 
     if "preview" in payload:

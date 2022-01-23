@@ -478,7 +478,7 @@ ul.gallery .gallerytext {
     width: 14px;
 }
 
-#preview {
+#preview, #edit-conflict-title {
     background: #D52D2D;
     color: white;
     text-align: center;

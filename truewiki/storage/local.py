@@ -36,6 +36,9 @@ class Storage:
     def get_repository_url(self):
         return ""
 
+    def get_file_nonce(self, filename: str) -> str:
+        return str(os.path.getmtime(f"{self._folder}/{filename}"))
+
     def file_exists(self, filename: str) -> bool:
         return os.path.exists(f"{self._folder}/{filename}")
 

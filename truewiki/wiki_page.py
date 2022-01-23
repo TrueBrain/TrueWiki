@@ -91,7 +91,8 @@ class WikiPage(Page):
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_exists(page)
 
-    def page_ondisk_name(self, page: str) -> str:
+    @staticmethod
+    def page_ondisk_name(page: str) -> str:
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_ondisk_name(page)
 
