@@ -23,7 +23,6 @@ from .user_session import (
     SESSION_COOKIE_NAME,
     get_user_by_bearer,
 )
-
 from .wiki_page import WikiPage
 
 log = logging.getLogger(__name__)

@@ -73,7 +73,7 @@
             }}
             {{#if:{{{has_edit_conflict|}}}|
             <div id="edit-conflict-title">Edit Conflict Detected</div>
-            <div id="edit-conflict-message">Someone else has changed this page since you started editing it. If you choose to save your edits, you will overwrite their changes! This may be solved by saving your text (i.e. in notepad) and refreshing this page.</div>
+            <div id="edit-conflict-message">Someone else has changed this page since you started editing it. If you choose to save your edits, you will overwrite their changes. By leaving this page (without saving) your changes will be lost.</div>
             }}
             {{#if:{{{is_preview|}}}|
             <div id="preview">This is a preview. Changes have not yet been saved.</div>

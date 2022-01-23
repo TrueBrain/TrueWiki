@@ -167,7 +167,7 @@ class Storage(local.Storage):
         super().file_rename(old_filename, new_filename)
 
     def get_file_nonce(self, filename: str) -> str:
-        return self._git.head.commit.hexsha if self._git else super().get_file_nonce(filename)
+        return self._git.head.commit.hexsha
 
 
 @click_helper.extend
