@@ -48,7 +48,7 @@ from .namespaces import (  # noqa
 log = logging.getLogger(__name__)
 
 # Don't allow any file above 4 MiB.
-MAX_UPLOAD_SIZE = (1024 ** 2) * 4
+MAX_UPLOAD_SIZE = (1024**2) * 4
 # Cache static files for 24 hours.
 CACHE_TIME_STATIC = 3600 * 24
 # Cache uploads for 5 minutes by default. These files can be overwritten by
