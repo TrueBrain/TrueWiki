@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
     - name: Checkout
       uses: actions/checkout@v2
       with:
@@ -48,6 +51,7 @@ jobs:
         version: ${{ steps.vars.outputs.version }}
         date: ${{ steps.vars.outputs.date }}
         registry: ghcr.io
+        platform: linux/amd64,linux/arm64
 
     - if: steps.vars.outputs.dry-run == 'false'
       name: Publish
