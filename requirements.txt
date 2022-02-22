@@ -1,4 +1,4 @@
-aioauth-client==0.27.2
+aioauth-client==0.27.3
 aiohttp==3.8.1
 aiosignal==1.2.0
 anyio==3.5.0
