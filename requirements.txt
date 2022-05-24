@@ -29,5 +29,5 @@ typing_extensions==4.2.0
 urllib3==1.26.9
 wcwidth==0.2.5
 wikitexthtml==1.0.2
-wikitextparser==0.49.1
+wikitextparser==0.49.2
 yarl==1.7.2
