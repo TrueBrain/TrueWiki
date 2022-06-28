@@ -79,6 +79,14 @@ class WikiPage(Page):
         self.en_page = None
         self.categories = []
 
+    # Overrides wikitexthtml methods so syntax highlighting is enabled everywhere.
+    # We need the throwaway argument to match # of args in superclass. Otherwise, we get a TypeError.
+    def prepare(self, body, _=None):
+        return super().prepare(body, True)
+
+    def render(self, body: str = None, _=None):
+        return super().render(body, True)
+
     def page_load(self, page: str) -> str:
         namespace = page.split("/")[0]
         return NAMESPACES.get(namespace, NAMESPACE_DEFAULT_PAGE).page_load(page)
