@@ -48,6 +48,10 @@ jobs:
       uses: TrueBrain/actions-flake8@v1
       with:
         path: truewiki
+    - name: Flake8
+      uses: TrueBrain/actions-flake8@v1
+      with:
+        path: e2e
 
   black:
     name: Black
@@ -65,7 +69,7 @@ jobs:
         pip install black
     - name: Black
       run: |
-        black -l 120 --check truewiki
+        black -l 120 --check truewiki e2e
 
   check_annotations:
     name: Check Annotations
