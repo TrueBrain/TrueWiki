@@ -208,7 +208,7 @@ async def edit_page_post(request):
     filename = os.path.basename(new_page)
     path = os.path.normpath(os.path.dirname(new_page))
     new_page = f"{path}/{filename}"
-    source_edit_nonce = singleton.STORAGE.get_file_nonce(WikiPage.page_ondisk_name(new_page))
+    source_edit_nonce = singleton.STORAGE.get_file_nonce(WikiPage.page_ondisk_name(page))
 
     if "save" in payload:
         if user_edit_nonce != source_edit_nonce:
