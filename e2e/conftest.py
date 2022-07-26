@@ -37,6 +37,10 @@ async def _run_server():
     # Copy the required folders to the temporary folder.
     shutil.copytree(f"{cwd}/static", "static")
     shutil.copytree(f"{cwd}/templates", "templates")
+    # Make sure some mandatory files exist.
+    os.makedirs("data")
+    with open("data/LICENSE.mediawiki", "w") as f:
+        f.write("end-to-end test file")
 
     # Run TrueWiki, with coverage enabled.
     command = ["coverage", "run", "--branch", "--source", "truewiki"]
@@ -50,6 +54,10 @@ async def _run_server():
             "local",
             "--user",
             "developer",
+            "--frontend-url",
+            "http://localhost:8080/",
+            "--cache-page-folder",
+            "cache/",
         ]
     )
     python_proc = await asyncio.create_subprocess_exec(

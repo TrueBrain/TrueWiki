@@ -2,6 +2,7 @@ from playwright.sync_api import Page, expect
 
 
 def test_login_page(page: Page):
+    """Check that the login page is actually loading."""
     page.goto("http://localhost:8080/")
 
     # Check the login button is on the page.
@@ -17,6 +18,7 @@ def test_login_page(page: Page):
 
 
 def test_login_flow(page: Page):
+    """Check that the login flow works."""
     page.goto("http://localhost:8080/user/login")
 
     # We run the test in developer-mode, as we lack credentials for SSOs.
@@ -41,3 +43,15 @@ def test_login_flow(page: Page):
         logout.click()
     page.wait_for_url("/en/Main%20Page")
     expect(page.locator("text=Login")).to_be_visible()
+
+
+def test_login_after_login(page: Page, login):
+    """Go to the login URL after being logged in."""
+    page.goto("http://localhost:8080/user/login")
+    page.wait_for_url("/en/")
+
+
+def test_login_after_login_with_location(page: Page, login):
+    """Go to the login URL after being logged in with a location query string."""
+    page.goto("http://localhost:8080/user/login?location=en/Main%20Page")
+    page.wait_for_url("/en/Main%20Page")
