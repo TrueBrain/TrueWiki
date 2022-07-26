@@ -1,6 +1,12 @@
 from playwright.sync_api import Page, expect
 
 
+def test_edit_page_without_login(page: Page):
+    """If we are not logged in, we should be redirected to the login page."""
+    page.goto("http://localhost:8080/edit/en/Main%20Page")
+    page.wait_for_url("/user/login?location=edit/en/Main%20Page")
+
+
 def test_create_page(page: Page, login):
     """When we first start, there are no pages yet. This creates the main page."""
     create = page.locator("text=Create Page")
