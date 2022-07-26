@@ -247,8 +247,8 @@ This server is written in Python 3.8 with aiohttp.
 To start it, you are advised to first create a virtualenv:
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+python3 -m venv .env
+.env/bin/pip install -r requirements.txt
 ```
 
 #### Preparing a data folder
@@ -266,7 +266,7 @@ It should contain the following folders (TrueWiki will create required folders i
 You can start the HTTP server by running:
 
 ```bash
-.venv/bin/python -m truewiki
+.env/bin/python -m truewiki
 ```
 
 This will start the server on port 8000 for you to work with locally.
@@ -276,6 +276,18 @@ This will start the server on port 8000 for you to work with locally.
 ```bash
 docker build -t truebrain/truewiki:local .
 docker run --rm -p 127.0.0.1:8000:80 -v "`pwd`/data:/data" -v "`pwd`/cache:/cache" truebrain/truewiki:local
+```
+
+### End-to-end tests
+
+In order to know all functionality is still working as expected, TrueWiki uses [Playwright](https://playwright.dev) to do end-to-end tests.
+This is located in the `e2e` folder, and requires some additional tooling to be installed.
+
+```bash
+.env/bin/pip install -r e2e/requirements.txt
+.env/bin/playwright install
+COVERAGE_FILE="$(pwd)/.coverage" pytest e2e
+coverage report -m
 ```
 
 ## Why Yet-Another-Wiki-Server
