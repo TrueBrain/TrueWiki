@@ -82,6 +82,12 @@ def run_server():
     temp_folder.cleanup()
 
 
+@pytest.fixture(autouse=True)
+def timeout(page: Page):
+    page.set_default_timeout(1000)
+    page.set_default_navigation_timeout(1000)
+
+
 @pytest.fixture
 def login(page: Page):
     page.goto("http://localhost:8080/user/login")
