@@ -13,6 +13,7 @@ def test_create_page(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=content]").fill("My First Edit")
     with page.expect_navigation():
@@ -29,6 +30,7 @@ def test_edit_page(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=content]").fill("My Second Edit")
     with page.expect_navigation():
@@ -45,6 +47,7 @@ def test_rename_page(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("en/Main Page2")
     with page.expect_navigation():
@@ -60,6 +63,7 @@ def test_create_page_again(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=content]").fill("My Third Edit")
     with page.expect_navigation():
@@ -76,6 +80,7 @@ def test_rename_page_again(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("en/Main Page2")
     with page.expect_navigation():
@@ -91,6 +96,7 @@ def test_rename_page_invalid_slash(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("en/Main Page/")
     with page.expect_navigation():
@@ -106,13 +112,18 @@ def test_rename_page_invalid_name(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("Main Page")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    expect(page.locator('text=Page name "./Main Page" contains a filename/folder that starts with a dot, which is not allowed.')).to_be_visible()
+    expect(
+        page.locator(
+            'text=Page name "./Main Page" contains a filename/folder that starts with a dot, which is not allowed.'
+        )
+    ).to_be_visible()
 
 
 def test_rename_page_invalid_language(page: Page, login):
@@ -121,6 +132,7 @@ def test_rename_page_invalid_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("de/Main Page")
     with page.expect_navigation():
@@ -136,13 +148,16 @@ def test_rename_page_invalid_casing(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
+    page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("en/main page2")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    expect(page.locator('text=Page name "en/main page2" conflicts with "en/Main Page2", which already exists.')).to_be_visible()
+    expect(
+        page.locator('text=Page name "en/main page2" conflicts with "en/Main Page2", which already exists.')
+    ).to_be_visible()
 
 
 def test_edit_page_missing_language(page: Page, login):
@@ -154,4 +169,6 @@ def test_edit_page_missing_language(page: Page, login):
 def test_edit_page_different_casing(page: Page, login):
     """Editing a page with different casing is not allowed."""
     page.goto("http://localhost:8080/edit/en/main%20page2")
-    expect(page.locator('text=Page name "en/main page2" conflicts with "en/Main Page2". Did you mean to edit Main Page2?')).to_be_visible()
+    expect(
+        page.locator('text=Page name "en/main page2" conflicts with "en/Main Page2". Did you mean to edit Main Page2?')
+    ).to_be_visible()
