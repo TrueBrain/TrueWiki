@@ -10,6 +10,7 @@ def test_login_page(page: Page):
     expect(login).to_have_attribute("href", "/user/login?location=en/Main%20Page")
     with page.expect_navigation():
         login.click()
+    page.wait_for_url("/user/login?location=en/Main%20Page")
 
     # Make sure we end up on the login page.
     expect(page).to_have_title("Unnamed | Login")
@@ -23,6 +24,7 @@ def test_login_flow(page: Page):
     expect(login).to_be_visible()
     with page.expect_navigation():
         login.click()
+    page.wait_for_url("/user/login")
 
     # Fill in the developer-login form.
     page.locator("[name=username]").fill("test")
@@ -37,4 +39,5 @@ def test_login_flow(page: Page):
     # Now logout.
     with page.expect_navigation():
         logout.click()
+    page.wait_for_url("/en/Main%20Page")
     expect(page.locator("text=Login")).to_be_visible()
