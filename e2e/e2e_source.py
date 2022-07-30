@@ -14,7 +14,7 @@ def test_source_page(page: Page):
     expect(
         page.locator("text=You do not have permission to edit this page, because you are not logged in.")
     ).to_be_visible()
-    expect(page.locator("textarea")).to_have_text("My Third Edit")
+    expect(page.locator("textarea")).to_have_text("My Third Edit\n\n[[Category:en/MyPages]]")
     expect(page.locator("text=My Third Edit")).to_be_visible()
 
 

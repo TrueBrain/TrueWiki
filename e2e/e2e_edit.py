@@ -32,7 +32,7 @@ def test_edit_page(page: Page, login):
         edit.click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    page.locator("[name=content]").fill("My Second Edit")
+    page.locator("[name=content]").fill("My Second Edit\n\n[[Category:en/MyPages]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/en/Main%20Page")
@@ -65,7 +65,7 @@ def test_create_page_again(page: Page, login):
         create.click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    page.locator("[name=content]").fill("My Third Edit")
+    page.locator("[name=content]").fill("My Third Edit\n\n[[Category:en/MyPages]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/en/Main%20Page")
