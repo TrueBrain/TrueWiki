@@ -93,7 +93,7 @@ class Namespace(base.Namespace):
 
         if not cls._is_language_root(page) and not cls._is_root_of_folder(page):
             if not page.endswith((".png", ".jpeg", ".gif")):
-                return f'Page name "{page}" in the File namespace should end with wither ".png", ".gif", or ".jpeg".'
+                return f'Page name "{page}" in the File namespace should end with either ".png", ".gif", or ".jpeg".'
 
         return None
 
