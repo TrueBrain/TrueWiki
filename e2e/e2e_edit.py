@@ -65,7 +65,9 @@ def test_create_page_again(page: Page, login):
         create.click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    page.locator("[name=content]").fill("My Third Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}\n{{Page:en/Empty}}")
+    page.locator("[name=content]").fill(
+        "[[Translation:en/Main Page]]\nMy Third Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}\n{{Page:en/Empty}}"
+    )
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/en/Main%20Page")
@@ -135,12 +137,12 @@ def test_rename_page_invalid_language(page: Page, login):
         edit.click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    page.locator("[name=page]").fill("de/Main Page")
+    page.locator("[name=page]").fill("zz/Main Page")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    expect(page.locator('text=Page name "de/Main Page" is in language "de" that does not exist.')).to_be_visible()
+    expect(page.locator('text=Page name "zz/Main Page" is in language "zz" that does not exist.')).to_be_visible()
 
 
 def test_rename_page_invalid_casing(page: Page, login):
@@ -205,3 +207,40 @@ def test_edit_page_invalid_language(page: Page, login):
     """View a page with an invalid language."""
     page.goto("http://localhost:8080/test/invalid")
     expect(page.locator('text=Page name "test/invalid" is in language "test" that does not exist.')).to_be_visible()
+
+
+def test_create_translation(page: Page, login):
+    """Create a translation for the main page."""
+    page.goto("http://localhost:8080/de/")
+
+    create = page.locator("text=Create Page")
+    expect(create).to_be_visible()
+    with page.expect_navigation():
+        create.click()
+    page.wait_for_url("/edit/de/Main%20Page")
+
+    page.locator("[name=content]").fill(
+        "[[Translation:en/Main Page]]\nMein dritter Edit\n\n[[Category:de/MyPages]]\n{{de/Summary}}\n{{Page:de/Empty}}"
+    )
+    with page.expect_navigation():
+        page.locator("[name=save]").click()
+    page.wait_for_url("/de/Main%20Page")
+
+    expect(page).to_have_title("Unnamed | Unnamed's Wiki")
+    expect(page.locator("text=Mein dritter Edi")).to_be_visible()
+    expect(page.locator("text=Page:de/Empty")).to_be_visible()
+
+
+def test_language_bar(page: Page):
+    """Check that the language bar is working."""
+    page.goto("http://localhost:8080/de/")
+
+    expect(page.locator('strong:has-text("de")')).to_be_visible()
+    en = page.locator("#language-bar >> text=en")
+    expect(en).to_be_visible()
+    with page.expect_navigation():
+        en.click()
+    page.wait_for_url("/en/")
+
+    expect(page.locator('strong:has-text("en")')).to_be_visible()
+    expect(page.locator("#language-bar >> text=de")).to_be_visible()

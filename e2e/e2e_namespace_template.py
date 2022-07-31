@@ -180,13 +180,13 @@ def test_template_edit_invalid_language(page: Page, login):
         edit.click()
     page.wait_for_url("/edit/Template/en/")
 
-    page.locator("[name=page]").fill("Template/de/test")
+    page.locator("[name=page]").fill("Template/zz/test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/edit/Template/en/")
 
-    expect(page.locator('text=Page name "Template/de/test" is in language "de" that does not exist.')).to_be_visible()
+    expect(page.locator('text=Page name "Template/zz/test" is in language "zz" that does not exist.')).to_be_visible()
 
 
 def test_template_linked_category(page: Page):
