@@ -14,8 +14,38 @@ def test_source_page(page: Page):
     expect(
         page.locator("text=You do not have permission to edit this page, because you are not logged in.")
     ).to_be_visible()
-    expect(page.locator("textarea")).to_have_text("My Third Edit\n\n[[Category:en/MyPages]]")
+    expect(page.locator("textarea")).to_have_text(
+        "My Third Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}\n{{Page:en/Empty}}"
+    )
     expect(page.locator("text=My Third Edit")).to_be_visible()
+
+    expect(page.locator("text=No templates used")).not_to_be_visible()
+    expect(page.locator("text=Not used on any page")).to_be_visible()
+
+    # Entries of the templates.
+    expect(page.locator('a:has-text("Summary")')).to_be_visible()
+
+
+def test_source_template(page: Page):
+    """Check if we can view the source page of a template."""
+    page.goto("http://localhost:8080/Template/en/Summary")
+
+    source = page.locator("text=View Source")
+    expect(source).to_be_visible()
+    with page.expect_navigation():
+        source.click()
+    page.wait_for_url("/Template/en/Summary.mediawiki")
+
+    expect(
+        page.locator("text=You do not have permission to edit this page, because you are not logged in.")
+    ).to_be_visible()
+    expect(page.locator("textarea")).to_have_text("My First Template\n[[Category:en/MyTemplates]]")
+    expect(page.locator("text=No templates used")).to_be_visible()
+    expect(page.locator("text=Not used on any page")).not_to_be_visible()
+
+    # Entries of the "used on pages".
+    expect(page.locator("main >> text=Unnamed's Wiki")).to_be_visible()
+    expect(page.locator("main >> text=Main Page2")).to_be_visible()
 
 
 def test_source_page_non_existing(page: Page):

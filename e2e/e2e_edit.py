@@ -32,7 +32,7 @@ def test_edit_page(page: Page, login):
         edit.click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    page.locator("[name=content]").fill("My Second Edit\n\n[[Category:en/MyPages]]")
+    page.locator("[name=content]").fill("My Second Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/en/Main%20Page")
@@ -65,13 +65,14 @@ def test_create_page_again(page: Page, login):
         create.click()
     page.wait_for_url("/edit/en/Main%20Page")
 
-    page.locator("[name=content]").fill("My Third Edit\n\n[[Category:en/MyPages]]")
+    page.locator("[name=content]").fill("My Third Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}\n{{Page:en/Empty}}")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/en/Main%20Page")
 
     expect(page).to_have_title("Unnamed | Unnamed's Wiki")
     expect(page.locator("text=My Third Edit")).to_be_visible()
+    expect(page.locator("text=Page:en/Empty")).to_be_visible()
 
 
 def test_rename_page_again(page: Page, login):
@@ -160,6 +161,32 @@ def test_rename_page_invalid_casing(page: Page, login):
     ).to_be_visible()
 
 
+def test_create_empty_page(page: Page, login):
+    """Create an empty page; that should show a placeholder text."""
+    page.goto("http://localhost:8080/en/Empty")
+
+    create = page.locator("text=Create Page")
+    expect(create).to_be_visible()
+    with page.expect_navigation():
+        create.click()
+    page.wait_for_url("/edit/en/Empty")
+
+    with page.expect_navigation():
+        page.locator("[name=save]").click()
+    page.wait_for_url("/en/Empty")
+
+    expect(page).to_have_title("Unnamed | Empty")
+    expect(page.locator("text=There is currently no text on this page.")).to_be_visible()
+
+
+def test_view_page_template(page: Page):
+    """Now the empty page exists, the main page should resolve the template."""
+    page.goto("http://localhost:8080/")
+
+    expect(page).to_have_title("Unnamed | Unnamed's Wiki")
+    expect(page.locator("text=Page:en/Empty")).not_to_be_visible()
+
+
 def test_edit_page_missing_language(page: Page, login):
     """Editing a page with the language missing."""
     page.goto("http://localhost:8080/edit/main%20page2")
@@ -172,3 +199,9 @@ def test_edit_page_different_casing(page: Page, login):
     expect(
         page.locator('text=Page name "en/main page2" conflicts with "en/Main Page2". Did you mean to edit Main Page2?')
     ).to_be_visible()
+
+
+def test_edit_page_invalid_language(page: Page, login):
+    """View a page with an invalid language."""
+    page.goto("http://localhost:8080/test/invalid")
+    expect(page.locator('text=Page name "test/invalid" is in language "test" that does not exist.')).to_be_visible()
