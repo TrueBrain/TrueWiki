@@ -28,7 +28,7 @@ def add_content(page: str) -> str:
             page_in_category = page_in_category[len(namespace) :]
             link = f"<li>[[{prefix}{page_in_category}]]</li>"
 
-            if namespace == "Templates/":
+            if namespace == "Template/":
                 items["templates"].append(link)
             elif namespace == "Category/":
                 items["categories"].append(link)
