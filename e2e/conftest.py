@@ -41,6 +41,9 @@ async def _run_server():
     os.makedirs("data")
     with open("data/LICENSE.mediawiki", "w") as f:
         f.write("end-to-end test file")
+    # Make sure a few languages exist.
+    os.makedirs("data/Page/en")
+    os.makedirs("data/Page/de")
 
     # Run TrueWiki, with coverage enabled.
     command = ["coverage", "run", "--branch", "--source", "truewiki"]

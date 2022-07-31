@@ -68,10 +68,10 @@ def test_folder_invalid_file_in_namespace(page: Page):
 
 def test_folder_invalid_language(page: Page):
     """Opening a folder in a language that doesn't exist."""
-    page.goto("http://localhost:8080/Folder/Page/de/")
+    page.goto("http://localhost:8080/Folder/Page/zz/")
 
     expect(
-        page.locator('text=Page name "Folder/Page/de/Main Page" is in language "de" that does not exist.')
+        page.locator('text=Page name "Folder/Page/zz/Main Page" is in language "zz" that does not exist.')
     ).to_be_visible()
 
 

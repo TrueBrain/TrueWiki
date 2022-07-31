@@ -118,13 +118,13 @@ def test_category_edit_invalid_language(page: Page, login):
         edit.click()
     page.wait_for_url("/edit/Category/en/")
 
-    page.locator("[name=page]").fill("Category/de/test")
+    page.locator("[name=page]").fill("Category/zz/test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
     page.wait_for_url("/edit/Category/en/")
 
-    expect(page.locator('text=Page name "Category/de/test" is in language "de" that does not exist.')).to_be_visible()
+    expect(page.locator('text=Page name "Category/zz/test" is in language "zz" that does not exist.')).to_be_visible()
 
 
 def test_category_root(page: Page):
