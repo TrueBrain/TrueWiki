@@ -66,7 +66,8 @@ def test_create_page_again(page: Page, login):
     page.wait_for_url("/edit/en/Main%20Page")
 
     page.locator("[name=content]").fill(
-        "[[Translation:en/Main Page]]\nMy Third Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}\n{{Page:en/Empty}}"
+        "[[Translation:en/Main Page]]\nMy Third Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}"
+        "\n{{Page:en/Empty}}\n[[File:en/Test.png]]\n[[Media:en/Test.png]]"
     )
     with page.expect_navigation():
         page.locator("[name=save]").click()
@@ -75,6 +76,7 @@ def test_create_page_again(page: Page, login):
     expect(page).to_have_title("Unnamed | Unnamed's Wiki")
     expect(page.locator("text=My Third Edit")).to_be_visible()
     expect(page.locator("text=Page:en/Empty")).to_be_visible()
+    expect(page.locator("text=File:en/test.png")).to_be_visible()
 
 
 def test_rename_page_again(page: Page, login):

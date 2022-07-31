@@ -56,7 +56,7 @@ def test_folder_file(page: Page):
     page.goto("http://localhost:8080/Folder/File/en/")
 
     expect(page.locator("text=All the pages and folders inside this folder.")).to_be_visible()
-    expect(page.locator("text=(this folder is empty)")).to_be_visible()
+    expect(page.locator("text=test.png")).to_be_visible()
 
 
 def test_folder_invalid_file_in_namespace(page: Page):
