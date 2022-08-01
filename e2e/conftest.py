@@ -4,6 +4,7 @@ import os
 import pytest
 import shutil
 import signal
+import time
 
 from ctypes.util import find_library
 from tempfile import TemporaryDirectory
@@ -21,7 +22,7 @@ async def set_death_signal():
     libc.prctl(PR_SET_PDEATHSIG, signal.SIGTERM, 0, 0, 0)
 
 
-async def _run_server():
+async def _run_server(storage):
     global temp_folder, python_proc
 
     # Make sure we can find our way to the code in the temporary folder.
@@ -43,10 +44,14 @@ async def _run_server():
         f.write("end-to-end test file")
     # Make sure a few languages exist.
     os.makedirs("data/Page/en")
+    with open("data/Page/en/.keep", "w") as f:
+        pass
     os.makedirs("data/Page/de")
+    with open("data/Page/de/.keep", "w") as f:
+        pass
 
     # Run TrueWiki, with coverage enabled.
-    command = ["coverage", "run", "--branch", "--source", "truewiki"]
+    command = ["coverage", "run"]
     command.extend(
         [
             "-m",
@@ -54,7 +59,7 @@ async def _run_server():
             "--port",
             "8080",
             "--storage",
-            "local",
+            storage,
             "--user",
             "developer",
             "--frontend-url",
@@ -63,6 +68,35 @@ async def _run_server():
             "cache/",
         ]
     )
+
+    if storage == "github":
+        branch_name = "e2e-" + str(time.time()).replace(".", "-")
+
+        command.extend(
+            [
+                "--storage-github-url",
+                "git@github.com:TrueBrain/truewiki-e2e-test.git",
+                "--storage-github-history-url",
+                "https://github.com/TrueBrain/truewiki-e2e-test",
+                "--storage-github-branch",
+                branch_name,
+            ]
+        )
+
+    if storage == "gitlab":
+        branch_name = "e2e-" + str(time.time()).replace(".", "-")
+
+        command.extend(
+            [
+                "--storage-gitlab-url",
+                "git@gitlab.com:TrueBrain/truewiki-e2e-test.git",
+                "--storage-gitlab-history-url",
+                "https://gitlab.com/TrueBrain/truewiki-e2e-test",
+                "--storage-gitlab-branch",
+                branch_name,
+            ]
+        )
+
     python_proc = await asyncio.create_subprocess_exec(
         command[0],
         *command[1:],
@@ -72,17 +106,34 @@ async def _run_server():
     # Make sure we switch back to the project folder.
     os.chdir(cwd)
 
-    # Wait for the startup line to be shown.
-    await python_proc.stdout.readline()
+    # Wait till the server reports "running".
+    lines = []
+    while python_proc.returncode is None and not python_proc.stdout.at_eof():
+        line = await python_proc.stdout.readline()
+        if line is None:
+            break
+        lines.append(line)
+
+        if "Running on http://" in line.decode():
+            break
+
+    # If either the process closed or the stdout closed, the server didn't
+    # actual start. And yes, it can happen stdout is already closed, but
+    # the returncode isn't in yet.
+    if python_proc.returncode is not None or python_proc.stdout.at_eof():
+        print((b"\n".join(lines) + await python_proc.stdout.read()).decode())
+        raise Exception("Failed to start TrueWiki server")
+
+    return None
 
 
 @pytest.fixture(scope="session", autouse=True)
-def run_server():
+def run_server(request):
     # Create a new event loop for our server.
     loop = asyncio.new_event_loop()
 
     # Start the server.
-    loop.run_until_complete(_run_server())
+    loop.run_until_complete(_run_server(request.config.getoption("--storage")))
 
     # Give control back to PyTest.
     yield
@@ -91,6 +142,10 @@ def run_server():
     python_proc.terminate()
     loop.run_until_complete(python_proc.wait())
     temp_folder.cleanup()
+
+
+def pytest_addoption(parser):
+    parser.addoption("--storage", action="store", default="local", help="Storage backend")
 
 
 @pytest.fixture(autouse=True)
