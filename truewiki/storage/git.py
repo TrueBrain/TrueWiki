@@ -26,6 +26,18 @@ class OutOfProcessStorage:
         self._git = git.Repo(self._folder)
 
     def commit(self, git_author, commit_message, files_added, files_changed, files_removed):
+        # We run this in a separate process, because GitPython is blocking.
+        # And something like "git push" can take 4+ seconds. This would be
+        # annoying for the end-user. But by delegating it to its own process,
+        # we have to take care of some race-conditions. For example, it can
+        # happen that a user makes an unrelated change, then makes a page and
+        # removes it directly after. As the unrelated change is taking 4+
+        # seconds, the next commit tries to add a page that is already removed.
+        # In that case, we simply ignore the change, as there is nothing else
+        # we can do.
+        # It has to be noted, it is rather unlike that a human makes this
+        # happen, but it is happening a lot with our end-to-end tests.
+
         if not files_added and not files_removed:
             # If there is no diff for any of these items, the user reverted back
             # to the original state. In this case, do not make a commit, as it
@@ -35,9 +47,18 @@ class OutOfProcessStorage:
 
         # Update the index with the added/removed files.
         for filename in files_added + files_changed:
-            self._git.index.add(filename)
+            try:
+                self._git.index.add(filename)
+            except FileNotFoundError:
+                # Sadly, a newer change has removed the file. So this
+                # change will be lost in history.
+                pass
         for filename in files_removed:
-            self._git.index.remove(filename)
+            try:
+                self._git.index.remove(filename)
+            except git.exc.GitCommandError:
+                # The file was already removed or never existed.
+                pass
 
         git_author = git.Actor(*git_author)
 
