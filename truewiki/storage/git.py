@@ -95,6 +95,16 @@ class Storage(local.Storage):
             committer=git.Actor(GIT_USERNAME, GIT_EMAIL),
         )
 
+        # Import any file in the data directory.
+        if _git.untracked_files:
+            for filename in _git.untracked_files:
+                _git.index.add(filename)
+            _git.index.commit(
+                "Add: initial files",
+                author=git.Actor(GIT_USERNAME, GIT_EMAIL),
+                committer=git.Actor(GIT_USERNAME, GIT_EMAIL),
+            )
+
         return _git
 
     async def _run_out_of_process_async(self, folder, ssh_command, callback, func, *args):
