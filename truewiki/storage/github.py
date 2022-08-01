@@ -139,7 +139,7 @@ class Storage(GitStorage):
 )
 @click.option(
     "--storage-github-private-key",
-    help="Base64-encoded private key to access GitHub." "Always use this via an environment variable!",
+    help="Base64-encoded private key to access GitHub. Always use this via an environment variable!",
 )
 @click.option(
     "--storage-github-branch",
