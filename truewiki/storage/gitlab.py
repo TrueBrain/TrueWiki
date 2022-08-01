@@ -56,7 +56,7 @@ class Storage(GitStorage):
 
     def commit_done(self):
         super().commit_done()
-        self._run_out_of_process(None, "push")
+        self._run_out_of_process(None, "push", _gitlab_branch)
 
     def get_history_url(self, page):
         page = urllib.parse.quote(page)

@@ -51,7 +51,12 @@ class OutOfProcessStorage(GitOutOfProcessStorage):
                 # throws a BadName. The best solution? Just run it again.
                 origin.fetch()
 
-        origin.refs[branch].checkout(force=True, B=branch)
+        if branch in origin.refs:
+            origin.refs[branch].checkout(force=True, B=branch)
+        else:
+            branch = self._git.create_head(branch)
+            branch.checkout()
+
         for file_name in self._git.untracked_files:
             os.unlink(f"{self._folder}/{file_name}")
 
@@ -63,14 +68,14 @@ class OutOfProcessStorage(GitOutOfProcessStorage):
 
         return True
 
-    def push(self):
+    def push(self, branch):
         if not self._ssh_command:
             log.error(f"No {self.name} private key supplied; cannot push to {self.name}.")
             return True
 
         try:
             with self._git.git.custom_environment(GIT_SSH_COMMAND=self._ssh_command):
-                self._git.remotes.origin.push()
+                self._git.remotes.origin.push(f"{branch}:{branch}")
         except Exception:
             log.exception(f"Git push failed; reloading from {self.name}")
             return False
@@ -113,7 +118,7 @@ class Storage(GitStorage):
 
     def commit_done(self):
         super().commit_done()
-        self._run_out_of_process(None, "push")
+        self._run_out_of_process(None, "push", _github_branch)
 
     def get_history_url(self, page):
         page = urllib.parse.quote(page)

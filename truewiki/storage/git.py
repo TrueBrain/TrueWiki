@@ -110,7 +110,7 @@ class Storage(local.Storage):
         # Always make sure there is a commit in the working tree, otherwise
         # HEAD is invalid, which results in other nasty problems.
         _git.index.commit(
-            "Add: initial empty commit",
+            "initialize: empty commit",
             author=git.Actor(GIT_USERNAME, GIT_EMAIL),
             committer=git.Actor(GIT_USERNAME, GIT_EMAIL),
         )
@@ -120,7 +120,7 @@ class Storage(local.Storage):
             for filename in _git.untracked_files:
                 _git.index.add(filename)
             _git.index.commit(
-                "Add: initial files",
+                "initialize: import existing files",
                 author=git.Actor(GIT_USERNAME, GIT_EMAIL),
                 committer=git.Actor(GIT_USERNAME, GIT_EMAIL),
             )
