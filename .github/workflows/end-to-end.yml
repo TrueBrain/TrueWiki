@@ -12,31 +12,46 @@ jobs:
   playwright:
     name: Playwright
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        storage: [local, git, github, gitlab]
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python 3.8
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
         python-version: 3.8
+        cache: 'pip'
+        cache-dependency-path: |
+          e2e/requirements.base
+          requirements.txt
+    - uses: actions/cache@v3
+      name: Cache Playwright
+      id: playwright-cache
+      with:
+        path: '~/.cache/ms-playwright'
+        key: '${{ runner.os }}-playwright'
     - name: Set up packages
       run: |
         python -m pip install --upgrade pip
         pip install -r e2e/requirements.base
         pip install -r requirements.txt
         playwright install
-    - name: Playwright
+    - name: Set up remote SSH keys
       run: |
-        COVERAGE_FILE="$(pwd)/.coverage" pytest e2e
-    - name: Coverage report
+        mkdir -p ~/.ssh
+        ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+        ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
+    - name: Playwright (storage=${{ matrix.storage }})
       run: |
+        COVERAGE_RCFILE="$(pwd)/.coveragerc" COVERAGE_FILE="$(pwd)/.coverage" pytest e2e -v --storage ${{ matrix.storage }}
+        coverage combine
         coverage report -m
-        coverage html
         coverage xml
-    - name: Archive coverage report
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage-report
-        path: htmlcov
+      env:
+        TRUEWIKI_STORAGE_GITHUB_PRIVATE_KEY: ${{ secrets.E2E_STORAGE_GITHUB_PRIVATE_KEY }}
+        TRUEWIKI_STORAGE_GITLAB_PRIVATE_KEY: ${{ secrets.E2E_STORAGE_GITLAB_PRIVATE_KEY }}
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

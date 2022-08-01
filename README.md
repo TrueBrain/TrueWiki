@@ -286,7 +286,8 @@ This is located in the `e2e` folder, and requires some additional tooling to be 
 ```bash
 .env/bin/pip install -r e2e/requirements.txt
 .env/bin/playwright install
-COVERAGE_FILE="$(pwd)/.coverage" pytest e2e
+COVERAGE_RCFILE="$(pwd)/.coveragerc" COVERAGE_FILE="$(pwd)/.coverage" pytest e2e -v --storage local
+coverage combine
 coverage report -m
 ```
 
