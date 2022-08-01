@@ -15,8 +15,7 @@ log = logging.getLogger(__name__)
 GIT_USERNAME = None
 GIT_EMAIL = None
 
-GIT_BUSY = asyncio.Event()
-GIT_BUSY.set()
+GIT_BUSY = asyncio.Lock()
 
 
 class OutOfProcessStorage:
@@ -108,8 +107,7 @@ class Storage(local.Storage):
         return _git
 
     async def _run_out_of_process_async(self, folder, ssh_command, callback, func, *args):
-        await GIT_BUSY.wait()
-        GIT_BUSY.clear()
+        await GIT_BUSY.acquire()
 
         try:
             out_of_process = self.out_of_process_class((GIT_USERNAME, GIT_EMAIL), folder, ssh_command)
@@ -125,7 +123,7 @@ class Storage(local.Storage):
                 task = loop.run_in_executor(executor, getattr(out_of_process, func), *args)
                 result = await task
         finally:
-            GIT_BUSY.set()
+            GIT_BUSY.release()
 
         # Task indicated something went wrong; initiate a full reload.
         if result is False:
