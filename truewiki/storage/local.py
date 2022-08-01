@@ -37,7 +37,10 @@ class Storage:
         return ""
 
     def get_file_nonce(self, filename: str) -> str:
-        return str(os.path.getmtime(f"{self._folder}/{filename}")) if self.file_exists(filename) else "0"
+        if self.file_exists(filename):
+            return str(os.path.getmtime(f"{self._folder}/{filename}"))
+        else:
+            return "0"
 
     def file_exists(self, filename: str) -> bool:
         return os.path.exists(f"{self._folder}/{filename}")
