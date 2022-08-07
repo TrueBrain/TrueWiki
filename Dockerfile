@@ -1,17 +1,6 @@
 FROM python:3.8-slim
 
-ARG BUILD_DATE=""
 ARG BUILD_VERSION="dev"
-
-LABEL maintainer="TrueBrain <truebrain@truebrain.nl>"
-LABEL org.opencontainers.image.created=${BUILD_DATE}
-LABEL org.opencontainers.image.authors="TrueBrain <truebrain@truebrain.nl>"
-LABEL org.opencontainers.image.url="https://github.com/TrueBrain/TrueWiki"
-LABEL org.opencontainers.image.source="https://github.com/TrueBrain/TrueWiki"
-LABEL org.opencontainers.image.version=${BUILD_VERSION}
-LABEL org.opencontainers.image.licenses="AGPLv3"
-LABEL org.opencontainers.image.title="Wiki Server"
-LABEL org.opencontainers.image.description="TrueWiki is a wikitext server similar to mediawiki and gollum"
 
 # git is needed to clone the wiki data
 # openssh-client is needed to git clone over ssh
