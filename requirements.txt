@@ -15,7 +15,7 @@ httpcore==0.15.0
 httpx==0.23.0
 idna==3.3
 multidict==6.0.2
-openttd-helpers==1.0.1
+openttd-helpers==1.1.0
 ply==3.11
 Pygments==2.12.0
 python-slugify==6.1.2
