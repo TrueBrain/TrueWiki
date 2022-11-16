@@ -77,7 +77,7 @@ class Namespace(base.Namespace):
         spage = page.split("/")
 
         if cls._is_root(page):
-            return None
+            return
 
         if is_new_page and cls._is_language_root(page):
             return f'Page name "{page}" is invalid, as it is automatically generated.'
