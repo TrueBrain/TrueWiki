@@ -4,7 +4,7 @@
 [![GitHub Tag](https://img.shields.io/github/v/tag/TrueBrain/TrueWiki?include_prereleases&label=stable)](https://github.com/TrueBrain/TrueWiki/releases)
 [![GitHub commits since latest release](https://img.shields.io/github/commits-since/TrueBrain/TrueWiki/latest/main)](https://github.com/TrueBrain/TrueWiki/commits/main)
 
-[![GitHub Workflow Status (Testing)](https://img.shields.io/github/workflow/status/TrueBrain/TrueWiki/Testing/main?label=main)](https://github.com/TrueBrain/TrueWiki/actions?query=workflow%3ATesting)
+[![GitHub Workflow Status (Testing)](https://img.shields.io/github/actions/workflow/status/TrueBrain/TrueWiki/testing.yml?branch=main&label=main)](https://github.com/TrueBrain/TrueWiki/actions/workflows/testing.yml)
 
 TrueWiki is an opinionated wikitext server similar to [MediaWiki](https://github.com/wikimedia/mediawiki) and/or [gollum](https://github.com/gollum/gollum).
 As default storage it uses GitHub (instead of a database).
