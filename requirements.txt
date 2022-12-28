@@ -14,7 +14,7 @@ h11==0.12.0
 httpcore==0.15.0
 httpx==0.23.0
 idna==3.4
-multidict==6.0.2
+multidict==6.0.4
 openttd-helpers==1.1.0
 ply==3.11
 Pygments==2.13.0
