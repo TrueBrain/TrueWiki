@@ -17,7 +17,7 @@ idna==3.4
 multidict==6.0.4
 openttd-helpers==1.1.0
 ply==3.11
-Pygments==2.13.0
+Pygments==2.14.0
 python-slugify==7.0.0
 PyYAML==6.0
 regex==2022.10.31
