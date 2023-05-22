@@ -25,14 +25,14 @@ class Storage(GitStorage):
     out_of_process_class = OutOfProcessStorage
 
     def __init__(self):
-        # We need to write the private key to disk: GitPython can only use
-        # SSH-keys that are written on disk.
         if _gitlab_private_key:
+            # We need to write the private key to disk: GitPython can only use
+            # SSH-keys that are written on disk.
             self._gitlab_private_key_file = tempfile.NamedTemporaryFile()
             self._gitlab_private_key_file.write(_gitlab_private_key)
             self._gitlab_private_key_file.flush()
 
-            super().__init__(f"ssh -i {self._gitlab_private_key_file.name}")
+            super().__init__(ssh_command=f"ssh -i {self._gitlab_private_key_file.name}")
         else:
             super().__init__()
 
