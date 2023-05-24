@@ -72,10 +72,15 @@ async def _run_server(storage):
     if storage == "github":
         branch_name = "e2e-" + str(time.time()).replace(".", "-")
 
+        if os.getenv("TRUEWIKI_STORAGE_GITHUB_PRIVATE_KEY"):
+            github_url = "git@github.com:TrueBrain/truewiki-e2e-test.git"
+        else:
+            github_url = "https://github.com/TrueBrain/truewiki-e2e-test"
+
         command.extend(
             [
                 "--storage-github-url",
-                "git@github.com:TrueBrain/truewiki-e2e-test.git",
+                github_url,
                 "--storage-github-history-url",
                 "https://github.com/TrueBrain/truewiki-e2e-test",
                 "--storage-github-branch",
@@ -101,6 +106,7 @@ async def _run_server(storage):
         command[0],
         *command[1:],
         stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
         preexec_fn=set_death_signal,
     )
     # Make sure we switch back to the project folder.
@@ -121,7 +127,9 @@ async def _run_server(storage):
     # actual start. And yes, it can happen stdout is already closed, but
     # the returncode isn't in yet.
     if python_proc.returncode is not None or python_proc.stdout.at_eof():
+        print("Logs from TrueWiki server:")
         print((b"\n".join(lines) + await python_proc.stdout.read()).decode())
+        print((b"\n".join(lines) + await python_proc.stderr.read()).decode())
         raise Exception("Failed to start TrueWiki server")
 
     return None

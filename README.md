@@ -138,10 +138,19 @@ Options:
   --storage-github-history-url URL
                                   Repository URL on GitHub to visit history
                                   (defaults to --storage-github-url).
-  --storage-github-private-key TEXT
-                                  Base64-encoded private key to access
-                                  GitHub.Always use this via an environment
+  --storage-github-deploy-key, --storage-github-private-key TEXT
+                                  Base64-encoded GitHub Deploy key to access
+                                  the repository. Use either this or a GitHub
+                                  App. Always use this via an environment
                                   variable!
+  --storage-github-app-id TEXT    GitHub App ID that has write access to the
+                                  repository. Use either this or a GitHub
+                                  Deploy Key.
+  --storage-github-app-key TEXT   Base64-encoded GitHub App Private Key. Use
+                                  either this or a GitHub Deploy Key. Always
+                                  use this via an environment variable!
+  --storage-github-api-url URL    GitHub API URL to use with GitHub App.
+                                  [default: https://api.github.com]
   --storage-github-branch branch  Branch of the GitHub repository to use.
                                   [default: main]
   --storage-gitlab-url URL        Repository URL on Gitlab.  [default:
@@ -151,9 +160,8 @@ Options:
                                   Repository URL on Gitlab to visit history
                                   (defaults to --storage-gitlab-url).
   --storage-gitlab-private-key TEXT
-                                  Base64-encoded private key to access
-                                  Gitlab.Always use this via an environment
-                                  variable!
+                                  Base64-encoded private key to access Gitlab.
+                                  Always use this via an environment variable!
   --storage-gitlab-branch branch  Branch of the Gitlab repository to use.
                                   [default: main]
   --user [developer|github|gitlab|microsoft]
@@ -194,10 +202,19 @@ By default, it will checkout the [wiki-example](https://github.com/TrueBrain/wik
 
 With `--storage-github-url` you can change this to your own repository; but in order for TrueWiki to push changes, you will have to setup an SSH key with write permissions.
 
-The easiest way to do this is via a [Deployment Key](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) on GitHub.
-`TRUEWIKI_STORAGE_GITHUB_PRIVATE_KEY` should be set to the base64-encoded private key matching the deployment key.
+The easiest way to do this is via a [Deploy Key](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) on GitHub.
+`TRUEWIKI_STORAGE_GITHUB_DEPLOY_KEY` should be set to the base64-encoded Deploy key.
 `--storage-github-url` should be set to the SSH url of your GitHub repository (for example: `git@github.com:TrueBrain/wiki-example.git`).
 With this, TrueWiki will automatically push changes to the GitHub repository, making your wiki persistent.
+
+If using SSH isn't possible, you have two other options:
+- Install a git credential helper on the host which has push permissions.
+- Use a GitHub Apps.
+
+For the latter, you need to create a GitHub Apps, give it permission to read/write content, and install it for the repository.
+After this, you can use for example `https://github/TrueBrain/wiki-example` as `--storage-github-url`.
+Make sure to set `--storage-github-app-id` and `TRUEWIKI_STORAGE_GITHUB_APP_KEY`, where the latter is a base64-encoded Private key of the GitHub App.
+In case you use GitHub enterprise, `--storage-github-api-url` needs to point to the API endpoint of your instance.
 
 #### Using GitLab
 

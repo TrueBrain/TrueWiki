@@ -1,6 +1,7 @@
 aiohttp
 aioauth_client
 click
+github3.py
 GitPython
 openttd-helpers
 PyYAML

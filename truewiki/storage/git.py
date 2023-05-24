@@ -19,10 +19,11 @@ GIT_BUSY = asyncio.Lock()
 
 
 class OutOfProcessStorage:
-    def __init__(self, git_commiter, folder, ssh_command):
+    def __init__(self, git_commiter, folder, ssh_command, ask_pass):
         self._git_commiter = git_commiter
         self._folder = folder
         self._ssh_command = ssh_command
+        self._ask_pass = ask_pass
         self._git = git.Repo(self._folder)
 
     def commit(self, git_author, commit_message, files_added, files_changed, files_removed):
@@ -85,10 +86,11 @@ def check_for_exception(task):
 class Storage(local.Storage):
     out_of_process_class = OutOfProcessStorage
 
-    def __init__(self, ssh_command=None):
+    def __init__(self, ssh_command=None, ask_pass=None):
         super().__init__()
 
         self._ssh_command = ssh_command
+        self._ask_pass = ask_pass
 
         self._files_added = []
         self._files_changed = []
@@ -127,11 +129,11 @@ class Storage(local.Storage):
 
         return _git
 
-    async def _run_out_of_process_async(self, folder, ssh_command, callback, func, *args):
+    async def _run_out_of_process_async(self, folder, ssh_command, ask_pass, callback, func, *args):
         await GIT_BUSY.acquire()
 
         try:
-            out_of_process = self.out_of_process_class((GIT_USERNAME, GIT_EMAIL), folder, ssh_command)
+            out_of_process = self.out_of_process_class((GIT_USERNAME, GIT_EMAIL), folder, ssh_command, ask_pass)
 
             # Run the reload in a new process, so we don't block the rest of the
             # server while doing this job.
@@ -156,7 +158,9 @@ class Storage(local.Storage):
 
     def _run_out_of_process(self, callback, func, *args):
         loop = asyncio.get_event_loop()
-        task = loop.create_task(self._run_out_of_process_async(self._folder, self._ssh_command, callback, func, *args))
+        task = loop.create_task(
+            self._run_out_of_process_async(self._folder, self._ssh_command, self._ask_pass, callback, func, *args)
+        )
         task.add_done_callback(check_for_exception)
 
     def commit(self, user, commit_message):

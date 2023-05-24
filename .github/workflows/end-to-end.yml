@@ -10,12 +10,26 @@ on:
 
 jobs:
   playwright:
-    name: Playwright
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        storage: [local, git, github, gitlab]
+        include:
+        - name: Local
+          storage: local
+        - name: Git
+          storage: git
+        - name: GitLab
+          storage: gitlab
+        - name: GitHub - App
+          storage: github
+          unset: TRUEWIKI_STORAGE_GITHUB_PRIVATE_KEY
+        - name: GitHub - Deploy Key
+          storage: github
+          unset: TRUEWIKI_STORAGE_GITHUB_APP_KEY
+
+    name: Playwright (${{ matrix.name }})
+
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -46,12 +60,18 @@ jobs:
         ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
     - name: Playwright (storage=${{ matrix.storage }})
       run: |
+        if [ -n "${{ matrix.unset }}" ]; then
+          unset ${{ matrix.unset }}
+        fi
+
         COVERAGE_RCFILE="$(pwd)/.coveragerc" COVERAGE_FILE="$(pwd)/.coverage" pytest e2e -v --storage ${{ matrix.storage }}
         coverage combine
         coverage report -m
         coverage xml
       env:
         TRUEWIKI_STORAGE_GITHUB_PRIVATE_KEY: ${{ secrets.E2E_STORAGE_GITHUB_PRIVATE_KEY }}
+        TRUEWIKI_STORAGE_GITHUB_APP_ID: ${{ secrets.E2E_STORAGE_GITHUB_APP_ID }}
+        TRUEWIKI_STORAGE_GITHUB_APP_KEY: ${{ secrets.E2E_STORAGE_GITHUB_APP_KEY }}
         TRUEWIKI_STORAGE_GITLAB_PRIVATE_KEY: ${{ secrets.E2E_STORAGE_GITLAB_PRIVATE_KEY }}
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
