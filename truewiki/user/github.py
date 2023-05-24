@@ -56,7 +56,6 @@ class User(BaseUser):
 
         self._oauth2 = GithubClient(client_id=GITHUB_CLIENT_ID, client_secret=GITHUB_CLIENT_SECRET)
         self._oauth2.access_token_url = f"{GITHUB_URL}/login/oauth/access_token"
-        self._oauth2.authorize_url = f"{GITHUB_URL}/login/oauth/authorize"
         self._oauth2.base_url = GITHUB_API_URL
         self._oauth2.user_info_url = f"{GITHUB_API_URL}/user"
 
