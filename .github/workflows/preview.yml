@@ -1,0 +1,19 @@
+name: Preview
+
+on:
+  pull_request_target:
+    types:
+    - labeled
+    - synchronize
+    branches:
+    - main
+
+jobs:
+  preview:
+    if: ${{ (github.event.action == 'labeled' && github.event.label.name == 'preview') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'preview')) }}
+    name: Preview
+    uses: OpenTTD/actions/.github/workflows/rw-entry-preview-docker-nomad.yml@v4
+    secrets: inherit
+    with:
+      service: wiki-preview
+      url: https://wiki-preview.openttd.org/

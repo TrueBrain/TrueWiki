@@ -9,24 +9,10 @@ on:
     - published
 
 jobs:
-  publish_image:
-    name: Publish image
-    uses: OpenTTD/actions/.github/workflows/publish-image.yml@v3
-
-  deploy:
-    name: Deploy
-    needs:
-    - publish_image
-
-    uses: OpenTTD/actions/.github/workflows/aws-deployment.yml@v3
+  release:
+    name: Release
+    uses: OpenTTD/actions/.github/workflows/rw-entry-release-docker-nomad.yml@v4
+    secrets: inherit
     with:
-      is_staging: ${{ github.ref == 'refs/heads/main' }}
-      name: Wiki
-      url_production: https://wiki.openttd.org
-      url_staging: https://wiki.staging.openttd.org
-      digest: ${{ needs.publish_image.outputs.digest }}
-      version: ${{ needs.publish_image.outputs.version }}
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      service: wiki-prod
+      url: https://wiki.openttd.org/
