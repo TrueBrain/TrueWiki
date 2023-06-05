@@ -12,7 +12,9 @@ jobs:
   release:
     name: Release
     uses: OpenTTD/actions/.github/workflows/rw-entry-release-docker-nomad.yml@v4
-    secrets: inherit
+    secrets:
+      NOMAD_CF_ACCESS_CLIENT_ID: ${{ secrets.NOMAD_CF_ACCESS_CLIENT_ID }}
+      NOMAD_CF_ACCESS_CLIENT_SECRET: ${{ secrets.NOMAD_CF_ACCESS_CLIENT_SECRET }}
     with:
       service: wiki-prod
       url: https://wiki.openttd.org/
