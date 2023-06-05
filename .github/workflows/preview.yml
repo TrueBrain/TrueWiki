@@ -13,7 +13,9 @@ jobs:
     if: ${{ (github.event.action == 'labeled' && github.event.label.name == 'preview') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'preview')) }}
     name: Preview
     uses: OpenTTD/actions/.github/workflows/rw-entry-preview-docker-nomad.yml@v4
-    secrets: inherit
+    secrets:
+      NOMAD_CF_ACCESS_CLIENT_ID: ${{ secrets.NOMAD_CF_ACCESS_CLIENT_ID }}
+      NOMAD_CF_ACCESS_CLIENT_SECRET: ${{ secrets.NOMAD_CF_ACCESS_CLIENT_SECRET }}
     with:
       service: wiki-preview
       url: https://wiki-preview.openttd.org/
