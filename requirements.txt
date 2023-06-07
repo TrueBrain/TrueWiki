@@ -38,6 +38,6 @@ typing_extensions==4.6.3
 uritemplate==4.1.1
 urllib3==2.0.2
 wcwidth==0.2.6
-wikitexthtml==1.1.2
+wikitexthtml==1.2.0
 wikitextparser==0.52.1
 yarl==1.9.2
