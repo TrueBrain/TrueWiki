@@ -54,12 +54,16 @@ CACHE_TIME_STATIC = 3600 * 24
 # Cache uploads for 5 minutes by default. These files can be overwritten by
 # users, so high cache times can be frustrating to the user.
 CACHE_TIME_UPLOADS = 300
+# The name of the header to use for remote IP addresses.
+REMOTE_IP_HEADER = None
 
 
 class ErrorOnlyAccessLogger(AccessLogger):
     def log(self, request, response, time):
         # Only log if the status was not successful
         if not (200 <= response.status < 400):
+            if REMOTE_IP_HEADER and REMOTE_IP_HEADER in request.headers:
+                request = request.clone(remote=request.headers[REMOTE_IP_HEADER])
             super().log(request, response, time)
 
 
@@ -78,6 +82,13 @@ async def remove_cookie_middleware(request, handler):
     # Remove the cookie.
     remove_session_cookie(response)
     return response
+
+
+@web.middleware
+async def remote_ip_header_middleware(request, handler):
+    if REMOTE_IP_HEADER in request.headers:
+        request = request.clone(remote=request.headers[REMOTE_IP_HEADER])
+    return await handler(request)
 
 
 async def cache_on_prepare(request, response, cache_time_uploads):
@@ -112,6 +123,10 @@ async def wait_for_storage():
     help="URL of the frontend, used for creating absolute links in the sitemap.xml",
 )
 @click.option(
+    "--remote-ip-header",
+    help="Header which contains the remote IP address. Make sure you trust this header!",
+)
+@click.option(
     "--cache-time", help="Cache time of uploaded images (in seconds)", default=CACHE_TIME_UPLOADS, show_default=True
 )
 @click_web_routes
@@ -126,7 +141,7 @@ async def wait_for_storage():
 @click_user_microsoft
 @click_page
 @click.option("--validate-all", help="Validate all mediawiki files and report all errors", is_flag=True)
-def main(bind, port, storage, frontend_url, cache_time, validate_all):
+def main(bind, port, storage, frontend_url, cache_time, remote_ip_header, validate_all):
     if frontend_url and frontend_url.endswith("/"):
         frontend_url = frontend_url[:-1]
     singleton.FRONTEND_URL = frontend_url
@@ -150,6 +165,10 @@ def main(bind, port, storage, frontend_url, cache_time, validate_all):
 
     webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])
     webapp.on_response_prepare.append(lambda request, response: cache_on_prepare(request, response, cache_time))
+    if remote_ip_header:
+        global REMOTE_IP_HEADER
+        REMOTE_IP_HEADER = remote_ip_header.upper()
+        webapp.middlewares.insert(0, remote_ip_header_middleware)
 
     # Ensure these folders exists, otherwise add_static() will complain.
     os.makedirs(f"{instance.folder}/File", exist_ok=True)
