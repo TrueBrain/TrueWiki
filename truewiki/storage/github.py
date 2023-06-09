@@ -108,6 +108,8 @@ class Storage(GitStorage):
         elif _github_app_id and _github_app_key:
             super().__init__(ask_pass=os.path.join(os.path.dirname(__file__), "github-askpass.py"))
         else:
+            log.info("Neither a GitHub Deploy key nor a GitHub App is provided")
+            log.info("Please make sure you have a credential helper configured for this repository.")
             super().__init__()
 
     def prepare(self):
@@ -220,6 +222,3 @@ def click_storage_github(
         os.environ["TRUEWIKI_GITHUB_ASKPASS_APP_KEY"] = _github_app_key
         os.environ["TRUEWIKI_GITHUB_ASKPASS_URL"] = _github_url
         os.environ["TRUEWIKI_GITHUB_ASKPASS_API_URL"] = storage_github_api_url
-    else:
-        log.info("Neither a GitHub Deploy key nor a GitHub App is provided")
-        log.info("Please make sure you have a credential helper configured for this repository.")
