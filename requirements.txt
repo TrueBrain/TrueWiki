@@ -19,7 +19,7 @@ httpcore==0.17.2
 httpx==0.24.1
 idna==3.4
 multidict==6.0.4
-openttd-helpers==1.2.0
+openttd-helpers==1.3.0
 ply==3.11
 pycparser==2.21
 Pygments==2.15.1
