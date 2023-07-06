@@ -3,7 +3,7 @@ updates:
 - package-ecosystem: "pip"
   directory: "/"
   schedule:
-    interval: "daily"
+    interval: "monthly"
   groups:
     dependencies:
       patterns:
