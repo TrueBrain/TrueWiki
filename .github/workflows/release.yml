@@ -12,7 +12,8 @@ jobs:
   release:
     name: Release
     uses: OpenTTD/actions/.github/workflows/rw-entry-release-docker-nomad.yml@v4
-    secrets: inherit
+    secrets:
+      NOMAD_SERVICE_PROD_KEY: ${{ secrets.NOMAD_SERVICE_PROD_KEY }}
     with:
       service: wiki-prod
       url: https://wiki.openttd.org/
