@@ -2,9 +2,11 @@ import asyncio
 import click
 import logging
 import os
+import re
 
 from aiohttp import web
 from aiohttp.web_log import AccessLogger
+from http import cookies
 from openttd_helpers import click_helper
 from openttd_helpers.logging_helper import click_logging
 from openttd_helpers.sentry_helper import click_sentry
@@ -56,6 +58,19 @@ CACHE_TIME_STATIC = 3600 * 24
 CACHE_TIME_UPLOADS = 300
 # The name of the header to use for remote IP addresses.
 REMOTE_IP_HEADER = None
+
+
+# Monkey-patch the http.cookies library, as it is considering certain
+# cookie-names invalid, which happen in the real world. It throws an exception
+# in those cases, causing a 500. But the user can do absolutely nothing about
+# having a cookie the browser considers valid. aiohttp should honestly handle
+# that more gracefully, but it doesn't.
+# There is a bit of discussion what cookie-names are actually allowed, but
+# more recent RFCs allow for more characters. So we monkey-patch that in.
+#
+# See https://github.com/aio-libs/aiohttp/issues/2683 for more details.
+#
+cookies._is_legal_key = re.compile("[%s]+" % re.escape(cookies._UnescapedChars)).fullmatch
 
 
 class ErrorOnlyAccessLogger(AccessLogger):
