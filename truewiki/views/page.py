@@ -113,7 +113,11 @@ def view(user, page: str, if_modified_since) -> web.Response:
     if can_cache:
         response.last_modified = metadata.LAST_TIME_RENDERED[namespaced_page]
         response.headers["Vary"] = "Accept-Encoding, Cookie"
-        response.headers["Cache-Control"] = "private, must-revalidate, max-age=0"
+        if not user:
+            # Allow caching-services between the browser and us to cache public pages.
+            response.headers["Cache-Control"] = "public, must-revalidate, max-age=0"
+        else:
+            response.headers["Cache-Control"] = "private, must-revalidate, max-age=0"
     return response
 
 
