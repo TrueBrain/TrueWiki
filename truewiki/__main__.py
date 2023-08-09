@@ -106,14 +106,14 @@ async def remote_ip_header_middleware(request, handler):
     return await handler(request)
 
 
-async def cache_on_prepare(request, response, cache_time_uploads):
-    if request.path.startswith("/static"):
-        # Cache everything in the /static folder for a day.
+async def cache_on_prepare(request, response):
+    if request.path.startswith("/static") or request.path == "/favicon.ico":
+        # Cache everything in the /static folder and favicon.ico for a day.
         response.headers["Cache-Control"] = f"public, max-age={CACHE_TIME_STATIC}"
 
-    if request.path.startswith("/uploads"):
-        # Cache uploaded files.
-        response.headers["Cache-Control"] = f"public, max-age={cache_time_uploads}"
+    if request.path.startswith("/uploads") and "Last-Modified" in response.headers:
+        # Cache uploaded files if they have a last-modified.
+        response.headers["Cache-Control"] = "private, must-revalidate, max-age=3600"
 
 
 async def wait_for_storage():
@@ -142,7 +142,10 @@ async def wait_for_storage():
     help="Header which contains the remote IP address. Make sure you trust this header!",
 )
 @click.option(
-    "--cache-time", help="Cache time of uploaded images (in seconds)", default=CACHE_TIME_UPLOADS, show_default=True
+    "--cache-time",
+    help="DEPRECATED: cache time of uploaded images (in seconds)",
+    default=CACHE_TIME_UPLOADS,
+    show_default=True,
 )
 @click_web_routes
 @click_metadata
@@ -179,7 +182,7 @@ def main(bind, port, storage, frontend_url, cache_time, remote_ip_header, valida
         return
 
     webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])
-    webapp.on_response_prepare.append(lambda request, response: cache_on_prepare(request, response, cache_time))
+    webapp.on_response_prepare.append(cache_on_prepare)
     if remote_ip_header:
         global REMOTE_IP_HEADER
         REMOTE_IP_HEADER = remote_ip_header.upper()
