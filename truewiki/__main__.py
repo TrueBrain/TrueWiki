@@ -1,3 +1,4 @@
+import aiohttp
 import asyncio
 import click
 import logging
@@ -110,10 +111,12 @@ async def cache_on_prepare(request, response):
     if request.path.startswith("/static") or request.path == "/favicon.ico":
         # Cache everything in the /static folder and favicon.ico for a day.
         response.headers["Cache-Control"] = f"public, max-age={CACHE_TIME_STATIC}"
+        response.etag = aiohttp.ETag(response.etag.value, is_weak=True)
 
     if request.path.startswith("/uploads") and "Last-Modified" in response.headers:
         # Cache uploaded files if they have a last-modified.
         response.headers["Cache-Control"] = "private, must-revalidate, max-age=3600"
+        response.etag = aiohttp.ETag(response.etag.value, is_weak=True)
 
 
 async def wait_for_storage():
