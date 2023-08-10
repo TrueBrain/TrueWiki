@@ -1,4 +1,6 @@
+import aiohttp
 import click
+import hashlib
 import os
 import time
 
@@ -32,7 +34,7 @@ def _view(wiki_page, user, page: str) -> web.Response:
     return wrap_page(page, "Page", variables, templates)
 
 
-def view(user, page: str, if_modified_since) -> web.Response:
+def view(user, page: str, if_modified_since, if_none_match) -> web.Response:
     if page.endswith("/"):
         page += "Main Page"
 
@@ -68,16 +70,22 @@ def view(user, page: str, if_modified_since) -> web.Response:
     if can_cache and namespaced_page in metadata.LAST_TIME_RENDERED:
         if (
             if_modified_since is not None
-            and metadata.LAST_TIME_RENDERED[namespaced_page] <= if_modified_since.timestamp()
+            and metadata.LAST_TIME_RENDERED[namespaced_page][0] <= if_modified_since.timestamp()
         ):
             # We already rendered this page before. If the browser has it in his
             # cache, he can simply reuse that if we haven't rendered since.
             response = web.HTTPNotModified()
         elif (
+            not user and if_none_match is not None and metadata.LAST_TIME_RENDERED[namespaced_page][1] == if_none_match
+        ):
+            # We already rendered this page before. If the browser has it in his
+            # cache, he can simply reuse that if the content is still the same.
+            response = web.HTTPNotModified()
+        elif (
             not user
             and cache_filename
             and os.path.exists(cache_filename)
-            and os.path.getmtime(cache_filename) >= metadata.LAST_TIME_RENDERED[namespaced_page]
+            and os.path.getmtime(cache_filename) >= metadata.LAST_TIME_RENDERED[namespaced_page][0]
         ):
             # We already rendered this page to disk. Serve from there.
             with open(cache_filename) as fp:
@@ -105,13 +113,28 @@ def view(user, page: str, if_modified_since) -> web.Response:
             # Only update the time if we don't have one yet. This makes sure
             # that LAST_TIME_RENDERED has the oldest timestamp possible.
             if namespaced_page not in metadata.LAST_TIME_RENDERED:
-                metadata.LAST_TIME_RENDERED[namespaced_page] = page_time
+                metadata.LAST_TIME_RENDERED[namespaced_page] = (page_time, None)
 
-        response = web.Response(body=body, content_type="text/html", status=status_code)
+            # Update the ETag if we don't have one yet. We only generate ETags for anonymous users.
+            if not user and metadata.LAST_TIME_RENDERED[namespaced_page][1] is None:
+                etag = hashlib.sha256(body.encode("utf-8")).hexdigest()
+                metadata.LAST_TIME_RENDERED[namespaced_page] = (metadata.LAST_TIME_RENDERED[namespaced_page][0], etag)
+
+                if if_none_match is not None and etag == if_none_match:
+                    # Now we rendered the page, we find out that the etag did match after all.
+                    # Return this information to the client, instead of the payload.
+                    response = web.HTTPNotModified()
+
+        if response is None:
+            response = web.Response(body=body, content_type="text/html", status=status_code)
 
     # Inform the browser under which rules it can cache this page.
     if can_cache:
-        response.last_modified = metadata.LAST_TIME_RENDERED[namespaced_page]
+        response.last_modified = metadata.LAST_TIME_RENDERED[namespaced_page][0]
+        if not user:
+            # ETags are weak, as we don't actually know if we are byte-for-byte the same because
+            # of things like gzip compression.
+            response.etag = aiohttp.ETag(metadata.LAST_TIME_RENDERED[namespaced_page][1], is_weak=True)
         response.headers["Vary"] = "Accept-Encoding, Cookie"
         response.headers["Cache-Control"] = "private, must-revalidate, max-age=0"
     return response
