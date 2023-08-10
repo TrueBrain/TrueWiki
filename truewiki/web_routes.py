@@ -242,7 +242,8 @@ async def html_page(request):
     _validate_page(page)
 
     if_modified_since = request.if_modified_since
-    return view_page.view(user, page, if_modified_since)
+    if_none_match = request.if_none_match[0].value if request.if_none_match else None
+    return view_page.view(user, page, if_modified_since, if_none_match)
 
 
 @routes.route("*", "/{tail:.*}")
