@@ -13,7 +13,7 @@ exceptiongroup==1.1.2
 frozenlist==1.4.0
 gitdb==4.0.10
 github3.py==4.0.1
-GitPython==3.1.32
+GitPython==3.1.37
 h11==0.14.0
 httpcore==0.17.3
 httpx==0.24.1
