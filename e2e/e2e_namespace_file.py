@@ -9,7 +9,7 @@ def test_file_view_empty(page: Page):
     expect(image).to_be_visible()
     with page.expect_navigation():
         image.click()
-    page.wait_for_url("/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/File/en/Test.png")
 
     expect(page.locator("text=There is currently no file with that name.")).to_be_visible()
 
@@ -34,11 +34,11 @@ def test_file_edit_empty(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Empty.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Empty.png")
 
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Empty.png")
+    page.wait_for_url("http://localhost:8080/File/en/Empty.png")
 
     expect(page).to_have_title("Unnamed | Empty.png")
     expect(page.locator("text=This file has no description yet.")).to_be_visible()
@@ -52,14 +52,14 @@ def test_file_edit_without_image(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
     page.locator("[name=content]").fill("My First Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/File/en/Test.png")
 
     expect(page).to_have_title("Unnamed | Test.png")
     expect(page.locator("text=My First Upload")).to_be_visible()
@@ -74,7 +74,7 @@ def test_file_upload_invalid_image(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -82,7 +82,7 @@ def test_file_upload_invalid_image(page: Page, login):
     page.locator("[name=content]").fill("My First Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(
         page.locator('text=Uploaded file "invalid.txt" is not a valid image. Only PNG, GIF, and JPEG is supported.')
@@ -97,7 +97,7 @@ def test_file_upload_invalid_png(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -105,7 +105,7 @@ def test_file_upload_invalid_png(page: Page, login):
     page.locator("[name=content]").fill("My First Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator('text=Uploaded file "invalid.png" is not a valid PNG image.')).to_be_visible()
 
@@ -118,7 +118,7 @@ def test_file_upload_invalid_gif(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.gif")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.gif")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -126,7 +126,7 @@ def test_file_upload_invalid_gif(page: Page, login):
     page.locator("[name=content]").fill("My First Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.gif")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.gif")
 
     expect(page.locator('text=Uploaded file "invalid.gif" is not a valid GIF image.')).to_be_visible()
 
@@ -139,7 +139,7 @@ def test_file_upload_invalid_jpeg(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.jpeg")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.jpeg")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -147,7 +147,7 @@ def test_file_upload_invalid_jpeg(page: Page, login):
     page.locator("[name=content]").fill("My First Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.jpeg")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.jpeg")
 
     expect(page.locator('text=Uploaded file "invalid.jpeg" is not a valid JPEG image.')).to_be_visible()
 
@@ -160,7 +160,7 @@ def test_file_upload_wrong_gif(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -168,7 +168,7 @@ def test_file_upload_wrong_gif(page: Page, login):
     page.locator("[name=content]").fill("My First Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator('text=Page name "File/en/Test.png" should end with ".gif" if uploading a GIF.')).to_be_visible()
 
@@ -181,7 +181,7 @@ def test_file_upload_wrong_jpeg(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -189,7 +189,7 @@ def test_file_upload_wrong_jpeg(page: Page, login):
     page.locator("[name=content]").fill("My First Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(
         page.locator('text=Page name "File/en/Test.png" should end with ".jpeg" if uploading a JPEG.')
@@ -204,7 +204,7 @@ def test_file_upload_png(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -212,7 +212,7 @@ def test_file_upload_png(page: Page, login):
     page.locator("[name=content]").fill("My First Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/File/en/Test.png")
 
     expect(page).to_have_title("Unnamed | Test.png")
     expect(page.locator("text=My First Upload")).to_be_visible()
@@ -229,7 +229,7 @@ def test_file_upload_wrong_png(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.gif")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.gif")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -237,7 +237,7 @@ def test_file_upload_wrong_png(page: Page, login):
     page.locator("[name=content]").fill("My Second Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.gif")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.gif")
 
     expect(page.locator('text=Page name "File/en/Test.gif" should end with ".png" if uploading a PNG.')).to_be_visible()
 
@@ -250,7 +250,7 @@ def test_file_upload_gif(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.gif")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.gif")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -258,7 +258,7 @@ def test_file_upload_gif(page: Page, login):
     page.locator("[name=content]").fill("My Second Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.gif")
+    page.wait_for_url("http://localhost:8080/File/en/Test.gif")
 
     expect(page).to_have_title("Unnamed | Test.gif")
     expect(page.locator("text=My Second Upload")).to_be_visible()
@@ -273,7 +273,7 @@ def test_file_upload_jpeg(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/File/en/Test.jpeg")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.jpeg")
 
     expect(page.locator("text=Upload new file")).to_be_visible()
 
@@ -281,7 +281,7 @@ def test_file_upload_jpeg(page: Page, login):
     page.locator("[name=content]").fill("My Third Upload\n[[Category:en/MyPictures]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.jpeg")
+    page.wait_for_url("http://localhost:8080/File/en/Test.jpeg")
 
     expect(page).to_have_title("Unnamed | Test.jpeg")
     expect(page.locator("text=My Third Upload")).to_be_visible()
@@ -296,7 +296,7 @@ def test_file_cannot_rename(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/File/en/Test.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(page.locator("text=Pages cannot be renamed if they are used by other pages.")).to_be_visible()
 
@@ -309,12 +309,12 @@ def test_file_cannot_rename_extension(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/File/en/Test.jpeg")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.jpeg")
 
     page.locator("[name=page]").fill("File/en/Test2.png")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test.jpeg")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.jpeg")
 
     expect(page.locator("text=Cannot rename extension of a file.")).to_be_visible()
 
@@ -327,12 +327,12 @@ def test_file_rename(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/File/en/Test.jpeg")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.jpeg")
 
     page.locator("[name=page]").fill("File/en/Test2.jpeg")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/File/en/Test2.jpeg")
+    page.wait_for_url("http://localhost:8080/File/en/Test2.jpeg")
 
 
 def test_file_root(page: Page):
@@ -343,7 +343,7 @@ def test_file_root(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/File/")
+    page.wait_for_url("http://localhost:8080/File/")
 
     expect(page.locator("text=A list of all the languages which have one or more files.")).to_be_visible()
     expect(page.locator('main >> a:has-text("en")')).to_be_visible()
@@ -357,7 +357,7 @@ def test_file_language(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/File/en/")
+    page.wait_for_url("http://localhost:8080/File/en/")
 
     expect(page.locator("text=All the files that belong to this language.")).to_be_visible()
     expect(page.locator('main >> a:has-text("Test.png")')).to_be_visible()
@@ -380,13 +380,13 @@ def test_file_cannot_edit_root(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/File/en/Test2.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test2.png")
 
     page.locator("[name=page]").fill("File/en/Testing/Main Page")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/File/en/Test2.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test2.png")
 
     expect(
         page.locator('text=Page name "File/en/Testing/Main Page" is invalid, as it is automatically generated.')
@@ -401,13 +401,13 @@ def test_file_cannot_edit_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/File/en/Test2.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test2.png")
 
     page.locator("[name=page]").fill("File/en/Main Page")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/File/en/Test2.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test2.png")
 
     expect(
         page.locator('text=Page name "File/en/Main Page" is invalid, as it is automatically generated.')
@@ -422,13 +422,13 @@ def test_file_edit_missing_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/File/en/Test2.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test2.png")
 
     page.locator("[name=page]").fill("File/test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/File/en/Test2.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test2.png")
 
     expect(page.locator('text=Page name "File/test" is missing a language code.')).to_be_visible()
 
@@ -441,13 +441,13 @@ def test_file_edit_invalid_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/File/en/Test2.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test2.png")
 
     page.locator("[name=page]").fill("File/zz/test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/File/en/Test2.png")
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test2.png")
 
     expect(page.locator('text=Page name "File/zz/test" is in language "zz" that does not exist.')).to_be_visible()
 
@@ -461,7 +461,7 @@ def test_files_linked_category(page: Page):
     with page.expect_navigation():
         category.click()
 
-    page.wait_for_url("/Category/en/MyPictures")
+    page.wait_for_url("http://localhost:8080/Category/en/MyPictures")
 
     expect(page.locator('h2:has-text("Files")')).to_be_visible()
     expect(page.locator("main >> text=Test.png")).to_be_visible()

@@ -4,7 +4,7 @@ from playwright.sync_api import Page, expect
 def test_edit_page_without_login(page: Page):
     """If we are not logged in, we should be redirected to the login page."""
     page.goto("http://localhost:8080/edit/en/Main%20Page")
-    page.wait_for_url("/user/login?location=edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/user/login?location=edit/en/Main%20Page")
 
 
 def test_create_page(page: Page, login):
@@ -13,12 +13,12 @@ def test_create_page(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=content]").fill("My First Edit")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/en/Main%20Page")
 
     expect(page).to_have_title("Unnamed | Unnamed's Wiki")
     expect(page.locator("text=My First Edit")).to_be_visible()
@@ -30,12 +30,12 @@ def test_edit_page(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=content]").fill("My Second Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/en/Main%20Page")
 
     expect(page).to_have_title("Unnamed | Unnamed's Wiki")
     expect(page.locator("text=My Second Edit")).to_be_visible()
@@ -47,12 +47,12 @@ def test_rename_page(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("en/Main Page2")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/en/Main%20Page2")
+    page.wait_for_url("http://localhost:8080/en/Main%20Page2")
 
     expect(page.locator('a:has-text("Main Page2")')).to_be_visible()
 
@@ -63,7 +63,7 @@ def test_create_page_again(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=content]").fill(
         "[[Translation:en/Main Page]]\nMy Third Edit\n\n[[Category:en/MyPages]]\n{{en/Summary}}"
@@ -71,7 +71,7 @@ def test_create_page_again(page: Page, login):
     )
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/en/Main%20Page")
 
     expect(page).to_have_title("Unnamed | Unnamed's Wiki")
     expect(page.locator("text=My Third Edit")).to_be_visible()
@@ -85,12 +85,13 @@ def test_rename_page_again(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("en/Main Page2")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/en/Main%20Page")
+    print(page.url)
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     expect(page.locator('text=Page name "en/Main Page2" already exists')).to_be_visible()
 
@@ -101,12 +102,12 @@ def test_rename_page_invalid_slash(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("en/Main Page/")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     expect(page.locator('text=Page name "en/Main Page/" cannot end with a "/".')).to_be_visible()
 
@@ -117,12 +118,12 @@ def test_rename_page_invalid_name(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("Main Page")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     expect(
         page.locator(
@@ -137,12 +138,12 @@ def test_rename_page_invalid_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("zz/Main Page")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     expect(page.locator('text=Page name "zz/Main Page" is in language "zz" that does not exist.')).to_be_visible()
 
@@ -153,12 +154,12 @@ def test_rename_page_invalid_casing(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     page.locator("[name=page]").fill("en/main page2")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     expect(
         page.locator('text=Page name "en/main page2" conflicts with "en/Main Page2", which already exists.')
@@ -173,11 +174,11 @@ def test_create_empty_page(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/en/Empty")
+    page.wait_for_url("http://localhost:8080/edit/en/Empty")
 
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/en/Empty")
+    page.wait_for_url("http://localhost:8080/en/Empty")
 
     expect(page).to_have_title("Unnamed | Empty")
     expect(page.locator("text=There is currently no text on this page.")).to_be_visible()
@@ -219,14 +220,14 @@ def test_create_translation(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/de/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/de/Main%20Page")
 
     page.locator("[name=content]").fill(
         "[[Translation:en/Main Page]]\nMein dritter Edit\n\n[[Category:de/MyPages]]\n{{de/Summary}}\n{{Page:de/Empty}}"
     )
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/de/Main%20Page")
+    page.wait_for_url("http://localhost:8080/de/Main%20Page")
 
     expect(page).to_have_title("Unnamed | Unnamed's Wiki")
     expect(page.locator("text=Mein dritter Edi")).to_be_visible()
@@ -242,7 +243,7 @@ def test_language_bar(page: Page):
     expect(en).to_be_visible()
     with page.expect_navigation():
         en.click()
-    page.wait_for_url("/en/")
+    page.wait_for_url("http://localhost:8080/en/")
 
     expect(page.locator('strong:has-text("en")')).to_be_visible()
     expect(page.locator("#language-bar >> text=de")).to_be_visible()

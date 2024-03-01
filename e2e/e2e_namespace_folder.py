@@ -9,7 +9,7 @@ def test_folder_main_page(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/Folder/Page/en/")
+    page.wait_for_url("http://localhost:8080/Folder/Page/en/")
 
     expect(page.locator("text=All the pages and folders inside this folder.")).to_be_visible()
     expect(page.locator('main >> a:has-text("Main Page2")')).to_be_visible()
@@ -30,7 +30,7 @@ def test_folder_namespace(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/Folder/Page/")
+    page.wait_for_url("http://localhost:8080/Folder/Page/")
 
     expect(page.locator("text=A list of all the languages within this namespace.")).to_be_visible()
     expect(page.locator('main >> a:has-text("en")')).to_be_visible()
@@ -44,7 +44,7 @@ def test_folder_root(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/Folder/")
+    page.wait_for_url("http://localhost:8080/Folder/")
 
     expect(page.locator("text=A list of all namespaces with files and folders.")).to_be_visible()
     expect(page.locator('main >> a:has-text("Page")')).to_be_visible()

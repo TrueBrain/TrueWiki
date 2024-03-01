@@ -10,7 +10,7 @@ def test_category_linked(page: Page):
     with page.expect_navigation():
         category.click()
 
-    page.wait_for_url("/Category/en/MyPages")
+    page.wait_for_url("http://localhost:8080/Category/en/MyPages")
 
     expect(page.locator("main >> text=Unnamed's Wiki")).to_be_visible()
     expect(page.locator("text=Main Page2")).to_be_visible()
@@ -24,12 +24,12 @@ def test_category_edit_page(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Category/en/MyPages")
+    page.wait_for_url("http://localhost:8080/edit/Category/en/MyPages")
 
     page.locator("[name=content]").fill("Our category\n\n[[Category:en/folder/OtherPages]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/Category/en/MyPages")
+    page.wait_for_url("http://localhost:8080/Category/en/MyPages")
 
     expect(page.locator("text=Our category")).to_be_visible()
     expect(page.locator("text=OtherPages")).to_be_visible()
@@ -44,7 +44,7 @@ def test_category_linked_category(page: Page):
     with page.expect_navigation():
         category.click()
 
-    page.wait_for_url("/Category/en/folder/OtherPages")
+    page.wait_for_url("http://localhost:8080/Category/en/folder/OtherPages")
 
     expect(page.locator("text=Subcategories")).to_be_visible()
     expect(page.locator("main >> text=MyPages")).to_be_visible()
@@ -58,12 +58,12 @@ def test_category_edit_empty(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Category/en/folder/OtherPages")
+    page.wait_for_url("http://localhost:8080/edit/Category/en/folder/OtherPages")
 
     page.locator("[name=content]").fill("")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/Category/en/folder/OtherPages")
+    page.wait_for_url("http://localhost:8080/Category/en/folder/OtherPages")
 
     expect(page.locator("text=There is currently no additional text for this category.")).to_be_visible()
 
@@ -76,13 +76,13 @@ def test_category_cannot_edit_root(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Category/en/")
+    page.wait_for_url("http://localhost:8080/edit/Category/en/")
 
     page.locator("[name=page]").fill("Category/en/Main Page")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/Category/en/")
+    page.wait_for_url("http://localhost:8080/edit/Category/en/")
 
     expect(
         page.locator('text=Page name "Category/en/Main Page" is invalid, as it is automatically generated.')
@@ -97,13 +97,13 @@ def test_category_edit_missing_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Category/en/")
+    page.wait_for_url("http://localhost:8080/edit/Category/en/")
 
     page.locator("[name=page]").fill("Category/test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/Category/en/")
+    page.wait_for_url("http://localhost:8080/edit/Category/en/")
 
     expect(page.locator('text=Page name "Category/test" is missing a language code.')).to_be_visible()
 
@@ -116,13 +116,13 @@ def test_category_edit_invalid_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Category/en/")
+    page.wait_for_url("http://localhost:8080/edit/Category/en/")
 
     page.locator("[name=page]").fill("Category/zz/test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/Category/en/")
+    page.wait_for_url("http://localhost:8080/edit/Category/en/")
 
     expect(page.locator('text=Page name "Category/zz/test" is in language "zz" that does not exist.')).to_be_visible()
 
@@ -135,7 +135,7 @@ def test_category_root(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/Category/")
+    page.wait_for_url("http://localhost:8080/Category/")
 
     expect(page.locator("text=A list of all the languages which have one or more categories.")).to_be_visible()
     expect(page.locator('main >> a:has-text("en")')).to_be_visible()
@@ -149,7 +149,7 @@ def test_category_language(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/Category/en/")
+    page.wait_for_url("http://localhost:8080/Category/en/")
 
     expect(page.locator("text=All the categories that belong to this language.")).to_be_visible()
     expect(page.locator('main >> a:has-text("MyPages")')).to_be_visible()

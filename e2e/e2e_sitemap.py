@@ -31,7 +31,7 @@ def test_sitemap_invalidate(page: Page, login):
     page.locator("[name=content]").fill("Invalidate Sitemap")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/en/Sitemap%20Change")
+    page.wait_for_url("http://localhost:8080/en/Sitemap%20Change")
 
     expect(page).to_have_title("Unnamed | Sitemap Change")
     expect(page.locator("text=Invalidate Sitemap")).to_be_visible()
