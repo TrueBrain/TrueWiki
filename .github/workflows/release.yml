@@ -11,7 +11,7 @@ on:
 jobs:
   release:
     name: Release
-    uses: OpenTTD/actions/.github/workflows/rw-entry-release-docker-nomad.yml@v4
+    uses: OpenTTD/actions/.github/workflows/rw-entry-release-docker-nomad.yml@v5
     secrets:
       NOMAD_SERVICE_PROD_KEY: ${{ secrets.NOMAD_SERVICE_PROD_KEY }}
     with:
