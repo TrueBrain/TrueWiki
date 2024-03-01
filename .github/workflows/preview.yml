@@ -12,7 +12,7 @@ jobs:
   preview:
     if: ${{ (github.event.action == 'labeled' && github.event.label.name == 'preview') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'preview')) }}
     name: Preview
-    uses: OpenTTD/actions/.github/workflows/rw-entry-preview-docker-nomad.yml@v4
+    uses: OpenTTD/actions/.github/workflows/rw-entry-preview-docker-nomad.yml@v5
     secrets:
       NOMAD_SERVICE_PREVIEW_KEY: ${{ secrets.NOMAD_SERVICE_PREVIEW_KEY }}
     with:
