@@ -9,7 +9,7 @@ def test_source_page(page: Page):
     expect(source).to_be_visible()
     with page.expect_navigation():
         source.click()
-    page.wait_for_url("/en/Main%20Page.mediawiki")
+    page.wait_for_url("http://localhost:8080/en/Main%20Page.mediawiki")
 
     expect(
         page.locator("text=You do not have permission to edit this page, because you are not logged in.")
@@ -35,7 +35,7 @@ def test_source_template(page: Page):
     expect(source).to_be_visible()
     with page.expect_navigation():
         source.click()
-    page.wait_for_url("/Template/en/Summary.mediawiki")
+    page.wait_for_url("http://localhost:8080/Template/en/Summary.mediawiki")
 
     expect(
         page.locator("text=You do not have permission to edit this page, because you are not logged in.")

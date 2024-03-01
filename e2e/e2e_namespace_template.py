@@ -17,12 +17,12 @@ def test_template_edit(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/Template/en/Summary")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/Summary")
 
     page.locator("[name=content]").fill("My First Template\n[[Category:en/MyTemplates]]")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/Template/en/Summary")
+    page.wait_for_url("http://localhost:8080/Template/en/Summary")
 
     expect(page).to_have_title("Unnamed | Summary")
     expect(page.locator("text=My First Template")).to_be_visible()
@@ -36,12 +36,12 @@ def test_template_create_link(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/Template/en/OtherTemplate")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/OtherTemplate")
 
     page.locator("[name=content]").fill("{{en/Summary}}")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/Template/en/OtherTemplate")
+    page.wait_for_url("http://localhost:8080/Template/en/OtherTemplate")
 
     expect(page).to_have_title("Unnamed | OtherTemplate")
     expect(page.locator("text=My First Template")).to_be_visible()
@@ -55,11 +55,11 @@ def test_template_create_empty(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/Template/en/Empty")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/Empty")
 
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/Template/en/Empty")
+    page.wait_for_url("http://localhost:8080/Template/en/Empty")
 
     expect(page).to_have_title("Unnamed | Empty")
     expect(page.locator("text=There is currently no text on this page.")).to_be_visible()
@@ -73,7 +73,7 @@ def test_template_link(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/Template/en/Summary")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/Summary")
 
     expect(page.locator("main >> text=OtherTemplate")).to_be_visible()
     expect(page.locator("main >> text=Unnamed's Wiki")).to_be_visible()
@@ -88,7 +88,7 @@ def test_template_link_page(page: Page, login):
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
-    page.wait_for_url("/edit/en/Main%20Page")
+    page.wait_for_url("http://localhost:8080/edit/en/Main%20Page")
 
     expect(page.locator('a:has-text("Summary")')).to_be_visible()
 
@@ -109,7 +109,7 @@ def test_template_root(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/Template/")
+    page.wait_for_url("http://localhost:8080/Template/")
 
     expect(page.locator("text=A list of all the languages which have one or more templates.")).to_be_visible()
     expect(page.locator('main >> a:has-text("en")')).to_be_visible()
@@ -123,7 +123,7 @@ def test_template_language(page: Page):
     expect(folder).to_be_visible()
     with page.expect_navigation():
         folder.click()
-    page.wait_for_url("/Template/en/")
+    page.wait_for_url("http://localhost:8080/Template/en/")
 
     expect(page.locator("text=All the templates that belong to this language.")).to_be_visible()
     expect(page.locator('main >> a:has-text("Summary")')).to_be_visible()
@@ -138,13 +138,13 @@ def test_template_cannot_edit_root(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Template/en/")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
     page.locator("[name=page]").fill("Template/en/Main Page")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/Template/en/")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
     expect(
         page.locator('text=Page name "Template/en/Main Page" is invalid, as it is automatically generated.')
@@ -159,13 +159,13 @@ def test_template_edit_missing_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Template/en/")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
     page.locator("[name=page]").fill("Template/test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/Template/en/")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
     expect(page.locator('text=Page name "Template/test" is missing a language code.')).to_be_visible()
 
@@ -178,13 +178,13 @@ def test_template_edit_invalid_language(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Template/en/")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
     page.locator("[name=page]").fill("Template/zz/test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
-    page.wait_for_url("/edit/Template/en/")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
     expect(page.locator('text=Page name "Template/zz/test" is in language "zz" that does not exist.')).to_be_visible()
 
@@ -198,7 +198,7 @@ def test_template_linked_category(page: Page):
     with page.expect_navigation():
         category.click()
 
-    page.wait_for_url("/Category/en/MyTemplates")
+    page.wait_for_url("http://localhost:8080/Category/en/MyTemplates")
 
     expect(page.locator('h2:has-text("Pages")')).to_be_visible()
     expect(page.locator('h2:has-text("Templates")')).to_be_visible()
@@ -214,6 +214,6 @@ def test_template_cannot_rename(page: Page, login):
     expect(edit).to_be_visible()
     with page.expect_navigation():
         edit.click()
-    page.wait_for_url("/edit/Template/en/Summary")
+    page.wait_for_url("http://localhost:8080/edit/Template/en/Summary")
 
     expect(page.locator("text=Pages cannot be renamed if they are used by other pages.")).to_be_visible()
