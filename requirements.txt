@@ -17,7 +17,7 @@ GitPython==3.1.42
 h11==0.14.0
 httpcore==1.0.4
 httpx==0.27.0
-idna==3.6
+idna==3.7
 multidict==6.0.5
 openttd-helpers==1.4.0
 ply==3.11
