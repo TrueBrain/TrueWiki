@@ -1,5 +1,6 @@
 import asyncio
 import click
+import json
 import logging
 import os
 import re
@@ -159,7 +160,8 @@ async def wait_for_storage():
 @click_user_microsoft
 @click_page
 @click.option("--validate-all", help="Validate all mediawiki files and report all errors", is_flag=True)
-def main(bind, port, storage, frontend_url, cache_time, remote_ip_header, validate_all):
+@click.option("--validate-output-json", help="Report validation result as JSON", is_flag=True)
+def main(bind, port, storage, frontend_url, cache_time, remote_ip_header, validate_all, validate_output_json):
     if frontend_url and frontend_url.endswith("/"):
         frontend_url = frontend_url[:-1]
     singleton.FRONTEND_URL = frontend_url
@@ -178,7 +180,13 @@ def main(bind, port, storage, frontend_url, cache_time, remote_ip_header, valida
     config.load()
 
     if validate_all:
-        validate.all()
+        log.info("Validating all mediawiki files ..")
+
+        errors = {} if validate_output_json else None
+        validate.all(errors)
+
+        if errors is not None:
+            print(json.dumps(errors, indent=4))
         return
 
     webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])

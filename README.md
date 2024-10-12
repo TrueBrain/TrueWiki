@@ -191,6 +191,7 @@ Options:
   --cache-page-folder TEXT        Folder used to cache rendered pages.
   --validate-all                  Validate all mediawiki files and report all
                                   errors
+  --validate-output-json          Report validation result as JSON
   -h, --help                      Show this message and exit.
 ```
 

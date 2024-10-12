@@ -5,10 +5,10 @@ from . import singleton
 from .wiki_page import WikiPage
 
 
-def validate_folder(folder, ignore_index):
+def validate_folder(folder, ignore_index, errors):
     for item in sorted(glob.glob(f"{folder}/*")):
         if os.path.isdir(item):
-            validate_folder(item, ignore_index)
+            validate_folder(item, ignore_index, errors)
             continue
 
         if not item.endswith(".mediawiki"):
@@ -21,15 +21,21 @@ def validate_folder(folder, ignore_index):
         try:
             wiki_page = WikiPage(item).render()
         except Exception as e:
-            print(f"{item}:")
-            print(" - EXCEPTION: ", e)
+            if errors is None:
+                print(f"{item}:")
+                print(" - EXCEPTION: ", e)
+            else:
+                errors[item] = {"exception": str(e)}
             continue
 
         if wiki_page.errors:
-            print(f"{item}:")
-            for error in wiki_page.errors:
-                print(f" - {error}")
+            if errors is None:
+                print(f"{item}:")
+                for error in wiki_page.errors:
+                    print(f" - {error}")
+            else:
+                errors[item] = {"errors": wiki_page.errors}
 
 
-def all():
-    validate_folder(singleton.STORAGE.folder, len(singleton.STORAGE.folder) + 1)
+def all(errors):
+    validate_folder(singleton.STORAGE.folder, len(singleton.STORAGE.folder) + 1, errors)
