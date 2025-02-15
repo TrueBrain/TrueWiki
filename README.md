@@ -252,13 +252,13 @@ https://github.com/TrueBrain/wiki-example/blob/main/.truewiki.yml
 
 ## Development
 
-This server is written in Python 3.8 with aiohttp.
+This server is written in Python 3.11 with aiohttp.
 
 ### Running a local server
 
 #### Dependencies
 
-- Python3.8 or higher.
+- Python3.11 or higher.
 
 #### Preparing your venv
 

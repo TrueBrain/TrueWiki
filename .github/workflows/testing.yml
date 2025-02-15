@@ -14,4 +14,4 @@ jobs:
     uses: OpenTTD/actions/.github/workflows/rw-entry-testing-docker-py.yml@v5
     with:
       python-path: truewiki e2e
-      python-version: 3.8
+      python-version: 3.11
