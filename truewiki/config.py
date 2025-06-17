@@ -17,7 +17,7 @@ PROJECT_NAME = "Unnamed"
 
 
 def load():
-    global CSS, FAVICON, HTML_SNIPPETS, JAVASCRIPT, LICENSE, PRIMARY_LANGUAGE, PROJECT_NAME
+    global CSS, FAVICON, JAVASCRIPT, LICENSE, PRIMARY_LANGUAGE, PROJECT_NAME
 
     if not singleton.STORAGE.file_exists(".truewiki.yml"):
         post_load()
