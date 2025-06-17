@@ -350,7 +350,7 @@ A [rust library](https://docs.rs/parse_wiki_text/0.1.5/parse_wiki_text/) for par
 In the end, this repository was born.
 It renders pages faster than MediaWiki serves pages from its cache (TrueWiki: ~30ms, MediaWiki: ~120ms).
 
-The wikitext supported is far from completely, and it is easily to find many edge-cases where it fails.
+The wikitext supported is far from complete, and it is easy to find many edge-cases where it fails.
 But mostly, this can be solved by informing the user, while creating the page, something is going wrong.
 Often the fixes are trivial, and good user-feedback avoids this.
 This means that with only supporting a subset of wikitext, all of the 5000+ pages on the OpenTTD wiki as it was in 2020 could be rendered to HTML in nearly the same way as MediaWiki can.
