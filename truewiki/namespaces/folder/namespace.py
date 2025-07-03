@@ -90,7 +90,10 @@ class Namespace(base.Namespace):
         if cls._is_namespace_root(page):
             return None
 
-        return page.split("/")[2]
+        spage = page.split("/")
+        if len(spage) < 3:
+            return None
+        return spage[2]
 
     @staticmethod
     def get_used_on_pages(page: str) -> list:
