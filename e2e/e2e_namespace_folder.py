@@ -82,3 +82,16 @@ def test_folder_invalid_namespace(page: Page):
     expect(
         page.locator('text=Page name "Folder/Page2/Main Page" is in namespace "Page2" that does not exist.')
     ).to_be_visible()
+
+
+def test_folder_category_no_crash(page: Page):
+    """Check that accessing Folder/Category doesn't cause an IndexError crash."""
+    page.goto("http://localhost:8080/Folder/Category")
+
+    # Before the fix, this would crash with an IndexError when page_get_language 
+    # tried to access page.split("/")[2] on ["Folder", "Category"].
+    # After the fix, it should show an appropriate error message.
+    # Since Category is a namespace, it should show the namespace error message.
+    expect(
+        page.locator('text=Page name "Folder/Category/Main Page" is in namespace "Category" that does not exist.')
+    ).to_be_visible()
