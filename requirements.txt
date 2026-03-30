@@ -22,7 +22,7 @@ openttd-helpers==2.0.0
 ply==3.11
 propcache==0.3.2
 pycparser==2.22
-Pygments==2.19.1
+Pygments==2.20.0
 PyJWT==2.10.1
 python-dateutil==2.9.0.post0
 python-slugify==8.0.4
