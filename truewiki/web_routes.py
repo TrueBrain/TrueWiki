@@ -12,6 +12,7 @@ from . import (
 )
 from .views import (
     edit,
+    error,
     license,
     login,
     source,
@@ -189,7 +190,17 @@ async def edit_page_post(request):
         location = urllib.parse.quote(page)
         return web.HTTPFound(f"/user/login?location=edit/{location}")
 
-    payload = await request.post()
+    try:
+        payload = await request.post()
+    except web.HTTPRequestEntityTooLarge:
+        max_size = config.MAX_UPLOAD_SIZE // 1024**2
+        return error.view(
+            user,
+            page,
+            f"The file you tried to upload is bigger than {max_size} MiB. "
+            "Your changes were not saved. Please make the file smaller and try again.",
+            status=413,
+        )
     if "content" not in payload:
         raise web.HTTPNotFound()
     content = payload["content"].replace("\r", "")

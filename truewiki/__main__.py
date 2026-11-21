@@ -49,8 +49,6 @@ from .namespaces import (  # noqa
 
 log = logging.getLogger(__name__)
 
-# Don't allow any file above 4 MiB.
-MAX_UPLOAD_SIZE = (1024**2) * 4
 # Cache static files for 24 hours.
 CACHE_TIME_STATIC = 3600 * 24
 # Cache uploads for 5 minutes by default. These files can be overwritten by
@@ -188,7 +186,7 @@ def main(bind, port, storage, frontend_url, cache_time, remote_ip_header, valida
             print(json.dumps(errors, indent=4))
         return
 
-    webapp = web.Application(client_max_size=MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])
+    webapp = web.Application(client_max_size=config.MAX_UPLOAD_SIZE, middlewares=[remove_cookie_middleware])
     webapp.on_response_prepare.append(cache_on_prepare)
     if remote_ip_header:
         global REMOTE_IP_HEADER

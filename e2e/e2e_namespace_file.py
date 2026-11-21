@@ -221,6 +221,22 @@ def test_file_upload_png(page: Page, login):
     expect(page.locator("text=Filesize: 2.81 KiB")).to_be_visible()
 
 
+def test_file_upload_too_large(page: Page, login, tmp_path):
+    """Check that uploading a file above the size limit gives a clear error."""
+    large_file = tmp_path / "large.png"
+    large_file.write_bytes(b"\0" * (5 * 1024 * 1024))
+
+    page.goto("http://localhost:8080/edit/File/en/Test.png")
+    expect(page.locator("text=Upload new file (max 4 MiB)")).to_be_visible()
+
+    page.locator("[name=file]").set_input_files(str(large_file))
+    with page.expect_navigation():
+        page.locator("[name=save]").click()
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
+
+    expect(page.locator("text=The file you tried to upload is bigger than 4 MiB.")).to_be_visible()
+
+
 def test_file_upload_wrong_png(page: Page, login):
     """Check if uploading a PNG on a .gif doesn't actually work."""
     page.goto("http://localhost:8080/File/en/Test.gif")
