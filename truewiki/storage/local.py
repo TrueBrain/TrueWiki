@@ -69,7 +69,9 @@ class Storage:
         os.makedirs(f"{self._folder}/{dirname}", exist_ok=True)
 
     def dir_listing(self, dirname: str) -> List[str]:
-        return [item[len(f"{self._folder}/") :] for item in glob.glob(f"{self._folder}/{dirname}/*")]
+        return [
+            item.replace(os.sep, "/")[len(f"{self._folder}/") :] for item in glob.glob(f"{self._folder}/{dirname}/*")
+        ]
 
     @property
     def folder(self):
