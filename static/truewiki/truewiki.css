@@ -214,6 +214,7 @@ a.new {
     background-color: #f9f9f9;
     display: inline-table;
     font-size: 94%;
+    max-width: min(906px, 100%);
     outline: 1px solid #ccc;
     overflow: hidden;
     padding: 3px 3px 0 3px !important;
@@ -232,7 +233,8 @@ a.new {
     margin: 0;
 }
 main img {
-    max-width: 900px;
+    height: auto;
+    max-width: min(900px, 100%);
 }
 
 .magnify {
