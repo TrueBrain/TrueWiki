@@ -47,7 +47,6 @@ from .namespaces import (  # noqa
     translation,
 )
 
-
 log = logging.getLogger(__name__)
 
 # Don't allow any file above 4 MiB.

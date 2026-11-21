@@ -8,7 +8,6 @@ from typing import Tuple
 from .base_oauth2 import User as BaseUser
 from .. import singleton
 
-
 GITLAB_CLIENT_ID = None
 GITLAB_CLIENT_SECRET = None
 

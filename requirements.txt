@@ -19,6 +19,7 @@ httpx==0.28.1
 idna==3.10
 multidict==6.5.0
 openttd-helpers==2.0.0
+packaging==26.3
 ply==3.11
 propcache==0.3.2
 pycparser==2.22

@@ -4,7 +4,6 @@ from aiohttp import web
 
 from .base import User as BaseUser
 
-
 _states = {}
 
 

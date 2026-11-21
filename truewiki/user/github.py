@@ -7,7 +7,6 @@ from typing import Tuple
 
 from .base_oauth2 import User as BaseUser
 
-
 GITHUB_CLIENT_ID = None
 GITHUB_CLIENT_SECRET = None
 GITHUB_API_URL = None

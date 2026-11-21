@@ -10,7 +10,6 @@ from ctypes.util import find_library
 from tempfile import TemporaryDirectory
 from playwright.sync_api import Page
 
-
 temp_folder = None
 python_proc = None
 
