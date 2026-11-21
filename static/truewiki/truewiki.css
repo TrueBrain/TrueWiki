@@ -406,6 +406,14 @@ h6:hover .anchor {
     margin-top: 5px;
     padding: 0 3px;
 }
+#create-in-folder {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    clear: both;
+    font-size: 90%;
+    margin-top: 10px;
+    padding: 4px 10px;
+}
 #categories {
     float: left;
 }

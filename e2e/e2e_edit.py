@@ -41,6 +41,28 @@ def test_edit_page(page: Page, login):
     expect(page.locator("text=My Second Edit")).to_be_visible()
 
 
+def test_create_in_folder(page: Page, login):
+    """Check that existing pages link to creating a new page in the same folder."""
+    page.goto("http://localhost:8080/en/Main%20Page")
+
+    create = page.locator("text=Create a page in en/")
+    expect(create).to_be_visible()
+    with page.expect_navigation():
+        create.click()
+    page.wait_for_url("http://localhost:8080/edit/en/")
+
+    expect(page.locator("[name=page]")).to_have_value("en/")
+    expect(page.locator("#create-hint")).to_be_visible()
+
+
+def test_create_in_folder_without_login(page: Page):
+    """Check that the create-in-folder link is hidden when not logged in."""
+    page.goto("http://localhost:8080/en/Main%20Page")
+
+    expect(page.locator("text=My Second Edit")).to_be_visible()
+    expect(page.locator("#create-in-folder")).to_have_count(0)
+
+
 def test_rename_page(page: Page, login):
     """Check if we can rename the main page to something else."""
     edit = page.locator("text=Edit Page")
