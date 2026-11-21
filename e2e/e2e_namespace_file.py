@@ -21,7 +21,7 @@ def test_file_view_bad_extension(page: Page):
     expect(
         page.locator(
             'text=Page name "File/en/Test.image" in the File namespace should'
-            ' end with either ".png", ".gif", or ".jpeg".'
+            ' end with either ".png", ".gif", ".jpeg", or ".jpg".'
         )
     ).to_be_visible()
 
@@ -192,7 +192,7 @@ def test_file_upload_wrong_jpeg(page: Page, login):
     page.wait_for_url("http://localhost:8080/edit/File/en/Test.png")
 
     expect(
-        page.locator('text=Page name "File/en/Test.png" should end with ".jpeg" if uploading a JPEG.')
+        page.locator('text=Page name "File/en/Test.png" should end with ".jpeg" or ".jpg" if uploading a JPEG.')
     ).to_be_visible()
 
 
@@ -285,6 +285,27 @@ def test_file_upload_jpeg(page: Page, login):
 
     expect(page).to_have_title("Unnamed | Test.jpeg")
     expect(page.locator("text=My Third Upload")).to_be_visible()
+    expect(page.locator("text=Filesize: 3.05 KiB")).to_be_visible()
+
+
+def test_file_upload_jpg(page: Page, login):
+    """Check that we can upload JPEG images with a .jpg extension."""
+    page.goto("http://localhost:8080/File/en/Test.jpg")
+
+    create = page.locator("text=Create Page")
+    expect(create).to_be_visible()
+    with page.expect_navigation():
+        create.click()
+    page.wait_for_url("http://localhost:8080/edit/File/en/Test.jpg")
+
+    page.locator("[name=file]").set_input_files("e2e/test.jpeg")
+    page.locator("[name=content]").fill("My Fourth Upload")
+    with page.expect_navigation():
+        page.locator("[name=save]").click()
+    page.wait_for_url("http://localhost:8080/File/en/Test.jpg")
+
+    expect(page).to_have_title("Unnamed | Test.jpg")
+    expect(page.locator("text=My Fourth Upload")).to_be_visible()
     expect(page.locator("text=Filesize: 3.05 KiB")).to_be_visible()
 
 
