@@ -10,6 +10,7 @@ from ..folder import (
     footer as folder_footer,
 )
 from ... import (
+    config,
     metadata,
     singleton,
     wiki_page,
@@ -177,9 +178,9 @@ class Namespace(base.Namespace):
 
     @staticmethod
     def add_edit_content() -> str:
-        return """
+        return f"""
 <hr />
-Upload new file: <input type="file" name="file" />
+Upload new file (max {config.MAX_UPLOAD_SIZE // 1024**2} MiB): <input type="file" name="file" />
 <p>Please ensure the upload has a license that is compatible with the license of this wiki.</p>
 <p>Any new upload will overwrite the existing upload at this location. Preview won't work for new uploads.</p>
 <hr />

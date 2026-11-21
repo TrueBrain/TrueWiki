@@ -12,6 +12,7 @@ HTML_SNIPPETS = {
 }
 JAVASCRIPT = []
 LICENSE = "Unlicensed"
+MAX_UPLOAD_SIZE = (1024**2) * 4
 PRIMARY_LANGUAGE = "en"
 PROJECT_NAME = "Unnamed"
 
