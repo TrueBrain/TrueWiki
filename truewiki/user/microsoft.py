@@ -7,7 +7,6 @@ from typing import Tuple
 
 from .base_oauth2 import User as BaseUser
 
-
 MICROSOFT_CLIENT_ID = None
 MICROSOFT_CLIENT_SECRET = None
 
