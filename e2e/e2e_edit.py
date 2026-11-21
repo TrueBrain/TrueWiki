@@ -51,8 +51,32 @@ def test_create_in_folder(page: Page, login):
         create.click()
     page.wait_for_url("http://localhost:8080/edit/en/")
 
-    expect(page.locator("[name=page]")).to_have_value("en/")
+    expect(page.locator("[name=page-language]")).to_have_value("en")
+    expect(page.locator("[name=page-name]")).to_have_value("")
     expect(page.locator("#create-hint")).to_be_visible()
+
+
+def test_create_page_with_picker(page: Page, login):
+    """Check that the language and name picked on the create form are used."""
+    page.goto("http://localhost:8080/edit/en/")
+
+    page.locator("[name=page-language]").select_option("de")
+    page.locator("[name=page-name]").fill("Picked")
+    page.locator("[name=content]").fill("Picked page")
+    with page.expect_navigation():
+        page.locator("[name=save]").click()
+    page.wait_for_url("http://localhost:8080/de/Picked")
+
+    expect(page.locator("text=Picked page")).to_be_visible()
+
+
+def test_create_page_picker_types(page: Page, login):
+    """Check that File can only be picked when creating a file."""
+    page.goto("http://localhost:8080/edit/en/")
+    expect(page.locator("[name=page-namespace] option")).to_have_text(["Page", "Template", "Category"])
+
+    page.goto("http://localhost:8080/edit/File/en/Picker.png")
+    expect(page.locator("[name=page-namespace] option")).to_have_text(["File"])
 
 
 def test_create_in_folder_without_login(page: Page):
