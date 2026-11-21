@@ -420,19 +420,25 @@ h6:hover .anchor {
     margin: 0 0 4px 0;
 }
 #page-picker {
-    align-items: center;
+    align-items: flex-end;
     display: flex;
     flex-wrap: wrap;
-    gap: 4px 12px;
+    gap: 4px 6px;
     margin-bottom: 4px;
 }
-#page-picker-name {
+#page-picker label {
+    color: #555;
     display: flex;
-    flex: 1 1 240px;
-    gap: 4px;
+    flex-direction: column;
+    font-size: 12px;
 }
-#page-name {
-    flex-grow: 1;
+#page-picker select, #page-picker input {
+    box-sizing: border-box;
+    font-size: 14px;
+    height: 26px;
+}
+#page-picker-name {
+    flex: 1 1 240px;
 }
 #categories {
     float: left;
