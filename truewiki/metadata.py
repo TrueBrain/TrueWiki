@@ -224,6 +224,7 @@ async def _scan_folder(folder, notified=None):
         notified = set()
 
     for node in glob.glob(f"{singleton.STORAGE.folder}/{folder}/*"):
+        node = node.replace(os.sep, "/")
         if os.path.isdir(node):
             folder = node[len(singleton.STORAGE.folder) + 1 :]
             pages_seen.update(await _scan_folder(folder, notified))
@@ -396,6 +397,7 @@ class MetadataQueue:
         for subfolder in ("Page", "Template", "Category", "File"):
             # Index all languages (the superset of all folders).
             for node in glob.glob(f"{singleton.STORAGE.folder}/{subfolder}/*"):
+                node = node.replace(os.sep, "/")
                 if os.path.isdir(node):
                     language = node.split("/")[-1]
                     LANGUAGES.add(language)

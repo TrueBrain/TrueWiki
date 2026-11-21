@@ -1,6 +1,6 @@
 import click
 import logging
-import os
+import posixpath
 import urllib
 
 from aiohttp import web
@@ -46,8 +46,8 @@ def _validate_page(page: str) -> None:
     if "/" not in page:
         return
 
-    filename = os.path.basename(page)
-    path = os.path.normpath(os.path.dirname(page))
+    filename = posixpath.basename(page)
+    path = posixpath.normpath(posixpath.dirname(page))
     fullpath = f"{path}/{filename}"
 
     # Don't allow directory traversal
@@ -205,8 +205,8 @@ async def edit_page_post(request):
 
     # Make sure that page names don't contain /../ or anything silly.
     new_page = payload.get("page", page)
-    filename = os.path.basename(new_page)
-    path = os.path.normpath(os.path.dirname(new_page))
+    filename = posixpath.basename(new_page)
+    path = posixpath.normpath(posixpath.dirname(new_page))
     new_page = f"{path}/{filename}"
     source_edit_nonce = singleton.STORAGE.get_file_nonce(WikiPage.page_ondisk_name(page))
 
