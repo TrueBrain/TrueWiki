@@ -33,15 +33,16 @@ def _options(values, selected: str) -> str:
     return "".join(options)
 
 
-def render(page: str) -> str:
+def render(page: str, is_file: bool) -> str:
     """HTML form fields to pick the namespace, language and name of a new page."""
     namespace, language, name = split(page)
+    choices = ("File",) if is_file else NAMESPACES[:3]
 
     languages = set(metadata.LANGUAGES)
     if language:
         languages.add(language)
 
-    namespaces = _options(NAMESPACES, namespace)
+    namespaces = _options(choices, namespace)
     languages = _options(sorted(languages), html.escape(language))
     name = html.escape(name)
 

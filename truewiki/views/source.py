@@ -78,7 +78,7 @@ def create_body(
         "errors": "\n".join(errors),
         "breadcrumbs": breadcrumb.create(wiki_page.page),
         "namespace_edit": wiki_page.add_edit_content() if new_page else "",
-        "page_picker": page_picker.render(new_page) if new_page else "",
+        "page_picker": page_picker.render(new_page, wiki_page.page.startswith("File/")) if new_page else "",
         "summary_text": summary if summary else "",
         "edit_nonce": singleton.STORAGE.get_file_nonce(ondisk_name),
     }
