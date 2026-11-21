@@ -96,7 +96,7 @@
             </div>
             {{#if: {{{create_in_folder|}}}|
             <div id="create-in-folder">
-                Missing something? <a href="/edit/{{urlencode:{{{create_in_folder}}}}}">Create a page in {{{create_in_folder}}}</a>
+                Missing something? <a href="/edit/{{urlencode:{{{create_in_folder}}}}}">Create a new page</a>
             </div>
             }}
 

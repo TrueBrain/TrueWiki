@@ -45,7 +45,7 @@ def test_create_in_folder(page: Page, login):
     """Check that existing pages link to creating a new page in the same folder."""
     page.goto("http://localhost:8080/en/Main%20Page")
 
-    create = page.locator("text=Create a page in en/")
+    create = page.locator("text=Create a new page")
     expect(create).to_be_visible()
     with page.expect_navigation():
         create.click()
