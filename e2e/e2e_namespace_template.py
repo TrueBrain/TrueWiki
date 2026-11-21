@@ -140,7 +140,7 @@ def test_template_cannot_edit_root(page: Page, login):
         edit.click()
     page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
-    page.locator("[name=page]").fill("Template/en/Main Page")
+    page.locator("[name=page-name]").fill("Main Page")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
@@ -161,7 +161,8 @@ def test_template_edit_missing_language(page: Page, login):
         edit.click()
     page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
-    page.locator("[name=page]").fill("Template/test")
+    page.locator("[name=page-language]").evaluate("(el, v) => { el.add(new Option(v, v)); el.value = v; }", "")
+    page.locator("[name=page-name]").fill("test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()
@@ -180,7 +181,8 @@ def test_template_edit_invalid_language(page: Page, login):
         edit.click()
     page.wait_for_url("http://localhost:8080/edit/Template/en/")
 
-    page.locator("[name=page]").fill("Template/zz/test")
+    page.locator("[name=page-language]").evaluate("(el, v) => { el.add(new Option(v, v)); el.value = v; }", "zz")
+    page.locator("[name=page-name]").fill("test")
     page.locator("[name=content]").fill("Some text")
     with page.expect_navigation():
         page.locator("[name=save]").click()

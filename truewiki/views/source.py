@@ -5,7 +5,10 @@ from aiohttp import web
 from wikitexthtml.render import wikilink
 
 from . import error
-from .. import singleton
+from .. import (
+    page_picker,
+    singleton,
+)
 from ..content import breadcrumb
 from ..wiki_page import (
     NAMESPACE_MAPPING,
@@ -75,6 +78,7 @@ def create_body(
         "errors": "\n".join(errors),
         "breadcrumbs": breadcrumb.create(wiki_page.page),
         "namespace_edit": wiki_page.add_edit_content() if new_page else "",
+        "page_picker": page_picker.render(new_page) if new_page else "",
         "summary_text": summary if summary else "",
         "edit_nonce": singleton.STORAGE.get_file_nonce(ondisk_name),
     }

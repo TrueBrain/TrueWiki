@@ -419,6 +419,21 @@ h6:hover .anchor {
     font-size: 80%;
     margin: 0 0 4px 0;
 }
+#page-picker {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-bottom: 4px;
+}
+#page-picker-name {
+    display: flex;
+    flex: 1 1 240px;
+    gap: 4px;
+}
+#page-name {
+    flex-grow: 1;
+}
 #categories {
     float: left;
 }

@@ -8,6 +8,7 @@ from openttd_helpers import click_helper
 
 from . import (
     config,
+    page_picker,
     singleton,
 )
 from .views import (
@@ -215,7 +216,12 @@ async def edit_page_post(request):
         raise web.HTTPBadRequest(reason="Summary exceeds maximum length of 500 characters.")
 
     # Make sure that page names don't contain /../ or anything silly.
-    new_page = payload.get("page", page)
+    if "page-language" in payload:
+        new_page = page_picker.join(
+            payload.get("page-namespace", ""), payload["page-language"], payload.get("page-name", "")
+        )
+    else:
+        new_page = payload.get("page", page)
     filename = posixpath.basename(new_page)
     path = posixpath.normpath(posixpath.dirname(new_page))
     new_page = f"{path}/{filename}"

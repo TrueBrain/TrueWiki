@@ -96,11 +96,15 @@
 
             <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
 
+            {{#if:{{{does_exist|}}}|
             {{#if:{{{has_used_on_pages|}}}|
             <input type="text" value="{{{new_page}}}" style="width: 100%;" disabled />
             <span id="no-rename">Pages cannot be renamed if they are used by other pages. Still want to rename? Create a <a href="{{{repository_url}}}/pulls" target="_new">Pull Request</a> or <a href="{{{repository_url}}}/issues" target="_new">Issue</a>.</span>
             |
             <input type="text" name="page" value="{{{new_page}}}" style="width: 100%;" />
+            }}
+            |
+            {{page_picker}}
             }}
 
             <textarea name="content" style="width: 100%;" rows=30>{{page}}</textarea>
