@@ -92,8 +92,11 @@ class Namespace(base.Namespace):
             return f'Page name "{page}" is in language "{spage[1]}" that does not exist.'
 
         if not cls._is_language_root(page) and not cls._is_root_of_folder(page):
-            if not page.endswith((".png", ".jpeg", ".gif")):
-                return f'Page name "{page}" in the File namespace should end with either ".png", ".gif", or ".jpeg".'
+            if not page.endswith((".png", ".jpeg", ".jpg", ".gif")):
+                return (
+                    f'Page name "{page}" in the File namespace should end with either'
+                    ' ".png", ".gif", ".jpeg", or ".jpg".'
+                )
 
         return None
 
@@ -215,8 +218,8 @@ Upload new file: <input type="file" name="file" />
             if not data.startswith(b"\xff\xd8") or not data.endswith(b"\xff\xd9"):
                 return f'Uploaded file "{payload["file"].filename}" is not a valid JPEG image.'
 
-            if not new_page.endswith(".jpeg"):
-                return f'Page name "{new_page}" should end with ".jpeg" if uploading a JPEG.'
+            if not new_page.endswith((".jpeg", ".jpg")):
+                return f'Page name "{new_page}" should end with ".jpeg" or ".jpg" if uploading a JPEG.'
         elif payload["file"].content_type == "image/gif":
             # See https://en.wikipedia.org/wiki/GIF#File_format
             if not data.startswith(b"GIF87a") and not data.startswith(b"GIF89a"):
