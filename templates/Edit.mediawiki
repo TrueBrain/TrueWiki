@@ -91,7 +91,7 @@
             <h3>Edit page</h3>
             |
             <h3>Create new page</h3>
-            <p id="create-hint">Tip: to add sub-pages to this page later, end its name with "/Main Page", like "en/Bridges/Main Page".</p>
+            <p id="create-hint">Tip: to add sub-pages to this page later, end its name with "/Main Page", like "Bridges/Main Page".</p>
             }}
 
             <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
