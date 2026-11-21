@@ -10,7 +10,10 @@ from openttd_helpers import click_helper
 from . import error
 from .. import metadata
 from ..content import breadcrumb
-from ..wiki_page import WikiPage
+from ..wiki_page import (
+    NAMESPACES,
+    WikiPage,
+)
 from ..wrapper import wrap_page
 
 CACHE_PAGE_FOLDER = None
@@ -25,7 +28,11 @@ def _view(wiki_page, user, page: str) -> web.Response:
         "display_name": user.display_name if user else "",
         "user_settings_url": user.get_settings_url() if user else "",
         "errors": len(wiki_page.errors) if wiki_page.errors else "",
+        "create_in_folder": "",
     }
+
+    if user and "/" in page and page.split("/")[0] not in NAMESPACES and wiki_page.page_exists(page):
+        variables["create_in_folder"] = page.rsplit("/", 1)[0] + "/"
 
     templates["language"] = wiki_page.add_language(page)
     templates["footer"] = wiki_page.add_footer(page)
